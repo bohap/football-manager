@@ -23,5 +23,5 @@ Android applicaiton that enables making football dream team. User that whant to 
 
 ### Collaborating:
 ---
-- Borche Petrovski as Android Developer [*@bohap*](https://github.com/bohap)
-- Martin Josifivski as Android Developer [*@JosifovskiM*](https://github.com/JosifovskiM)
+- Borche Petrovski as Android Developer [**@bohap**](https://github.com/bohap)
+- Martin Josifovski as Android Developer [**@JosifovskiM**](https://github.com/JosifovskiM)
