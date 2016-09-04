@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Colors-->
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#337ab7</color>
+    <!--Background Color-->
+    <color name="backgroundColorDefault">#fff</color>
+    <color name="backgroundColorPrimary">@color/colorPrimary</color>
+    <color name="backgroundColorSuccess">#5cb85c</color>
+    <color name="backgroundColorDanger">#d9534f</color>
+    <color name="backgroundColorInfo">#5bc0de</color>
+    <color name="backgroundColorWarning">#f0ad4e</color>
+    <!--Strokes-->
+    <color name="colorStrokeDefault">#ccc</color>
+    <color name="colorStrokePrimary">#2e6da4</color>
+    <color name="colorStrokeSuccess">#4cae4c</color>
+    <color name="colorStrokeDanger">#d43f3a</color>
+    <color name="colorStrokeInfo">#46b8da</color>
+    <color name="colorStrokeWarning">#eea236</color>
+    <!--Text Color-->
+    <color name="defaultBackgroundTextColor">#333</color>
+    <color name="primaryBackgroundTextColor">#fff</color>
+    <color name="successBackgroundTextColor">#fff</color>
+    <color name="dangerBackgroundTextColor">#fff</color>
+    <color name="infoBackgroundTextColor">#fff</color>
+    <color name="warningBackgroundTextColor">#fff</color>
+    <!--Pressed State Background-->
+    <color name="pressedBackgroundColorDefault">#e6e6e6</color>
+    <color name="pressedBackgroundColorPrimary">#286090</color>
+    <color name="pressedBackgroundColorSuccess">#449d44</color>
+    <color name="pressedBackgroundColorDanger">#c9302c</color>
+    <color name="pressedBackgroundColorInfo">#31b0d5</color>
+    <color name="pressedBackgroundColorWarning">#ec971f</color>
+    <!--Pressed State Strokes-->
+    <color name="pressedStrokeColorDefault">#8c8c8c</color>
+    <color name="pressedStrokeColorPrimary">#122b40</color>
+    <color name="pressedStrokeColorSuccess">#255625</color>
+    <color name="pressedStrokeColorDanger">#761c19</color>
+    <color name="pressedStrokeColorInfo">#1b6d85</color>
+    <color name="pressedStrokeColorWarning">#985f0d</color>
+    <!--EditText-->
+    <color name="editText_background">#eeeeee</color>
+    <color name="editText_text_color">@android:color/black</color>
+    <color name="editText_stroke">#bdbdbd</color>
+    <color name="editText_pressedState_background">#e0e0e0</color>
+    <color name="editText_errorStrokeColor">#a94442</color>
+    <color name="editText_errorBackground">#ffebee</color>
+    <!--Spinner-->
+    <color name="spinner_startColor">#ebf4fc</color>
+    <color name="spinner_centerColor">#66a4d9</color>
+    <color name="spinner_endColor">#337ab7</color>
+    <!--Error Container Layout-->
+    <color name="error_containerBackground">#ffebee</color>
+    <!--Sidebar-->
+    <color name="sidebar_background">@android:color/white</color>
+    <!--CustomDialog-->
+    <color name="customDialog_background">#03A9F4</color>
+    <color name="customDialog_strokeColor">#0277BD</color>
+    <color name="customDialog_textColor">@android:color/white</color>
+</resources>

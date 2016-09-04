@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/lineupTab_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/textSize"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/lineupTab_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="30dp"
+        android:minHeight="30dp"
+        android:background="@drawable/circle_primary"
+        android:textColor="@color/primaryBackgroundTextColor"
+        android:textSize="@dimen/textSize"
+        android:textStyle="bold"
+        android:padding="@dimen/small_horizontalPadding"
+        android:layout_marginLeft="@dimen/base_horizontalMargin"
+        android:layout_marginStart="@dimen/base_horizontalMargin"
+        android:gravity="center" />
+
+</LinearLayout>

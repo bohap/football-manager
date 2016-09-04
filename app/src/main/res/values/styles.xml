@@ -1,0 +1,340 @@
+<resources>
+    <!--App-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
+    <!--Toolbar-->
+    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+    <!--Sidebar-->
+    <style name="Sidebar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:background">@color/sidebar_background</item>
+    </style>
+    <!--Tab Layout-->
+    <style name="TabLayout" parent="Widget.Design.TabLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="tabIndicatorColor">@color/colorPrimary</item>
+        <item name="tabIndicatorHeight">@dimen/tabIndicator_height</item>
+    </style>
+    <!--Block View-->
+    <style name="Block">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="Inline">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <!--Empty Element-->
+    <style name="Empty">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <!--Main Content-->
+    <style name="MainContent">
+        <!--<item name="android:background">@drawable/bgg</item>-->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingLeft">@dimen/base_horizontalMargin</item>
+        <item name="android:paddingRight">@dimen/base_horizontalMargin</item>
+        <item name="android:paddingTop">@dimen/base_verticalMargin</item>
+        <item name="android:paddingBottom">@dimen/base_verticalMargin</item>
+    </style>
+    <!--Error Container Style-->
+    <style name="ErrorContainer">
+        <item name="android:background">@drawable/error_container</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/base_horizontalPadding</item>
+        <item name="android:paddingRight">@dimen/base_horizontalPadding</item>
+        <item name="android:paddingTop">@dimen/base_verticalPadding</item>
+        <item name="android:paddingBottom">@dimen/base_verticalPadding</item>
+        <item name="android:layout_marginTop">@dimen/base_verticalMargin</item>
+    </style>
+
+    <!--Button-->
+    <style name="Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/button_minHeight</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">@dimen/base_horizontalPadding</item>
+        <item name="android:paddingRight">@dimen/base_horizontalPadding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="Button.Block">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+    <style name="Button.Small">
+        <item name="android:minHeight">@dimen/smallButton_minHeight</item>
+        <item name="android:paddingLeft">@dimen/medium_horizontalPadding</item>
+        <item name="android:paddingRight">@dimen/medium_horizontalPadding</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
+    </style>
+    <!--Button Default Style -->
+    <style name="Button.Default">
+        <item name="android:background">@drawable/btn_default</item>
+        <item name="android:textColor">@color/defaultBackgroundTextColor</item>
+    </style>
+    <style name="Button.Block.Default">
+        <item name="android:background">@drawable/btn_default</item>
+        <item name="android:textColor">@color/defaultBackgroundTextColor</item>
+    </style>
+    <style name="Button.Small.Default">
+        <item name="android:background">@drawable/btn_default</item>
+        <item name="android:textColor">@color/defaultBackgroundTextColor</item>
+    </style>
+    <style name="Button.Default.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Default.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Default.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <style name="Button.Default.NoCornersRadius">
+        <item name="android:background">@drawable/btn_default_no_corners_radius</item>
+    </style>
+    <style name="Button.Block.Default.NoCornersRadius">
+        <item name="android:background">@drawable/btn_default_no_corners_radius</item>
+    </style>
+    <style name="Button.Small.Default.NoCornersRadius">
+        <item name="android:background">@drawable/btn_default_no_corners_radius</item>
+    </style>
+    <style name="Button.Default.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Default.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Default.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <!--Button Primary Style-->
+    <style name="Button.Primary">
+        <item name="android:background">@drawable/btn_primary</item>
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+    </style>
+    <style name="Button.Block.Primary">
+        <item name="android:background">@drawable/btn_primary</item>
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+    </style>
+    <style name="Button.Small.Primary">
+        <item name="android:background">@drawable/btn_primary</item>
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+    </style>
+    <style name="Button.Primary.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Primary.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Primary.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <style name="Button.Primary.NoCornersRadius">
+        <item name="android:background">@drawable/btn_primary_no_corners_radius</item>
+    </style>
+    <style name="Button.Block.Primary.NoCornersRadius">
+        <item name="android:background">@drawable/btn_primary_no_corners_radius</item>
+    </style>
+    <style name="Button.Small.Primary.NoCornersRadius">
+        <item name="android:background">@drawable/btn_primary_no_corners_radius</item>
+    </style>
+    <style name="Button.Primary.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Primary.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Primary.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <!--Button Danger Style-->
+    <style name="Button.Danger">
+        <item name="android:background">@drawable/btn_danger</item>
+        <item name="android:textColor">@color/dangerBackgroundTextColor</item>
+    </style>
+    <style name="Button.Block.Danger">
+        <item name="android:background">@drawable/btn_danger</item>
+        <item name="android:textColor">@color/dangerBackgroundTextColor</item>
+    </style>
+    <style name="Button.Small.Danger">
+        <item name="android:background">@drawable/btn_danger</item>
+        <item name="android:textColor">@color/dangerBackgroundTextColor</item>
+    </style>
+    <style name="Button.Danger.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Danger.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Danger.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <style name="Button.Danger.NoCornersRadius">
+        <item name="android:background">@drawable/btn_danger_no_corner_radius</item>
+    </style>
+    <style name="Button.Block.Danger.NoCornersRadius">
+        <item name="android:background">@drawable/btn_danger_no_corner_radius</item>
+    </style>
+    <style name="Button.Small.Danger.NoCornersRadius">
+        <item name="android:background">@drawable/btn_danger_no_corner_radius</item>
+    </style>
+    <style name="Button.Danger.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Danger.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Danger.NoCornersRadius.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+
+    <!--EditText-->
+    <style name="EditText">
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:background">@drawable/edit_text</item>
+        <item name="android:textColor">@color/editText_text_color</item>
+        <item name="android:paddingLeft">@dimen/medium_verticalPadding</item>
+        <item name="android:paddingRight">@dimen/medium_horizontalPadding</item>
+        <item name="android:paddingTop">@dimen/medium_horizontalPadding</item>
+        <item name="android:paddingBottom">@dimen/medium_verticalPadding</item>
+    </style>
+
+    <!--Test View-->
+    <style name="TextView">
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="TextView.Block">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="TextView.Icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="TextView.Icon.Small">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
+    <style name="TextView.Icon.Tiny">
+        <item name="android:textSize">@dimen/tinyIconTextSize</item>
+    </style>
+    <style name="TextView.Button">
+        <item name="android:textSize">@dimen/textSize</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">@dimen/button_minHeight</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="TextView.Button.Default">
+        <item name="android:textColor">@color/defaultBackgroundTextColor</item>
+    </style>
+    <style name="TextView.Button.Default.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="TextView.Button.Primary">
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+    </style>
+    <style name="TextView.Button.Primary.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="TextView.Button.Danger">
+        <item name="android:textColorTertiary">@color/dangerBackgroundTextColor</item>
+    </style>
+    <style name="TextView.Button.Danger.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="TextView.Error">
+        <item name="android:textColor">@color/backgroundColorDanger</item>
+        <item name="android:textSize">@dimen/textSize</item>
+    </style>
+    <style name="TextView.Block.Error">
+        <item name="android:textColor">@color/backgroundColorDanger</item>
+        <item name="android:textSize">@dimen/textSize</item>
+    </style>
+    <style name="TextView.Block.Error.Small">
+        <item name="android:textSize">@dimen/smallTextSize</item>
+        <item name="android:layout_marginLeft">@dimen/small_horizontalMargin</item>
+        <item name="android:layout_marginRight">@dimen/small_horizontalMargin</item>
+        <item name="android:layout_marginTop">@dimen/small_verticalMargin</item>
+        <item name="android:layout_marginBottom">@dimen/small_verticalMargin</item>
+    </style>
+
+    <!--Spinner-->
+    <style name="Spinner">
+        <item name="android:indeterminateDrawable">@drawable/spinner</item>
+    </style>
+    <style name="ButtonSpinner" parent="@android:style/Widget.ProgressBar">
+        <item name="android:indeterminateDrawable">@drawable/spinner</item>
+        <item name="android:layout_width">@dimen/button_minHeight</item>
+        <item name="android:layout_height">@dimen/button_minHeight</item>
+    </style>
+    
+    <!--Lineup Formation Player Style-->
+    <style name="LineupPlayer.Holder">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginLeft">@dimen/base_horizontalMargin</item>
+        <item name="android:layout_marginRight">@dimen/base_horizontalMargin</item>
+    </style>
+    <style name="LineupPlayer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+        <item name="android:textSize">@dimen/tinyTextSize</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <!--List Position Player Style-->
+    <style name="PositionPlayer">
+        <item name="android:padding">@dimen/small_verticalPadding</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="PositionPlayer.Header">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="PositionPlayerText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+    </style>
+    <style name="PositionPlayerText.Header">
+        <item name="android:textColor">@color/primaryBackgroundTextColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!--PlayerDetails Dialog-->
+    <style name="PlayerDetailsInfo">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
+        <item name="android:textColor">@color/customDialog_textColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="PlayerDetailsInfo.Label">
+        <item name="android:layout_marginRight">@dimen/base_horizontalMargin</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

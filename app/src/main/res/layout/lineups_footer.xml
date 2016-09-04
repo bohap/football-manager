@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lineupsListView_btnLoadMore"
+    style="@style/Button.Block.Default.NoCornersRadius"
+    android:clickable="true">
+    <TextView
+        android:id="@+id/lineupsListView_btnLoadMoreText"
+        style="@style/TextView.Button.Default"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/base_horizontalMargin"
+        android:layout_marginEnd="@dimen/base_horizontalMargin"
+        android:text="@string/lineupsListView_loadMoreBtnText" />
+    <ProgressBar
+        android:id="@+id/lineupsListVIew_spinnerLoadMore"
+        style="@style/ButtonSpinner"
+        android:layout_toRightOf="@id/lineupsListView_btnLoadMoreText"
+        android:layout_toEndOf="@id/lineupsListView_btnLoadMoreText"
+        android:visibility="gone" />
+</RelativeLayout>

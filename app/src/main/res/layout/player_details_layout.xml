@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="400dp"
+    android:background="@drawable/dialog_background"
+    android:layout_gravity="center"
+    android:layout_marginTop="@dimen/base_horizontalMargin"
+    android:layout_marginBottom="@dimen/base_horizontalMargin">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            style="@style/MainContent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/playerDetailsLayout_name"
+                android:background="@drawable/dialog_header_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="@dimen/small_horizontalPadding"
+                android:textSize="@dimen/textSize"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="@dimen/base_verticalMargin" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/player"
+                android:layout_gravity="center"
+                android:contentDescription="@string/playerDetails_imageDesc" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/base_verticalMargin">
+                <TextView
+                    style="@style/PlayerDetailsInfo.Label"
+                    android:text="@string/playerDetails_teamLabel" />
+                <TextView
+                    android:id="@+id/playerDetailsLayout_team"
+                    style="@style/PlayerDetailsInfo" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/PlayerDetailsInfo.Label"
+                    android:text="@string/playerDetails_ageLabel" />
+                <TextView
+                    android:id="@+id/playerDetailsLayout_age"
+                    style="@style/PlayerDetailsInfo" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/PlayerDetailsInfo.Label"
+                    android:text="@string/playerDetails_positionLabel" />
+                <TextView
+                    android:id="@+id/playerDetailsLayout_position"
+                    style="@style/PlayerDetailsInfo" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/playerDetailsLayout_btnRemove"
+                style="@style/Button.Block.Danger"
+                android:layout_marginTop="@dimen/base_horizontalMargin"
+                android:text="@string/playerDetails_btnRemove"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

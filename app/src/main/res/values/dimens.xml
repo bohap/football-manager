@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Margins-->
+    <dimen name="base_horizontalMargin">15dp</dimen>
+    <dimen name="base_verticalMargin">20dp</dimen>
+    <dimen name="small_horizontalMargin">5dp</dimen>
+    <dimen name="small_verticalMargin">8dp</dimen>
+    <dimen name="large_horizontalMargin">50dp</dimen>
+    <dimen name="large_verticalMargin">50dp</dimen>
+    <!--Padding-->
+    <dimen name="base_horizontalPadding">20dp</dimen>
+    <dimen name="base_verticalPadding">15dp</dimen>
+    <dimen name="small_horizontalPadding">5dp</dimen>
+    <dimen name="small_verticalPadding">8dp</dimen>
+    <dimen name="medium_verticalPadding">10dp</dimen>
+    <dimen name="medium_horizontalPadding">12dp</dimen>
+    <dimen name="large_horizontalPadding">50dp</dimen>
+    <dimen name="large_verticalPadding">50dp</dimen>
+    <!--TextSize-->
+    <dimen name="textSize">20sp</dimen>
+    <dimen name="smallTextSize">15sp</dimen>
+    <dimen name="tinyTextSize">10sp</dimen>
+    <dimen name="largeTextSize">30sp</dimen>
+    <dimen name="iconsTextSize">30sp</dimen>
+    <dimen name="smallIconTextSize">25sp</dimen>
+    <dimen name="tinyIconTextSize">15sp</dimen>
+    <!--Borders-->
+    <dimen name="cornersRadius">10dp</dimen>
+    <dimen name="strokeWidth">2dp</dimen>
+    <dimen name="smallCornersRadius">5dp</dimen>
+    <dimen name="smallStrokeWidth">2dp</dimen>
+    <!--Button-->
+    <dimen name="button_minHeight">50dp</dimen>
+    <dimen name="smallButton_minHeight">40dp</dimen>
+    <!--LineupPlayer-->
+    <dimen name="lineupPlayer_width">120dp</dimen>
+    <!--Sidebar-->
+    <dimen name="sidebar_listWidth">250dp</dimen>
+    <dimen name="sidebar_listDivider_height">1dp</dimen>
+    <!--Tabs-->
+    <dimen name="tabIndicator_height">5dp</dimen>
+</resources>

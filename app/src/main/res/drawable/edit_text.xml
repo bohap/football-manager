@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/smallCornersRadius" />
+            <stroke android:width="@dimen/smallStrokeWidth"
+                android:color="@color/editText_stroke" />
+            <solid android:color="@color/editText_pressedState_background" />
+        </shape>
+    </item>
+
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/smallCornersRadius" />
+            <stroke android:width="@dimen/smallStrokeWidth"
+                android:color="@color/editText_stroke" />
+            <solid android:color="@color/editText_pressedState_background" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/smallCornersRadius" />
+            <stroke android:width="@dimen/smallStrokeWidth"
+                android:color="@color/editText_stroke" />
+            <solid android:color="@color/editText_background" />
+        </shape>
+    </item>
+</selector>

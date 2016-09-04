@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include
+        layout="@layout/toolbar" />
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/homeLayout_drawerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include
+                android:visibility="gone"
+                layout="@layout/spinner" />
+            <include
+                android:visibility="gone"
+                layout="@layout/request_failed_partial" />
+            <RelativeLayout
+                android:id="@+id/homeLayout_mainContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/homeLayout_listView_headerText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/textSize"
+                    android:gravity="center"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@android:color/white"
+                    android:text="@string/homeActivity_lineupsList_headerText"/>
+                <ListView
+                    android:id="@+id/homeLayout_lineupsListView"
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/homeLayout_listView_headerText"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/sidebar"
+            style="@style/Sidebar"
+            app:menu="@menu/sidebar_menu"
+            app:headerLayout="@layout/sidebar_header" />
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>

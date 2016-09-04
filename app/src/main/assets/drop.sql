@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS lineups_comments;
+DROP TABLE IF EXISTS lineups_likes;
+DROP TABLE IF EXISTS lineups_players;
+DROP TABLE IF EXISTS lineups;
+DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS positions;
+DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS users;

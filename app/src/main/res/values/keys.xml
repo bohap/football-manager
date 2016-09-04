@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preference_first_time_key">first_time</string>
+    <string name="preference_auth_user_id_key">auth_user_id</string>
+    <string name="preference_teams_loaded_key">teams_loaded</string>
+    <string name="preference_positions_loaded_key">positions_loaded</string>
+    <string name="preference_players_loaded_key">players_loaded</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="font_awesome_path">fontawesome.ttf</string>
+    <string name="fa_dot_circle_o">&#xf192;</string>
+    <string name="fa_thumbs_o_up">&#xf087;</string>
+    <string name="fa_thumbs_o_down">&#xf088;</string>
+    <string name="fa_trash">&#xf1f8;</string>
+    <string name="fa_user">&#xf007;</string>
+    <string name="fa_clock_o">&#xf017;</string>
+    <string name="fa_exclamation_circle">&#xf06a;</string>
+</resources>

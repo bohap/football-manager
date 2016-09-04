@@ -1,0 +1,119 @@
+<resources>
+    <string name="app_name">Top 11</string>
+    <string name="api_baseUrl">http://football-manager.hol.es/app/</string>
+    <!--Sidebar-->
+    <string name="sidebar_header">
+        Football \n Dream Eleven
+    </string>
+    <string name="sidebarOpen_title">Navigation</string>
+    <string name="sidebar_drawerOpen_text">Open navigation drawer</string>
+    <string name="sidebar_drawerClose_text">Close navigation drawer</string>
+    <string name="sidebar_iconDescription">Sidebar item icon</string>
+    <!--Toast Messages-->
+    <string name="app_errorMessage">
+        Unknown error occurred. Please try again later.
+    </string>
+    <string name="server_connectionTimeoutMessage">
+        Connection to the server timeout. Please try again later.
+    </string>
+    <string name="server_errorMessage">
+        There was some problem with the server. Please try again later.
+    </string>
+    <!--Error Loading Layout-->
+    <string name="errorLoadingLayout_mainText">
+        Some error occurred while trying to load data from the server. Please try again later.
+    </string>
+    <string name="errorLoadingLayout_btnText">Try again</string>
+    <string name="errorLoadingLayout_imageDec">Error icon</string>
+    <!--Info Message-->
+    <string name="firstTimeStarted_title">Terms for using</string>
+    <string name="firstTimeStarted_message">
+        This application is for making a football dream team. The users can choose a dream lineup
+        from a list of given players, and also they can like or comment the lineups of the other
+        users. If you want to use this application you need to have a account which is free to make
+        and will only take one minute.
+    </string>
+    <string name="initialDataLoading_title">Loading initial data</string>
+    <string name="initialDataLoading_message">
+        Loading the players data from the server. This data is loaded only when the application
+        is started for the first time, so this may take a minute. Please be patient.
+    </string>
+    <!--LoginActivity-->
+    <string name="loginActivity_title">Login</string>
+    <string name="loginActivity_emailEditText_hint">Email</string>
+    <string name="loginActivity_email_EditText_requiredErrorMessage">
+        The email field is required
+    </string>
+    <string name="loginActivity_emailEditText_invalidErrorMessage">The email is invalid</string>
+    <string name="loginActivity_passwordEditText_hint">Password</string>
+    <string name="loginActivity_passwordEditText_requiredErrorMessage">
+        The password field is required
+    </string>
+    <string name="loginActivity_loginBtnText">Login</string>
+    <string name="loginActivity_registerBtnText">Register</string>
+    <!--Home Activity-->
+    <string name="homeActivity_title">Home</string>
+    <string name="homeActivity_spinnerInitialDataLoading_text">
+        Loading initial data…
+    </string>
+    <string name="homeActivity_spinnerLineupsLoading_text">
+        Loading latest lineups…
+    </string>
+    <string name="homeActivity_lineupsList_headerText">Latest lineups</string>
+    <!--LineupDetails Activity-->
+    <string name="lineupDetailsActivity_title">Lineup Details</string>
+    <string name="lineupDetailsActivity_spinnerLoadingLineup_text">
+        Loading lineup data…
+    </string>
+    <string name="lineupDetailsActivity_btnPlayers_text">Players</string>
+    <string name="lineupDetailsActivity_lineupIconDesc">Lineup image</string>
+    <string name="lineupDetailsActivity_likesTab_text">Likes</string>
+    <string name="lineupDetailsActivity_commentsTab_text">Comments</string>
+    <!--Lineups List View-->
+    <string name="lineupsListViewItem_imageDesc">Lineup image</string>
+    <string name="lineupsListView_loadMoreBtnText">Load More</string>
+    <!--Like Fragment-->
+    <string name="btnAddLike_text">Add Like</string>
+    <string name="btnRemoveLike_text">Remove Like</string>
+    <string name="likesFragment_spinnerLoadingText">Loading likes…</string>
+    <string name="likesFragment_likeAddingFailed_text">
+        Error occurred while adding the like
+    </string>
+    <string name="likesFragment_likeRemovingFailed_text">
+        Error occurred while removing the like
+    </string>
+    <!--LineupPlayers Activity-->
+    <string name="lineupPlayersActivity_title">Lineup Players</string>
+    <string name="lineupPlayersActivity_spinnerLoadPlayers_text">Loading lineup players…</string>
+    <string name="lineupPlayersActivity_spinnerUpdatingLineup_text">
+        Updating lineup players…
+    </string>
+    <string name="lineupPlayersLayout_updateLineupError_text">
+        A error occurred while updating the lineup data. Please try again.
+    </string>
+    <string name="lineupPlayersActivity_btnUpdate_text">Update</string>
+    <!--ListPositionPlayers Fragment-->
+    <string name="positionsPlayers_nameColumn">Name</string>
+    <string name="positionsPlayers_ageColumn">Age</string>
+    <string name="positionsPlayers_teamColumn">Team</string>
+    <string name="positionsPlayers_positionColumn">Position</string>
+    <!--PlayerDetails Dialog-->
+    <string name="playerDetails_imageDesc">Player Image</string>
+    <string name="playerDetails_teamLabel">Team: </string>
+    <string name="playerDetails_ageLabel">Age: </string>
+    <string name="playerDetails_positionLabel">Natural position: </string>
+    <string name="playerDetails_btnRemove">Remove</string>
+    <!--Create Lineup View-->
+    <string name="createLineupView_title">Create a new lineup</string>
+    <string name="createLineupView_btnSave">Save</string>
+    <string name="createLineupView_iconChangeFormation_desc">Change lineup formation</string>
+    <string name="createLineupView_spinnerCreateLineup_text">Saving lineup data…</string>
+    <string name="createLineupView_requestFailedText">
+        A error occurred while saving the lineup. Please try again.
+    </string>
+    <string name="formationContextMenuTitle">Choose a formation</string>
+    <string name="formation_4_4_2_title">4–4–2</string>
+    <string name="formation_3_2_3_2_title">3–2–3–2</string>
+    <string name="formation_4_2_3_1_title">4–2–3–1</string>
+    <string name="formation_4_3_3_title">4–3–3</string>
+</resources>

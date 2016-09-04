@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/toolbar" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            layout="@layout/spinner" />
+        <include
+            layout="@layout/request_failed_partial" />
+        <LinearLayout
+            android:id="@+id/lineupPlayersActivity_updateFailed"
+            style="@style/MainContent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                style="@style/TextView.Block"
+                android:textStyle="bold"
+                android:text="@string/lineupPlayersLayout_updateLineupError_text"/>
+            <Button
+                android:id="@+id/lineupPlayersActivity_btnTryUpdateAgain"
+                style="@style/Button.Primary"
+                android:layout_marginTop="@dimen/base_verticalMargin"
+                android:text="@string/errorLoadingLayout_btnText"/>
+        </LinearLayout>
+        <RelativeLayout
+            android:orientation="vertical"
+            android:id="@+id/lineupPlayersPlayers_mainContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/field" />
+            <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                android:id="@+id/lineupPlayersLayout_btnChangeFormation"
+                android:minWidth="0dp"
+                style="@style/Button.Small.Default.Icon"
+                android:layout_marginLeft="@dimen/base_horizontalMargin"
+                android:layout_marginStart="@dimen/base_horizontalMargin"
+                android:layout_marginTop="@dimen/base_verticalMargin"
+                android:text="@string/fa_dot_circle_o"
+                android:visibility="gone" />
+            <Button
+                android:id="@+id/lineupPlayersLayout_btnUpdate"
+                style="@style/Button.Small.Primary"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="@dimen/base_horizontalMargin"
+                android:layout_marginEnd="@dimen/base_horizontalMargin"
+                android:layout_alignTop="@+id/lineupPlayersLayout_btnChangeFormation"
+                android:layout_marginTop="@dimen/base_verticalMargin"
+                android:text="@string/lineupPlayersActivity_btnUpdate_text"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

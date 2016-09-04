@@ -1,0 +1,6 @@
+{
+  "jwt_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4ODg4XC9hcHBcL2F1dGhcL2xvZ2luIiwiaWF0IjoxNDcwNTU3NTQ1LCJleHAiOjE0NzA1NjExNDUsIm5iZiI6MTQ3MDU1NzU0NSwianRpIjoiMTcxOTYzMmMwZmY2NjU0ODFlMTE0NzJkOGQ5MWZmZWYifQ.ib7fHiv_UyQztcyEF-wOh7uXyo0lxp_J9tK5dn8LkyE",
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@doe.com"
+}

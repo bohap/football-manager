@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MainContent">
+
+    <LinearLayout
+        android:id="@id/keeperHolder"
+        style="@style/Block"
+        android:layout_alignParentBottom="true" >
+        <FrameLayout
+            style="@style/Empty" />
+        <FrameLayout
+            style="@style/Empty">
+            <TextView
+                android:id="@+id/keeper"
+                style="@style/LineupPlayer" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/Empty" />
+    </LinearLayout>
+
+    <!--Defenders-->
+    <!--Centre Backs-->
+    <LinearLayout
+        android:id="@+id/centreBacksHolder"
+        style="@style/Block"
+        android:layout_above="@+id/keeperHolder"
+        android:layout_marginBottom="@dimen/base_verticalMargin"
+        android:baselineAligned="false">
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+        <FrameLayout style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/leftCentreBack"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/rightCentreBack"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+    </LinearLayout>
+    <!--Side Backs-->
+    <LinearLayout
+        style="@style/Block"
+        android:layout_above="@+id/centreBacksHolder"
+        android:layout_marginBottom="@dimen/small_verticalMargin">
+        <FrameLayout style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/leftBack"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout style="@style/Empty"/>
+        <FrameLayout style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@id/rightBack"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!--Midfielders-->
+    <!--Centre Midfielders-->
+    <LinearLayout
+        android:id="@+id/centreMidfieldersHolder"
+        style="@style/Block"
+        android:layout_centerVertical="true"
+        android:baselineAligned="false">
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/leftCentreMidfield"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/rightCentreMidfield"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+    </LinearLayout>
+    <!--Side Midfielders-->
+    <LinearLayout
+        style="@style/Block"
+        android:layout_above="@+id/centreMidfieldersHolder"
+        android:layout_marginBottom="@dimen/base_verticalMargin">
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/leftWing"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout style="@style/Empty"/>
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/rightWing"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!--Forwards-->
+    <LinearLayout
+        style="@style/Block"
+        android:layout_alignParentTop="true"
+        android:baselineAligned="false">
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/leftCentreForward"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/LineupPlayer.Holder">
+            <TextView
+                android:id="@+id/rightCentreForward"
+                style="@style/LineupPlayer"
+                android:layout_gravity="center" />
+        </FrameLayout>
+        <FrameLayout
+            style="@style/Empty"
+            android:layout_weight="0.5" />
+    </LinearLayout>
+</RelativeLayout>

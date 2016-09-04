@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="db_name">football_dream_team</string>
+    <integer name="db_version">1</integer>
+    <string name="create_sql">create.sql</string>
+    <string name="drop_sql">drop.sql</string>
+    <!--Users table-->
+    <string name="users_table_name">users</string>
+    <string name="users_column_id">id</string>
+    <string name="users_column_name">name</string>
+    <string name="users_column_email">email</string>
+    <string name="users_column_created_at">created_at</string>
+    <string name="users_column_updated_at">updated_at</string>
+    <string name="users_column_jwt_token">jwt_token</string>
+    <!--Teams table-->
+    <string name="teams_table_name">teams</string>
+    <string name="teams_column_id">id</string>
+    <string name="teams_column_name">name</string>
+    <string name="teams_column_short_name">short_name</string>
+    <string name="teams_column_squad_market_value">squad_market_value</string>
+    <!--Positions table-->
+    <string name="positions_table_name">positions</string>
+    <string name="positions_column_id">id</string>
+    <string name="positions_column_name">name</string>
+    <!--Players table-->
+    <string name="players_table_name">players</string>
+    <string name="players_column_id">id</string>
+    <string name="players_column_team_id">team_id</string>
+    <string name="players_column_position_id">position_id</string>
+    <string name="players_column_name">name</string>
+    <string name="players_column_nationality">nationality</string>
+    <string name="players_column_date_of_birth">date_of_birth</string>
+    <!--Lineups table-->
+    <string name="lineups_table_name">lineups</string>
+    <string name="lineups_column_id">id</string>
+    <string name="lineups_column_user_id">user_id</string>
+    <string name="lineups_column_created_at">created_at</string>
+    <string name="lineups_column_updated_at">updated_at</string>
+    <!--Lineups Players table-->
+    <string name="lineups_players_table_name">lineups_players</string>
+    <string name="lineups_players_column_lineup_id">lineup_id</string>
+    <string name="lineups_players_column_player_id">player_id</string>
+    <string name="lineups_players_column_position_id">position_id</string>
+    <string name="lineups_players_column_created_at">created_at</string>
+    <string name="lineups_players_column_updated_at">updated_at</string>
+    <!--Lineups Likes table-->
+    <string name="lineups_likes_table_name">lineups_likes</string>
+    <string name="lineup_likes_user_id">user_id</string>
+    <string name="lineup_likes_lineup_id">lineup_id</string>
+    <string name="lineup_likes_created_at">created_at</string>
+    <!--Lineups Comments table-->
+    <string name="lineups_comments_table_name">lineups_comments</string>
+    <string name="lineups_comments_column_id">id</string>
+    <string name="lineups_comments_column_user_id">user_id</string>
+    <string name="lineups_comments_column_lineup_id">lineup_id</string>
+    <string name="lineups_comments_column_body">body</string>
+    <string name="lineups_comments_column_created_at">created_at</string>
+    <string name="lineups_comments_column_updated_at">updated_at</string>
+</resources>

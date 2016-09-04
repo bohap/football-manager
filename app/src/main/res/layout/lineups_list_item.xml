@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/base_verticalPadding"
+    android:paddingLeft="@dimen/base_horizontalPadding"
+    android:paddingRight="@dimen/base_horizontalPadding">
+
+    <ImageView
+        android:id="@+id/lineupsItem_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/base_horizontalMargin"
+        android:layout_marginEnd="@dimen/base_horizontalMargin"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/lineup"
+        android:contentDescription="@string/lineupsListViewItem_imageDesc" />
+
+    <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+        android:id="@+id/lineupsItem_userIcon"
+        style="@style/TextView.Icon"
+        android:layout_toRightOf="@+id/lineupsItem_image"
+        android:layout_toEndOf="@+id/lineupsItem_image"
+        android:layout_marginRight="@dimen/small_horizontalMargin"
+        android:layout_marginEnd="@dimen/small_horizontalMargin"
+        android:text="@string/fa_user" />
+
+    <TextView
+        android:id="@+id/lineupsItem_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/textSize"
+        android:textStyle="bold"
+        android:layout_toRightOf="@id/lineupsItem_userIcon"
+        android:layout_toEndOf="@id/lineupsItem_userIcon" />
+
+    <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+        android:id="@+id/lineupsItem_timeIcon"
+        style="@style/TextView.Icon.Tiny"
+        android:layout_toRightOf="@+id/lineupsItem_image"
+        android:layout_toEndOf="@+id/lineupsItem_image"
+        android:layout_below="@+id/lineupsItem_userIcon"
+        android:layout_marginRight="@dimen/small_horizontalMargin"
+        android:layout_marginEnd="@dimen/small_horizontalMargin"
+        android:layout_marginTop="@dimen/small_verticalMargin"
+        android:text="@string/fa_clock_o" />
+
+    <TextView
+        android:id="@+id/lineups_item_updated_at_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/smallTextSize"
+        android:layout_toRightOf="@id/lineupsItem_timeIcon"
+        android:layout_toEndOf="@+id/lineupsItem_timeIcon"
+        android:layout_alignTop="@+id/lineupsItem_timeIcon" />
+
+</RelativeLayout>

@@ -1,0 +1,31 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android.finki.mpip.footballdreamteam">
+
+    <!--Permisons-->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name="com.android.finki.mpip.footballdreamteam.MainApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <!--Activities-->
+        <activity android:name=".ui.activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.activity.LoginActivity"></activity>
+        <activity android:name=".ui.activity.RegisterActivity"></activity>
+        <activity android:name=".ui.activity.HomeActivity"></activity>
+        <activity android:name=".ui.activity.LineupDetailsActivity"></activity>
+        <activity android:name=".ui.activity.LineupPlayersActivity"
+            android:screenOrientation="landscape"></activity>
+        <activity android:name=".ui.activity.CreateLineupActivity"
+            android:screenOrientation="landscape"></activity>
+    </application>
+
+</manifest>

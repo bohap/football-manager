@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:visibility="gone"
+        layout="@layout/spinner" />
+    <include
+        android:visibility="gone"
+        layout="@layout/request_failed_partial" />
+    <RelativeLayout
+        android:id="@+id/likeLayout_mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/likeLayout_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/likeLayout_btnHolder" />
+        <LinearLayout
+            android:id="@+id/likeLayout_btnHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+            <RelativeLayout
+                android:id="@+id/likeLayout_btnAddLike"
+                style="@style/Button.Block.Primary.NoCornersRadius">
+                <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+                    style="@style/TextView.Button.Primary.Icon"
+                    android:text="@string/fa_thumbs_o_up"
+                    android:layout_toLeftOf="@+id/likeLayout_btnAddLike_text"
+                    android:layout_toStartOf="@id/likeLayout_btnAddLike_text"
+                    android:layout_marginRight="@dimen/base_horizontalMargin"
+                    android:layout_marginEnd="@dimen/base_horizontalMargin" />
+                <TextView
+                    android:id="@+id/likeLayout_btnAddLike_text"
+                    style="@style/TextView.Button.Primary"
+                    android:text="@string/btnAddLike_text"
+                    android:layout_centerHorizontal="true" />
+                <ProgressBar
+                    android:id="@+id/spinnerLikeAdding"
+                    style="@style/ButtonSpinner"
+                    android:layout_toRightOf="@id/likeLayout_btnAddLike_text"
+                    android:layout_toEndOf="@id/likeLayout_btnAddLike_text"
+                    android:layout_marginLeft="@dimen/base_horizontalMargin"
+                    android:layout_marginStart="@dimen/base_horizontalMargin"
+                    android:visibility="gone" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/likeLayout_btnRemoveLike"
+                style="@style/Button.Block.Primary.NoCornersRadius"
+                android:visibility="gone">
+                <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+                    style="@style/TextView.Button.Primary.Icon"
+                    android:text="@string/fa_thumbs_o_down"
+                    android:layout_toLeftOf="@+id/likeLayout_btnRemoveLike_text"
+                    android:layout_toStartOf="@id/likeLayout_btnRemoveLike_text"
+                    android:layout_marginRight="@dimen/base_horizontalMargin"
+                    android:layout_marginEnd="@dimen/base_horizontalMargin" />
+                <TextView
+                    android:id="@+id/likeLayout_btnRemoveLike_text"
+                    style="@style/TextView.Button.Primary"
+                    android:text="@string/btnRemoveLike_text"
+                    android:layout_centerHorizontal="true" />
+                <ProgressBar
+                    android:id="@+id/spinnerLikeRemoving"
+                    style="@style/ButtonSpinner"
+                    android:layout_toRightOf="@id/likeLayout_btnRemoveLike_text"
+                    android:layout_toEndOf="@id/likeLayout_btnRemoveLike_text"
+                    android:layout_marginLeft="@dimen/base_horizontalMargin"
+                    android:layout_marginStart="@dimen/base_horizontalMargin"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

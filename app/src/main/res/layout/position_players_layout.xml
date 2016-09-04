@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        style="@style/PositionPlayer.Header">
+        <TextView
+            android:id="@+id/positionPlayersLayout_headerText"
+            style="@style/PositionPlayerText.Header"
+            android:layout_width="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        style="@style/PositionPlayer.Header">
+        <TextView
+            style="@style/PositionPlayerText.Header"
+            android:layout_weight="1"
+            android:text="@string/positionsPlayers_nameColumn" />
+        <TextView
+            style="@style/PositionPlayerText.Header"
+            android:layout_weight="0.5"
+            android:text="@string/positionsPlayers_ageColumn" />
+        <TextView
+            style="@style/PositionPlayerText.Header"
+            android:layout_weight="1"
+            android:text="@string/positionsPlayers_teamColumn" />
+        <TextView
+            style="@style/PositionPlayerText.Header"
+            android:layout_weight="0.5"
+            android:text="@string/positionsPlayers_positionColumn" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/positionPlayersLayout_listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white" />
+
+</LinearLayout>
