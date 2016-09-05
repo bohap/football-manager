@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -87,6 +88,21 @@ public class LineupDetailsActivity extends BaseActivity {
             this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         presenter.loadLineupData(this.getIntent().getExtras());
+    }
+
+    /**
+     * Called when a options menu item is selected.
+     *
+     * @param item manu item that has been selected
+     * @return whatever the action should be canceled or not
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

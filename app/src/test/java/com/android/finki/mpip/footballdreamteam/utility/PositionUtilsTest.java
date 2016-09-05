@@ -33,7 +33,7 @@ public class PositionUtilsTest {
     private Position leftWing = new Position(9, "Left Wing");
     private Position centreForward = new Position(10, "Centre Forward");
     private Position secondaryForward = new Position(11, "Secondary Forward");
-    private Map<Position.POSITION, Integer> mapped;
+    private Map<PositionUtils.POSITION, Integer> mapped;
 
     private PositionUtils utils;
 
@@ -49,17 +49,17 @@ public class PositionUtilsTest {
      */
     private void initMap() {
         mapped = new HashMap<>();
-        mapped.put(Position.POSITION.KEEPER, keeper.getId());
-        mapped.put(Position.POSITION.CENTRE_BACK, centreBack.getId());
-        mapped.put(Position.POSITION.LEFT_BACK, leftBack.getId());
-        mapped.put(Position.POSITION.RIGHT_BACK, rightBack.getId());
-        mapped.put(Position.POSITION.DEFENSIVE_MIDFIELD, defensiveMidfield.getId());
-        mapped.put(Position.POSITION.CENTRE_MIDFIELD, centreMidfield.getId());
-        mapped.put(Position.POSITION.ATTACKING_MIDFIELD, attackingMidfield.getId());
-        mapped.put(Position.POSITION.LEFT_WING, leftWing.getId());
-        mapped.put(Position.POSITION.RIGHT_WING, rightWing.getId());
-        mapped.put(Position.POSITION.CENTRE_FORWARD, centreForward.getId());
-        mapped.put(Position.POSITION.SECONDARY_FORWARD, secondaryForward.getId());
+        mapped.put(PositionUtils.POSITION.KEEPER, keeper.getId());
+        mapped.put(PositionUtils.POSITION.CENTRE_BACK, centreBack.getId());
+        mapped.put(PositionUtils.POSITION.LEFT_BACK, leftBack.getId());
+        mapped.put(PositionUtils.POSITION.RIGHT_BACK, rightBack.getId());
+        mapped.put(PositionUtils.POSITION.DEFENSIVE_MIDFIELD, defensiveMidfield.getId());
+        mapped.put(PositionUtils.POSITION.CENTRE_MIDFIELD, centreMidfield.getId());
+        mapped.put(PositionUtils.POSITION.ATTACKING_MIDFIELD, attackingMidfield.getId());
+        mapped.put(PositionUtils.POSITION.LEFT_WING, leftWing.getId());
+        mapped.put(PositionUtils.POSITION.RIGHT_WING, rightWing.getId());
+        mapped.put(PositionUtils.POSITION.CENTRE_FORWARD, centreForward.getId());
+        mapped.put(PositionUtils.POSITION.SECONDARY_FORWARD, secondaryForward.getId());
     }
 
     /**
@@ -433,7 +433,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForKeeper() {
-        assertEquals(Position.POSITION.KEEPER, utils.getPosition(keeper));
+        assertEquals(PositionUtils.POSITION.KEEPER, utils.getPosition(keeper));
     }
 
     /**
@@ -441,7 +441,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForCentreBack() {
-        assertEquals(Position.POSITION.CENTRE_BACK, utils.getPosition(centreBack));
+        assertEquals(PositionUtils.POSITION.CENTRE_BACK, utils.getPosition(centreBack));
     }
 
     /**
@@ -449,7 +449,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForRightBack() {
-        assertEquals(Position.POSITION.RIGHT_BACK, utils.getPosition(rightBack));
+        assertEquals(PositionUtils.POSITION.RIGHT_BACK, utils.getPosition(rightBack));
     }
 
     /**
@@ -457,7 +457,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForLeftBack() {
-        assertEquals(Position.POSITION.LEFT_BACK, utils.getPosition(leftBack));
+        assertEquals(PositionUtils.POSITION.LEFT_BACK, utils.getPosition(leftBack));
     }
 
     /**
@@ -466,7 +466,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForDefensiveMidfield() {
-        assertEquals(Position.POSITION.DEFENSIVE_MIDFIELD, utils.getPosition(defensiveMidfield));
+        assertEquals(PositionUtils.POSITION.DEFENSIVE_MIDFIELD, utils.getPosition(defensiveMidfield));
     }
 
     /**
@@ -475,7 +475,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForCentreMidfield() {
-        assertEquals(Position.POSITION.CENTRE_MIDFIELD, utils.getPosition(centreMidfield));
+        assertEquals(PositionUtils.POSITION.CENTRE_MIDFIELD, utils.getPosition(centreMidfield));
     }
 
     /**
@@ -484,7 +484,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForAttackingMidfield() {
-        assertEquals(Position.POSITION.ATTACKING_MIDFIELD, utils.getPosition(attackingMidfield));
+        assertEquals(PositionUtils.POSITION.ATTACKING_MIDFIELD, utils.getPosition(attackingMidfield));
     }
 
     /**
@@ -492,7 +492,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForRightWing() {
-        assertEquals(Position.POSITION.RIGHT_WING, utils.getPosition(rightWing));
+        assertEquals(PositionUtils.POSITION.RIGHT_WING, utils.getPosition(rightWing));
     }
 
     /**
@@ -500,7 +500,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForLeftWing() {
-        assertEquals(Position.POSITION.LEFT_WING, utils.getPosition(leftWing));
+        assertEquals(PositionUtils.POSITION.LEFT_WING, utils.getPosition(leftWing));
     }
 
     /**
@@ -509,7 +509,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForCentreForward() {
-        assertEquals(Position.POSITION.CENTRE_FORWARD, utils.getPosition(centreForward));
+        assertEquals(PositionUtils.POSITION.CENTRE_FORWARD, utils.getPosition(centreForward));
     }
 
     /**
@@ -518,7 +518,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionForSecondaryForward() {
-        assertEquals(Position.POSITION.SECONDARY_FORWARD, utils.getPosition(secondaryForward));
+        assertEquals(PositionUtils.POSITION.SECONDARY_FORWARD, utils.getPosition(secondaryForward));
     }
 
     /**
@@ -550,7 +550,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForKeeper() {
-        assertEquals(Position.POSITION_PLACE.KEEPERS, utils.getPositionPlace(keeper));
+        assertEquals(PositionUtils.POSITION_PLACE.KEEPERS, utils.getPositionPlace(keeper));
     }
 
     /**
@@ -558,7 +558,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForDefender() {
-        assertEquals(Position.POSITION_PLACE.DEFENDERS, utils.getPositionPlace(rightBack));
+        assertEquals(PositionUtils.POSITION_PLACE.DEFENDERS, utils.getPositionPlace(rightBack));
     }
 
     /**
@@ -566,7 +566,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForMidfielder() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS, utils.getPositionPlace(centreMidfield));
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS, utils.getPositionPlace(centreMidfield));
     }
 
     /**
@@ -574,7 +574,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForAttacker() {
-        assertEquals(Position.POSITION_PLACE.ATTACKERS, utils.getPositionPlace(secondaryForward));
+        assertEquals(PositionUtils.POSITION_PLACE.ATTACKERS, utils.getPositionPlace(secondaryForward));
     }
 
     /**
@@ -590,7 +590,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForKeeperResourceId() {
-        assertEquals(Position.POSITION_PLACE.KEEPERS, utils.getPositionPlace(R.id.keeper));
+        assertEquals(PositionUtils.POSITION_PLACE.KEEPERS, utils.getPositionPlace(R.id.keeper));
     }
 
     /**
@@ -599,7 +599,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForLeftCentreBackResourceId() {
-        assertEquals(Position.POSITION_PLACE.DEFENDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.DEFENDERS,
                 utils.getPositionPlace(R.id.leftCentreBack));
     }
 
@@ -609,7 +609,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForRightCentreBackResourceId() {
-        assertEquals(Position.POSITION_PLACE.DEFENDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.DEFENDERS,
                 utils.getPositionPlace(R.id.rightCentreBack));
     }
 
@@ -619,7 +619,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForCentreCentreBackResourceId() {
-        assertEquals(Position.POSITION_PLACE.DEFENDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.DEFENDERS,
                 utils.getPositionPlace(R.id.centreCentreBack));
     }
 
@@ -629,7 +629,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForLeftCentreMidfieldResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.leftCentreMidfield));
     }
 
@@ -639,7 +639,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForRightCentreMidfieldResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.rightCentreMidfield));
     }
 
@@ -649,7 +649,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForCentreCentreMidfieldResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.centreCentreMidfield));
     }
 
@@ -659,7 +659,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForLeftWingResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.leftWing));
     }
 
@@ -669,7 +669,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForRightWingResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.rightWing));
     }
 
@@ -679,7 +679,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForAttackingMidfieldResourceId() {
-        assertEquals(Position.POSITION_PLACE.MIDFIELDERS,
+        assertEquals(PositionUtils.POSITION_PLACE.MIDFIELDERS,
                 utils.getPositionPlace(R.id.attackingMidfield));
     }
 
@@ -689,7 +689,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForLeftCentreForwardResourceId() {
-        assertEquals(Position.POSITION_PLACE.ATTACKERS,
+        assertEquals(PositionUtils.POSITION_PLACE.ATTACKERS,
                 utils.getPositionPlace(R.id.leftCentreForward));
     }
 
@@ -699,7 +699,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForRightCentreForwardResourceId() {
-        assertEquals(Position.POSITION_PLACE.ATTACKERS,
+        assertEquals(PositionUtils.POSITION_PLACE.ATTACKERS,
                 utils.getPositionPlace(R.id.rightCentreForward));
     }
 
@@ -709,7 +709,7 @@ public class PositionUtilsTest {
      */
     @Test
     public void testGetPositionPlaceForCentreCentreForwardResourceId() {
-        assertEquals(Position.POSITION_PLACE.ATTACKERS,
+        assertEquals(PositionUtils.POSITION_PLACE.ATTACKERS,
                 utils.getPositionPlace(R.id.centreCentreForward));
     }
 
@@ -738,16 +738,16 @@ public class PositionUtilsTest {
         List<Position> positions = Arrays.asList(keeper, centreBack, centreBack, rightBack,
                 leftBack, centreMidfield, centreMidfield, rightWing, leftWing,
                 attackingMidfield, centreForward);
-        Map<Position.POSITION, Integer> map = utils.countPositions(positions);
+        Map<PositionUtils.POSITION, Integer> map = utils.countPositions(positions);
         assertNotNull(map);
-        assertEquals(2, map.get(Position.POSITION.CENTRE_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_BACK).intValue());
-        assertEquals(2, map.get(Position.POSITION.CENTRE_MIDFIELD).intValue());
-        assertEquals(1, map.get(Position.POSITION.ATTACKING_MIDFIELD).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_WING).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_WING).intValue());
-        assertEquals(1, map.get(Position.POSITION.CENTRE_FORWARD).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_BACK).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_MIDFIELD).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.ATTACKING_MIDFIELD).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_WING).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_WING).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.CENTRE_FORWARD).intValue());
     }
 
     /**
@@ -758,16 +758,16 @@ public class PositionUtilsTest {
     public void testCountPositionsWithDefensiveMidfield() {
         List<Position> positions = Arrays.asList(keeper, centreBack, centreBack, rightBack, leftBack, defensiveMidfield,
                 centreMidfield, rightWing, leftWing, attackingMidfield, centreForward);
-        Map<Position.POSITION, Integer> map = utils.countPositions(positions);
+        Map<PositionUtils.POSITION, Integer> map = utils.countPositions(positions);
         assertNotNull(map);
-        assertEquals(2, map.get(Position.POSITION.CENTRE_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_BACK).intValue());
-        assertEquals(2, map.get(Position.POSITION.CENTRE_MIDFIELD).intValue());
-        assertEquals(1, map.get(Position.POSITION.ATTACKING_MIDFIELD).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_WING).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_WING).intValue());
-        assertEquals(1, map.get(Position.POSITION.CENTRE_FORWARD).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_BACK).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_MIDFIELD).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.ATTACKING_MIDFIELD).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_WING).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_WING).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.CENTRE_FORWARD).intValue());
     }
 
     /**
@@ -779,15 +779,15 @@ public class PositionUtilsTest {
         List<Position> positions = Arrays.asList(keeper, centreBack, centreBack, rightBack,
                 leftBack, centreMidfield, centreMidfield, rightWing, leftWing,
                 centreForward, secondaryForward);
-        Map<Position.POSITION, Integer> map = utils.countPositions(positions);
+        Map<PositionUtils.POSITION, Integer> map = utils.countPositions(positions);
         assertNotNull(map);
-        assertEquals(2, map.get(Position.POSITION.CENTRE_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_BACK).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_BACK).intValue());
-        assertEquals(2, map.get(Position.POSITION.CENTRE_MIDFIELD).intValue());
-        assertEquals(1, map.get(Position.POSITION.LEFT_WING).intValue());
-        assertEquals(1, map.get(Position.POSITION.RIGHT_WING).intValue());
-        assertEquals(2, map.get(Position.POSITION.CENTRE_FORWARD).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_BACK).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_BACK).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_MIDFIELD).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.LEFT_WING).intValue());
+        assertEquals(1, map.get(PositionUtils.POSITION.RIGHT_WING).intValue());
+        assertEquals(2, map.get(PositionUtils.POSITION.CENTRE_FORWARD).intValue());
     }
 
     /**

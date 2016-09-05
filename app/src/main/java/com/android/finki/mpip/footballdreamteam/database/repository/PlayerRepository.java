@@ -240,18 +240,21 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
      * @return List if Players
      */
     public List<Player> getPositionPlayers(int[] playersToExclude, Integer... positionsIds) {
+        //TODO change test
         StringBuilder where = new StringBuilder();
         String[] whereArgs = new String[playersToExclude.length + positionsIds.length];
         int argsCount = 0;
-        where.append("(");
-        for (int i = 0; i < playersToExclude.length; i++) {
-            if (i > 0) {
-                where.append(" and ");
+        if (playersToExclude.length > 0) {
+            where.append("(");
+            for (int i = 0; i < playersToExclude.length; i++) {
+                if (i > 0) {
+                    where.append(" and ");
+                }
+                where.append(String.format("%s.%s != ?", TABLE_NAME, COLUMN_ID));
+                whereArgs[argsCount++] = String.valueOf(playersToExclude[i]);
             }
-            where.append(String.format("%s.%s != ?", TABLE_NAME, COLUMN_ID));
-            whereArgs[argsCount++] = String.valueOf(playersToExclude[i]);
+            where.append(") and (");
         }
-        where.append(") and (");
         for (int i = 0; i < positionsIds.length; i++) {
             if (i > 0) {
                 where.append(" or ");
@@ -259,7 +262,9 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
             where.append(String.format("%s.%s = ?", TABLE_NAME, COLUMN_POSITION_ID));
             whereArgs[argsCount++] = String.valueOf(positionsIds[i]);
         }
-        where.append(")");
+        if (playersToExclude.length > 0) {
+            where.append(")");
+        }
         return super.getMultiple(this.getQuery(true, false), where.toString(), whereArgs);
     }
 }

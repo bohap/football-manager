@@ -1,8 +1,9 @@
 package com.android.finki.mpip.footballdreamteam.ui.component;
 
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
+import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 
 import java.util.List;
 
@@ -11,9 +12,11 @@ import java.util.List;
  */
 public interface CreatedLineupView {
 
-    List<Player> getPlayers();
+    List<Player> getPlayersOrdered();
 
-    void changeFormation(LineupPlayers.FORMATION formation, List<Player> players);
+    List<LineupPlayer> getLineupPlayers();
+
+    void changeFormation(LineupUtils.FORMATION formation, List<Player> players);
 
     void showStoring();
 

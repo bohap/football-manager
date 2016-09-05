@@ -25,7 +25,6 @@
         android:layout_marginRight="@dimen/small_horizontalMargin"
         android:layout_marginEnd="@dimen/small_horizontalMargin"
         android:text="@string/fa_user" />
-
     <TextView
         android:id="@+id/lineupsItem_user"
         android:layout_width="wrap_content"
@@ -34,18 +33,16 @@
         android:textStyle="bold"
         android:layout_toRightOf="@id/lineupsItem_userIcon"
         android:layout_toEndOf="@id/lineupsItem_userIcon" />
-
     <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
         android:id="@+id/lineupsItem_timeIcon"
         style="@style/TextView.Icon.Tiny"
         android:layout_toRightOf="@+id/lineupsItem_image"
         android:layout_toEndOf="@+id/lineupsItem_image"
-        android:layout_below="@+id/lineupsItem_userIcon"
+        android:layout_below="@+id/lineupsItem_user"
         android:layout_marginRight="@dimen/small_horizontalMargin"
         android:layout_marginEnd="@dimen/small_horizontalMargin"
         android:layout_marginTop="@dimen/small_verticalMargin"
         android:text="@string/fa_clock_o" />
-
     <TextView
         android:id="@+id/lineups_item_updated_at_text"
         android:layout_width="wrap_content"

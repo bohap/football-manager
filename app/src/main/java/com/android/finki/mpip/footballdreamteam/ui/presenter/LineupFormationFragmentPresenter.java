@@ -37,7 +37,7 @@ public class LineupFormationFragmentPresenter {
     private LineupPlayerValidator validator;
 
     private Map<Integer, Player> mappedPlayers;
-    private LineupPlayers.FORMATION formation;
+    private LineupUtils.FORMATION formation;
     private boolean editable = false;
     private int selectedPositionResourceId = -1;
 
@@ -61,9 +61,7 @@ public class LineupFormationFragmentPresenter {
      */
     public void onFragmentCreated(Bundle args) {
         if (args == null) {
-            String message = "bundle argument can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("bundle argument can't be null");
         }
         Serializable serializable = args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY);
         if ((serializable instanceof LineupPlayers)) {
@@ -71,23 +69,18 @@ public class LineupFormationFragmentPresenter {
             this.setPlayers(lineupPlayers);
         } else {
             serializable = args.getSerializable(LineupFormationFragment.FORMATION_KEY);
-            if (!(serializable instanceof LineupPlayers.FORMATION)) {
-                String message = "neither player of formation provided for fragment";
-                logger.error(message);
-                throw new IllegalArgumentException(message);
+            if (!(serializable instanceof LineupUtils.FORMATION)) {
+                throw new IllegalArgumentException(
+                        "neither player of formation provided for fragment");
             }
-            LineupPlayers.FORMATION formation = (LineupPlayers.FORMATION) serializable;
+            LineupUtils.FORMATION formation = (LineupUtils.FORMATION) serializable;
             serializable = args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY);
             if (!(serializable instanceof LineupPlayers)) {
-                String message = "players for the formation are not provided";
-                logger.error(message);
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException("players for the formation are not provided");
             }
             List<Player> players = ((LineupPlayers) serializable).getPlayers();
             if (players == null) {
-                String message = "List of players must be provided";
-                logger.error(message);
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException("List of players must be provided");
             }
             this.setFormation(formation, players);
         }
@@ -110,19 +103,16 @@ public class LineupFormationFragmentPresenter {
         List<Position> positions = new ArrayList<>();
         for (Player player : lineupPlayers.getPlayers()) {
             if (player.getLineupPlayer() == null) {
-                String message = "lineup player must be set";
-                logger.error(message);
                 positionDBService.close();
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException("lineup player must be set");
             }
             int positionId = player.getLineupPositionId();
             /* We need access to the player position that is used in LineupUtils */
             Position position = positionDBService.get(positionId);
             if (position == null) {
-                String message = String.format("un existing position id, %d", positionId);
-                logger.error(message);
                 positionDBService.close();
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException(String
+                        .format("un existing position id, %d", positionId));
             }
             player.getLineupPlayer().setPosition(position);
             positions.add(position);
@@ -142,32 +132,30 @@ public class LineupFormationFragmentPresenter {
      * @param formation lineup formation
      * @param players players that are already in the lineup
      */
-    private void setFormation(LineupPlayers.FORMATION formation, List<Player> players) {
+    private void setFormation(LineupUtils.FORMATION formation, List<Player> players) {
         this.formation = formation;
         this.editable = true;
         positionDBService.open();
         for (Player player : players) {
             if (player.getLineupPlayer() == null) {
-                String message = "lineup player must be set";
-                logger.error(message);
                 positionDBService.close();
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException("lineup player must be set");
             }
             if (player.getLineupPlayer().getPosition() == null) {
                 int positionId = player.getLineupPositionId();
                 /* We need access to the player position that is used in LineupUtils */
                 Position position = positionDBService.get(positionId);
                 if (position == null) {
-                    String message = String.format("un existing position id, %d", positionId);
-                    logger.error(message);
                     positionDBService.close();
-                    throw new IllegalArgumentException(message);
+                    throw new IllegalArgumentException(String
+                            .format("un existing position id, %d", positionId));
                 }
                 player.getLineupPlayer().setPosition(position);
             }
         }
+        this.mappedPlayers = lineupUtils.generateMap(formation,
+                players, positionDBService.mapPositions());
         positionDBService.close();
-        this.mappedPlayers = lineupUtils.generateMap(formation, players);
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
         if (validator.validate(lineupPlayers)) {
             fragment.lineupValid();
@@ -181,7 +169,7 @@ public class LineupFormationFragmentPresenter {
      *
      * @return Lineup formation
      */
-    public LineupPlayers.FORMATION getFormation() {
+    public LineupUtils.FORMATION getFormation() {
         return this.formation;
     }
 
@@ -199,16 +187,12 @@ public class LineupFormationFragmentPresenter {
      */
     public String getPlayerAt(int positionId) {
         if (mappedPlayers == null) {
-            String message = "map for the players is not yet generated";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("map for the players is not yet generated");
         }
         Player player = mappedPlayers.get(positionId);
         if (player == null) {
-            String message = String.format("can't find player in the lineup on positions %s",
-                    positionId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't find player in the lineup on positions %s", positionId));
         }
         if (player.getId() == 0 || player.getName() == null) {
             return "";
@@ -223,21 +207,18 @@ public class LineupFormationFragmentPresenter {
      */
     public void onPlayerClick(int positionResourceId) {
         if (mappedPlayers == null) {
-            String message = "map for the players is not yet generated";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("map for the players is not yet generated");
         }
         Player player = mappedPlayers.get(positionResourceId);
         if (player == null) {
-            String message = String.format("can't find player at position %d", positionResourceId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't find player at position %d", positionResourceId));
         }
         int playerId = player.getId();
         if (playerId > 0) {
             fragment.showPlayerDetailsDialog(playerId, editable);
         } else if (playerId == 0) {
-            Position.POSITION_PLACE place = positionUtils.getPositionPlace(positionResourceId);
+            PositionUtils.POSITION_PLACE place = positionUtils.getPositionPlace(positionResourceId);
             List<Integer> playersToExclude = new ArrayList<>();
             for (Map.Entry<Integer, Player> entry : mappedPlayers.entrySet()) {
                 Player mapPlayer = entry.getValue();
@@ -247,9 +228,7 @@ public class LineupFormationFragmentPresenter {
             }
             fragment.showListPositionPlayersFragment(place, ArrayUtils.toInt(playersToExclude));
         } else {
-            String message = String.format("invalid player id, %d", playerId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("invalid player id, %d", playerId));
         }
         this.selectedPositionResourceId = positionResourceId;
     }
@@ -261,13 +240,11 @@ public class LineupFormationFragmentPresenter {
      */
     public void updateLineupPosition(Player player) {
         if (selectedPositionResourceId == -1) {
-            String message = "position not selected";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position not selected");
         }
 
         positionDBService.open();
-        Map<Position.POSITION, Integer> mappedPositions = positionDBService.mapPositions();
+        Map<PositionUtils.POSITION, Integer> mappedPositions = positionDBService.mapPositions();
         positionDBService.close();
         int positionId = positionUtils.getPositionId(selectedPositionResourceId, mappedPositions);
         player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
@@ -288,13 +265,12 @@ public class LineupFormationFragmentPresenter {
      */
     public void removeSelectedPlayer() {
         if (selectedPositionResourceId == -1) {
-            String message = "position not selected";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position not selected");
         }
         mappedPlayers.put(selectedPositionResourceId, new Player());
         selectedPositionResourceId = -1;
         fragment.bindPlayers();
+        fragment.lineupInvalid();
     }
 
     /**
@@ -302,11 +278,10 @@ public class LineupFormationFragmentPresenter {
      */
     public void onPlayerSelectCanceled() {
         if (selectedPositionResourceId == -1) {
-            String message = "position not selected";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position not selected");
         }
         selectedPositionResourceId = -1;
+        fragment.lineupInvalid();
     }
 
     /**

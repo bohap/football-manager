@@ -29,7 +29,6 @@ public class ListLineupsAdapter extends BaseAdapter {
     private static Logger logger = LoggerFactory.getLogger(ListLineupsAdapter.class);
 
     private Context context;
-    private ViewHolder holder;
     private List<Lineup> lineups;
 
     public ListLineupsAdapter(Context context) {
@@ -96,7 +95,23 @@ public class ListLineupsAdapter extends BaseAdapter {
      * @param lineups List of new lineups
      */
     public void update(List<Lineup> lineups) {
-        this.lineups.addAll(lineups);
+        if (this.lineups.size() == 0) {
+            this.lineups.addAll(lineups);
+        }
+        List<Lineup> lineupToBeAdded = new ArrayList<>();
+        for (Lineup lineup1 : lineups) {
+            boolean found = false;
+            for (Lineup lineup2 : this.lineups) {
+                if (lineup1.equals(lineup2)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                lineupToBeAdded.add(lineup1);
+            }
+        }
+        this.lineups.addAll(lineupToBeAdded);
         super.notifyDataSetChanged();
     }
 
@@ -110,6 +125,7 @@ public class ListLineupsAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
+        ViewHolder holder;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

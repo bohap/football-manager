@@ -3,6 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/settings"
-        android:title="Settings" />
+        android:id="@+id/mainMenu_refresh"
+        android:title="@string/mainMenu_menuItemRefresh_title"
+        android:icon="@drawable/ic_sync"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mainMenu_createLineup"
+        android:title="@string/mainMenu_menuItemCreateLineup_title"
+        android:icon="@drawable/ic_plus"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mainMenu_logout"
+        android:title="@string/mainMenu_menuItemLogout_title"
+        app:showAsAction="never" />
 </menu>

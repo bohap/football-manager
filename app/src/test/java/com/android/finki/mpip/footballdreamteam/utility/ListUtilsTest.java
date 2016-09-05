@@ -1,6 +1,8 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
+import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.model.User;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +10,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 /**

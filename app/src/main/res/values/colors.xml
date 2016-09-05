@@ -52,8 +52,6 @@
     <color name="spinner_endColor">#337ab7</color>
     <!--Error Container Layout-->
     <color name="error_containerBackground">#ffebee</color>
-    <!--Sidebar-->
-    <color name="sidebar_background">@android:color/white</color>
     <!--CustomDialog-->
     <color name="customDialog_background">#03A9F4</color>
     <color name="customDialog_strokeColor">#0277BD</color>

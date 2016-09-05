@@ -13,8 +13,9 @@ import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class LineupFormationFragmentTest {
             new Player(), new Player(), new Player(), new Player(), new Player(), new Player(),
             new Player(), new Player(), new Player(), new Player());
     private LineupPlayers lineupPlayers = new LineupPlayers(players);
-    private LineupPlayers.FORMATION formation = LineupPlayers.FORMATION.F_4_3_3;
+    private LineupUtils.FORMATION formation = LineupUtils.FORMATION.F_4_3_3;
 
     private final int[] positions_4_4_2 = {R.id.keeper, R.id.leftBack, R.id.rightBack,
             R.id.leftCentreBack, R.id.rightCentreBack, R.id.leftCentreMidfield,
@@ -183,7 +184,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testFragmentIsCreatedWithLineupPlayer() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_4_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment);
@@ -206,7 +207,7 @@ public class LineupFormationFragmentTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testNewInstanceOnNullListOfPlayers() {
-        LineupFormationFragment.newInstance(LineupPlayers.FORMATION.F_4_4_2, null);
+        LineupFormationFragment.newInstance(LineupUtils.FORMATION.F_4_4_2, null);
     }
 
     /**
@@ -214,7 +215,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testFragmentIsCreatedWithFormationAndListOfPlayers() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_4_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
         fragment = LineupFormationFragment.newInstance(formation, players);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment);
@@ -237,7 +238,7 @@ public class LineupFormationFragmentTest {
      * @param map          Map containing the players
      */
     private void assertFragmentView(LineupFormationFragment fragment,
-                                    LineupPlayers.FORMATION formation, boolean checkBinding,
+                                    LineupUtils.FORMATION formation, boolean checkBinding,
                                     Map<Integer, Player> map) {
         int[] positions;
         int[] notPositions;
@@ -301,12 +302,12 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnViewCreatedOn4_4_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_4_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         View view = fragment.getView();
         assertNotNull(view);
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_4_2, false, null);
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_4_2, false, null);
     }
 
     /**
@@ -314,12 +315,12 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnViewCreatedOn3_2_3_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_3_2_3_2);
-        fragment = LineupFormationFragment.newInstance(LineupPlayers.FORMATION.F_3_2_3_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
+        fragment = LineupFormationFragment.newInstance(LineupUtils.FORMATION.F_3_2_3_2);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         View view = fragment.getView();
         assertNotNull(view);
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_3_2_3_2, false, null);
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_3_2_3_2, false, null);
     }
 
     /**
@@ -327,12 +328,12 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnViewCreatedOn4_2_3_1Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_2_3_1);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_2_3_1);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         View view = fragment.getView();
         assertNotNull(view);
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_2_3_1, false, null);
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_2_3_1, false, null);
     }
 
     /**
@@ -340,12 +341,12 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnVIewCreatedOn4_3_3Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         View view = fragment.getView();
         assertNotNull(view);
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_3_3, false, null);
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_3_3, false, null);
     }
 
     /**
@@ -362,7 +363,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testBindPlayersOn4_4_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_4_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -378,7 +379,7 @@ public class LineupFormationFragmentTest {
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         fragment.bindPlayers();
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_4_2,
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_4_2,
                 true, mappedFormation4_4_2);
     }
 
@@ -387,7 +388,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testBindPlayersOn3_2_3_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_3_2_3_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -403,7 +404,7 @@ public class LineupFormationFragmentTest {
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         fragment.bindPlayers();
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_3_2_3_2,
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_3_2_3_2,
                 true, mappedFormation3_2_3_2);
     }
 
@@ -412,7 +413,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testBindPlayersOn4_2_3_1Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_2_3_1);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_2_3_1);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -428,7 +429,7 @@ public class LineupFormationFragmentTest {
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         fragment.bindPlayers();
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_2_3_1,
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_2_3_1,
                 true, mappedFormation4_2_3_1);
     }
 
@@ -437,7 +438,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testBindPlayersOn4_3_3Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -453,7 +454,7 @@ public class LineupFormationFragmentTest {
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         fragment.bindPlayers();
-        this.assertFragmentView(fragment, LineupPlayers.FORMATION.F_4_3_3,
+        this.assertFragmentView(fragment, LineupUtils.FORMATION.F_4_3_3,
                 true, mappedFormation4_3_3);
     }
 
@@ -462,8 +463,8 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnClickOn4_4_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_4_2);
-        fragment = LineupFormationFragment.newInstance(LineupPlayers.FORMATION.F_4_4_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
+        fragment = LineupFormationFragment.newInstance(LineupUtils.FORMATION.F_4_4_2);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment.getView());
         fragment.bindPlayers();
@@ -480,7 +481,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnClickOn3_2_3_2Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_3_2_3_2);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment.getView());
@@ -498,7 +499,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnClickOn4_2_3_1Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_2_3_1);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_2_3_1);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment.getView());
@@ -516,7 +517,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testOnClickOn4_3_3Formation() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment);
         assertNotNull(fragment.getView());
@@ -534,7 +535,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testShowListPositionPlayersFragment() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment, TestActivity.class, 0);
         fragment.showListPositionPlayersFragment(null, null);
@@ -546,7 +547,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testShowPlayerDetailsDialog() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment, TestActivity.class, 0);
         fragment.showPlayerDetailsDialog(1, true);
@@ -558,7 +559,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testFormationInvalid() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment, TestActivity.class, 0);
         fragment.lineupInvalid();
@@ -570,7 +571,7 @@ public class LineupFormationFragmentTest {
      */
     @Test
     public void testFormationValid() {
-        when(presenter.getFormation()).thenReturn(LineupPlayers.FORMATION.F_4_3_3);
+        when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment, TestActivity.class, 0);
         fragment.lineupValid();
@@ -589,7 +590,7 @@ public class LineupFormationFragmentTest {
         static final String ON_INVALID_FORMATION_TOAST = "On Invalid Formation";
 
         @Override
-        public void showListPositionPlayersFragment(Position.POSITION_PLACE place,
+        public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                                     int[] playersToExclude) {
             Toast.makeText(this, SHOW_LIST_POSITION_PLAYERS_TOAST, Toast.LENGTH_SHORT).show();
         }

@@ -3,7 +3,6 @@
     android:id="@+id/error_loading"
     style="@style/MainContent"
     android:orientation="vertical">
-
     <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
         style="@style/TextView.Icon"
         android:layout_width="match_parent"

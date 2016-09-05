@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -127,6 +128,18 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
+     * Called wehn the options menu is ready to be creted or recreated.
+     *
+     * @param menu menu that will be created
+     * @return whatever the menu should be created or not
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
      * Handle click on the options menu item.
      *
      * @param item menu item that has been selected
@@ -134,10 +147,34 @@ public class HomeActivity extends BaseActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.mainMenu_createLineup:
+                this.startCreteLineupActivity();
+                return true;
+            case R.id.mainMenu_refresh:
+                presenter.refresh();
+                return true;
+            case R.id.mainMenu_logout:
+                this.logout();
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Handle click on the sidebar menu item.
+     *
+     * @param item menu item that has been clicked
+     */
+    private void onSidebarItemSelected(MenuItem item) {
+        this.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Start the CreteLineupActivity.
+     */
+    private void startCreteLineupActivity() {
+        this.startActivity(new Intent(this, CreateLineupActivity.class));
     }
 
     /**
@@ -158,12 +195,12 @@ public class HomeActivity extends BaseActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         sidebar.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                onSidebarItemSelected(item);
-                return true;
-            }
-        });
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem item) {
+                        onSidebarItemSelected(item);
+                        return true;
+                    }
+                });
     }
 
     /**
@@ -280,14 +317,12 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
-     * Handle click on the sidebar menu item.
-     *
-     * @param item menu item that has been clicked
+     * Called when the user has selected the options to be logged out.
      */
-    private void onSidebarItemSelected(MenuItem item) {
-        /**
-         * Implement
-         */
+    private void logout() {
+        presenter.logout();
+        this.startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     /**

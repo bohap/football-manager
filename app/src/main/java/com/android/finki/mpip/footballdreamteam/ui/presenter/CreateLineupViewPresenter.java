@@ -4,12 +4,11 @@ import com.android.finki.mpip.footballdreamteam.database.service.LineupDBService
 import com.android.finki.mpip.footballdreamteam.database.service.LineupPlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
-import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
 import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +30,11 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
     private LineupApi api;
     private LineupDBService lineupDBService;
     private LineupPlayerDBService lineupPlayerDBService;
-    private LineupPlayers.FORMATION formation = LineupPlayers.FORMATION.F_4_4_2;
+    private LineupUtils.FORMATION formation = LineupUtils.FORMATION.F_4_4_2;
     private List<LineupPlayer> players;
+
+    private boolean formationValid = false;
+    private boolean changed = false;
 
     public CreateLineupViewPresenter(CreatedLineupView view, LineupApi api,
                                      LineupDBService lineupDBService,
@@ -43,12 +45,28 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
         this.lineupPlayerDBService = lineupPlayerDBService;
     }
 
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setFormationValid(boolean formationValid) {
+        this.formationValid = formationValid;
+    }
+
+    public boolean isFormationValid() {
+        return formationValid;
+    }
+
     /**
      * Get the lineup formation.
      *
      * @return lineup formation
      */
-    public LineupPlayers.FORMATION getFormation() {
+    public LineupUtils.FORMATION getFormation() {
         return this.formation;
     }
 
@@ -57,22 +75,21 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
      *
      * @param formation new lineup formation
      */
-    public void updateFormation(LineupPlayers.FORMATION formation) {
+    public void updateFormation(LineupUtils.FORMATION formation) {
         if (!this.formation.equals(formation)) {
             this.formation = formation;
-            view.changeFormation(formation, view.getPlayers());
+            view.changeFormation(formation, view.getPlayersOrdered());
         }
     }
 
     /**
      * Send a request to store the lineup.
      *
-     * @param lineupPlayers List of players in the lineup
      */
-    public void store(List<LineupPlayer> lineupPlayers) {
+    public void store() {
         view.showStoring();
-        this.players = lineupPlayers;
-        api.store(this.createLineupRequest(lineupPlayers)).enqueue(this);
+        this.players = view.getLineupPlayers();
+        api.store(this.createLineupRequest(players)).enqueue(this);
     }
 
     /**
@@ -111,36 +128,40 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
      */
     @Override
     public void onResponse(Call<LineupResponse> call, Response<LineupResponse> response) {
-        Lineup lineup = response.body().getLineup();
-        if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        view.showStoringSuccessful(lineup);
-        lineupDBService.open();
-        boolean lineupSavingError = false;
-        if (!lineupDBService.exists(lineup.getId())) {
-            try {
-                lineupDBService.store(lineup);
-            } catch (RuntimeException exp) {
-                logger.error("error occurred while saving the lineup");
-                lineupSavingError = true;
-            } finally {
+        if (response.isSuccessful()) {
+            Lineup lineup = response.body().getLineup();
+            if (lineup == null) {
+                String message = "lineup can't be null";
+                logger.error(message);
+                throw new IllegalArgumentException(message);
+            }
+            view.showStoringSuccessful(lineup);
+            lineupDBService.open();
+            boolean lineupSavingError = false;
+            if (!lineupDBService.exists(lineup.getId())) {
+                try {
+                    lineupDBService.store(lineup);
+                } catch (RuntimeException exp) {
+                    logger.error("error occurred while saving the lineup");
+                    lineupSavingError = true;
+                } finally {
+                    lineupDBService.close();
+                }
+            } else {
                 lineupDBService.close();
             }
-        } else {
-            lineupDBService.close();
-        }
-        if (!lineupSavingError) {
-            lineupPlayerDBService.open();
-            try {
-                lineupPlayerDBService.storePlayers(players);
-            } catch (RuntimeException exp) {
-                logger.error("error occurred while saving the players");
-            } finally {
-                lineupPlayerDBService.close();
+            if (!lineupSavingError) {
+                lineupPlayerDBService.open();
+                try {
+                    lineupPlayerDBService.storePlayers(players);
+                } catch (RuntimeException exp) {
+                    logger.error("error occurred while saving the players");
+                } finally {
+                    lineupPlayerDBService.close();
+                }
             }
+        } else {
+            view.showStoringFailed();
         }
     }
 

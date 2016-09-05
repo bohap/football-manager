@@ -1,12 +1,10 @@
 package com.android.finki.mpip.footballdreamteam.ui.component;
 
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
+import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupPlayersViewPresenter;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Created by Borce on 28.08.2016.
@@ -27,9 +25,11 @@ public interface LineupPlayersView {
 
     void showUpdatingFailed();
 
-    List<Player> getPlayers();
+    List<Player> getPlayersOrdered();
 
-    LineupPlayers.FORMATION getFormation();
+    List<LineupPlayer> getLineupPlayers();
 
-    void changeFormation(LineupPlayers.FORMATION formation, List<Player> players);
+    LineupUtils.FORMATION getFormation();
+
+    void changeFormation(LineupUtils.FORMATION formation, List<Player> players);
 }

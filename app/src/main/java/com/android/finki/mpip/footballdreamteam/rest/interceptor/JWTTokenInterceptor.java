@@ -40,7 +40,6 @@ public class JWTTokenInterceptor implements Interceptor {
         request = request.newBuilder()
                 .addHeader("Authorization", String.format("Bearer %s", user.getJwtToken()))
                 .build();
-
         Response response = chain.proceed(request);
         String token = response.header("Authorization", null);
         if (token != null) {

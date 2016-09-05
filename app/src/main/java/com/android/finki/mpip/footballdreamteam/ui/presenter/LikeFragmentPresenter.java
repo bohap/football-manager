@@ -116,17 +116,23 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
      */
     @Override
     public void onResponse(Call<List<UserLike>> call, Response<List<UserLike>> response) {
-        logger.info("likes request success");
-        requestSending = false;
-        List<UserLike> likes = response.body();
-        fragment.showLoadingSuccess(likes);
-        final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
-        if (likes.contains(userLike)) {
-            fragment.showRemoveLikeButton();
-            likeAdded = true;
+        if (response.isSuccessful()) {
+            logger.info("likes request success");
+            requestSending = false;
+            List<UserLike> likes = response.body();
+            fragment.showLoadingSuccess(likes);
+            final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
+            if (likes.contains(userLike)) {
+                fragment.showRemoveLikeButton();
+                likeAdded = true;
+            } else {
+                fragment.showAddLikeButton();
+                likeAdded = false;
+            }
         } else {
-            fragment.showAddLikeButton();
-            likeAdded = false;
+            logger.info("likes request failed");
+            requestSending = false;
+            fragment.showLoadingFailed();
         }
     }
 
@@ -163,8 +169,13 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
         api.addLike(lineup.getId()).enqueue(new Callback<ServerResponse>() {
             @Override
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
-                logger.info("add like request success");
-                addLikeSuccess();
+                if (response.isSuccessful()) {
+                    logger.info("add like request success");
+                    addLikeSuccess();
+                } else {
+                    logger.info("add like request failed");
+                    fragment.showLikeAddingFailed();
+                }
             }
 
             @Override

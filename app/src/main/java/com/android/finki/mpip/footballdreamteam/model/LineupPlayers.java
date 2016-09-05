@@ -1,5 +1,7 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -11,22 +13,15 @@ public class LineupPlayers implements Serializable {
 
     private List<Player> players;
     private List<Position> positions;
-    private FORMATION formation;
+    private LineupUtils.FORMATION formation;
     private boolean editable;
     private Map<Integer, Player> mappedPlayers;
-
-    public enum FORMATION {
-        F_4_4_2,
-        F_4_2_3_1,
-        F_4_3_3,
-        F_3_2_3_2
-    }
 
     public LineupPlayers() {
     }
 
     public LineupPlayers(List<Player> players, List<Position> positions,
-                         FORMATION formation, boolean editable) {
+                         LineupUtils.FORMATION formation, boolean editable) {
         this.players = players;
         this.positions = positions;
         this.formation = formation;
@@ -49,11 +44,11 @@ public class LineupPlayers implements Serializable {
         this.players = players;
     }
 
-    public FORMATION getFormation() {
+    public LineupUtils.FORMATION getFormation() {
         return formation;
     }
 
-    public void setFormation(FORMATION formation) {
+    public void setFormation(LineupUtils.FORMATION formation) {
         this.formation = formation;
     }
 

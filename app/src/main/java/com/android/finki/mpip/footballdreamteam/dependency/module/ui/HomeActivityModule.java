@@ -38,6 +38,7 @@ public class HomeActivityModule {
      * @param teamDBService instance of TeamDbService
      * @param positionDBService instance of PositionDBService
      * @param playerDBService instance of PlayerDBService
+     * @param sharedPreferences instance of shared preferences
      * @return instance of HomeActivity presenter
      */
     @Provides
@@ -45,11 +46,12 @@ public class HomeActivityModule {
     HomeActivityPresenter provideHomeActivityPresenter(SharedPreferences preferences,
                             TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
                             LineupApi lineupApi, TeamDBService teamDBService,
-                            PositionDBService positionDBService, PlayerDBService playerDBService) {
+                            PositionDBService positionDBService, PlayerDBService playerDBService,
+                            SharedPreferences sharedPreferences) {
         StoreTeamsTask storeTeamsTask = new StoreTeamsTask(teamDBService);
         StorePositionsTask storePositionsTask = new StorePositionsTask(positionDBService);
         StorePlayersTask storePlayersTask = new StorePlayersTask(playerDBService);
         return new HomeActivityPresenter(activity, preferences, teamApi, positionApi, playerApi,
-                lineupApi, storeTeamsTask,storePositionsTask, storePlayersTask);
+                lineupApi, storeTeamsTask,storePositionsTask, storePlayersTask, sharedPreferences);
     }
 }

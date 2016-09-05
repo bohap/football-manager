@@ -8,7 +8,6 @@ import com.android.finki.mpip.footballdreamteam.exception.LineupException;
 import com.android.finki.mpip.footballdreamteam.exception.LineupPlayerException;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
@@ -16,6 +15,7 @@ import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.LineupPlayersActivity;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
 import org.junit.Before;
@@ -245,7 +245,7 @@ public class LineupPlayersViewPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnSetLineup() {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-        presenter.update(null);
+//        presenter.update(null);
     }
 
     /**
@@ -257,7 +257,7 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(false);
         presenter.loadPlayers(args);
-        presenter.update(lineupPlayers);
+//        presenter.update(lineupPlayers);
     }
 
     /**
@@ -269,7 +269,7 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
-        presenter.update(lineupPlayers);
+//        presenter.update(lineupPlayers);
     }
 
     /**
@@ -281,8 +281,8 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         verify(view).showUpdating();
     }
@@ -299,8 +299,8 @@ public class LineupPlayersViewPresenterTest {
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(false);
         doThrow(LineupException.class).when(lineupDBService).store(any(Lineup.class));
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -326,8 +326,8 @@ public class LineupPlayersViewPresenterTest {
         doThrow(LineupPlayerException.class).when(lineupPlayerDBService)
                 .storePlayers(anyListOf(LineupPlayer.class));
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -352,8 +352,8 @@ public class LineupPlayersViewPresenterTest {
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(true);
         doThrow(LineupException.class).when(lineupDBService).update(any(Lineup.class));
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -380,8 +380,8 @@ public class LineupPlayersViewPresenterTest {
         doThrow(LineupPlayerException.class).when(lineupPlayerDBService)
                 .updatePlayers(anyInt(), anyListOf(LineupPlayer.class));
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -403,8 +403,8 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new SocketTimeoutException());
         verify(view).showUpdatingFailed();
@@ -420,8 +420,8 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
-        presenter.setChanged();
-        presenter.update(lineupPlayers);
+//        presenter.setChanged();
+//        presenter.update(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new Throwable());
         verify(view).showUpdatingFailed();
@@ -433,7 +433,7 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateFormationOnNullViewFormation() {
-        presenter.updateFormation(LineupPlayers.FORMATION.F_3_2_3_2);
+        presenter.updateFormation(LineupUtils.FORMATION.F_3_2_3_2);
     }
 
     /**
@@ -443,10 +443,10 @@ public class LineupPlayersViewPresenterTest {
     @Test
     public void testUpdateFormationWhenFormationIsDifferent() {
         final List<Player> players = new ArrayList<>();
-        when(view.getFormation()).thenReturn(LineupPlayers.FORMATION.F_3_2_3_2);
-        when(view.getPlayers()).thenReturn(players);
-        presenter.updateFormation(LineupPlayers.FORMATION.F_4_4_2);
-        verify(view).changeFormation(LineupPlayers.FORMATION.F_4_4_2, players);
+        when(view.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
+        when(view.getPlayersOrdered()).thenReturn(players);
+        presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
+        verify(view).changeFormation(LineupUtils.FORMATION.F_4_4_2, players);
     }
 
     /**
@@ -456,10 +456,10 @@ public class LineupPlayersViewPresenterTest {
     @Test
     public void testUpdateFormationWhenFormationIsSame() {
         final List<Player> players = new ArrayList<>();
-        when(view.getFormation()).thenReturn(LineupPlayers.FORMATION.F_3_2_3_2);
-        when(view.getPlayers()).thenReturn(players);
-        presenter.updateFormation(LineupPlayers.FORMATION.F_3_2_3_2);
-        verify(view, never()).changeFormation(any(LineupPlayers.FORMATION.class),
+        when(view.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
+        when(view.getPlayersOrdered()).thenReturn(players);
+        presenter.updateFormation(LineupUtils.FORMATION.F_3_2_3_2);
+        verify(view, never()).changeFormation(any(LineupUtils.FORMATION.class),
                 anyListOf(Player.class));
     }
 }

@@ -13,7 +13,6 @@ import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersFragmentModule;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListPositionPlayersAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
@@ -55,7 +54,7 @@ public class ListPositionPlayersFragment extends Fragment {
      * @param place position place on the field for which the player will be listed
      * @return new instance of the fragment
      */
-    public static ListPositionPlayersFragment newInstance(Position.POSITION_PLACE place,
+    public static ListPositionPlayersFragment newInstance(PositionUtils.POSITION_PLACE place,
                                                           int[] playersToExclude) {
         if (place == null) {
             String message = "position place can't be null";

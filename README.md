@@ -10,14 +10,15 @@ Android applicaiton that enables making football dream team. User that want to u
 
 ### To be implemented:
 ---
+- [ ] User registration
 - [x] User authentication using JWT tokens
 - [x] Loading teams, positions and players data and saving it into local SQLite database on first launch
 - [x] Listing latest lineups
 - [x] Displaying linup likes
 - [ ] Displaying lineup comments
 - [x] Displaying lineup players
-- [ ] Updaing lineup players
-- [ ] Creating new lineup
+- [x] Updaing lineup players
+- [x] Creating new lineup
 - [ ] Deleting existing lineup
 - [ ] Background servide to load and notify the user about the latest likes and comments on his latest lineup
 

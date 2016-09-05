@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class ListPositionPlayersFragmentPresenter {
     private ListPositionPlayersFragment fragment;
     private PlayerDBService playerDBService;
     private List<Player> players;
-    private Position.POSITION_PLACE place;
+    private PositionUtils.POSITION_PLACE place;
 
     public ListPositionPlayersFragmentPresenter(ListPositionPlayersFragment fragment,
                                                 PlayerDBService playerDBService) {
@@ -43,7 +43,7 @@ public class ListPositionPlayersFragmentPresenter {
         }
         Serializable serializable = args
                 .getSerializable(ListPositionPlayersFragment.getPlaceKey());
-        if (serializable == null || ! (serializable instanceof Position.POSITION_PLACE)) {
+        if (serializable == null || ! (serializable instanceof PositionUtils.POSITION_PLACE)) {
             String message = "position place must be set";
             logger.error(message);
             throw new IllegalArgumentException(message);
@@ -55,7 +55,7 @@ public class ListPositionPlayersFragmentPresenter {
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
-        this.place = (Position.POSITION_PLACE)serializable;
+        this.place = (PositionUtils.POSITION_PLACE)serializable;
         this.getPlayers(playersToExclude);
     }
 

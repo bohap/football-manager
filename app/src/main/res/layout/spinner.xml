@@ -3,7 +3,6 @@
     android:id="@+id/spinner"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <ProgressBar
         android:id="@+id/spinner_icon"
         style="@style/Spinner"
@@ -11,7 +10,6 @@
         android:layout_height="80dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
-
     <TextView
         android:id="@+id/spinner_text"
         android:layout_width="wrap_content"
@@ -19,5 +17,4 @@
         android:textSize="@dimen/textSize"
         android:layout_below="@id/spinner_icon"
         android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

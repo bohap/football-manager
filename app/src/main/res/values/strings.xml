@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Top 11</string>
     <string name="api_baseUrl">http://football-manager.hol.es/app/</string>
+    <!--Menus-->
+    <string name="mainMenu_menuItemCreateLineup_title">Create new lineup</string>
+    <string name="mainMenu_menuItemRefresh_title">Refresh lineups</string>
+    <string name="mainMenu_menuItemLogout_title">Logout</string>
+    <string name="lineup_menuItemSave_title">Save</string>
+    <string name="formationContextMenuTitle">Choose a formation</string>
+    <string name="formation_4_4_2_title">4–4–2</string>
+    <string name="formation_3_2_3_2_title">3–2–3–2</string>
+    <string name="formation_4_2_3_1_title">4–2–3–1</string>
+    <string name="formation_4_3_3_title">4–3–3</string>
     <!--Sidebar-->
     <string name="sidebar_header">
         Football \n Dream Eleven
@@ -91,7 +101,6 @@
     <string name="lineupPlayersLayout_updateLineupError_text">
         A error occurred while updating the lineup data. Please try again.
     </string>
-    <string name="lineupPlayersActivity_btnUpdate_text">Update</string>
     <!--ListPositionPlayers Fragment-->
     <string name="positionsPlayers_nameColumn">Name</string>
     <string name="positionsPlayers_ageColumn">Age</string>
@@ -111,9 +120,4 @@
     <string name="createLineupView_requestFailedText">
         A error occurred while saving the lineup. Please try again.
     </string>
-    <string name="formationContextMenuTitle">Choose a formation</string>
-    <string name="formation_4_4_2_title">4–4–2</string>
-    <string name="formation_3_2_3_2_title">3–2–3–2</string>
-    <string name="formation_4_2_3_1_title">4–2–3–1</string>
-    <string name="formation_4_3_3_title">4–3–3</string>
 </resources>

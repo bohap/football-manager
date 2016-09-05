@@ -1,18 +1,13 @@
 <resources>
     <!--App-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-    </style>
-    <!--Toolbar-->
-    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:textColorPrimary">@android:color/white</item>
     </style>
     <!--Sidebar-->
     <style name="Sidebar">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
-        <item name="android:background">@color/sidebar_background</item>
     </style>
     <!--Tab Layout-->
     <style name="TabLayout" parent="Widget.Design.TabLayout">
@@ -35,6 +30,12 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+    </style>
+    <!--Root Layout View-->
+    <style name="RootView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/background</item>
     </style>
     <!--Main Content-->
     <style name="MainContent">
@@ -206,6 +207,7 @@
         <item name="android:textSize">@dimen/textSize</item>
         <item name="android:background">@drawable/edit_text</item>
         <item name="android:textColor">@color/editText_text_color</item>
+        <item name="android:textColorHint">@color/editText_text_color</item>
         <item name="android:paddingLeft">@dimen/medium_verticalPadding</item>
         <item name="android:paddingRight">@dimen/medium_horizontalPadding</item>
         <item name="android:paddingTop">@dimen/medium_horizontalPadding</item>

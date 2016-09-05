@@ -24,43 +24,6 @@ public class Position extends BaseModel<Integer> implements Serializable {
 
     private List<Position> positions;
 
-    public enum POSITION {
-        KEEPER("keeper"),
-        RIGHT_BACK("right back"),
-        LEFT_BACK("left back"),
-        CENTRE_BACK("centre back"),
-        DEFENSIVE_MIDFIELD("defensive midfield"),
-        CENTRE_MIDFIELD("centre midfield"),
-        ATTACKING_MIDFIELD("attacking midfield"),
-        RIGHT_WING("right wing"),
-        LEFT_WING("left wing"),
-        CENTRE_FORWARD("centre forward"),
-        SECONDARY_FORWARD("secondary forward");
-
-        private final String name;
-
-        POSITION(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-    }
-
-    public enum POSITION_PLACE {
-        KEEPERS,
-        DEFENDERS,
-        MIDFIELDERS,
-        ATTACKERS
-    }
-
-    public static final int[] resourcesIds = {R.id.keeper, R.id.leftCentreBack,
-            R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftBack, R.id.rightBack,
-            R.id.leftCentreMidfield, R.id.rightCentreMidfield, R.id.centreCentreMidfield,
-            R.id.attackingMidfield, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
-            R.id.rightCentreForward, R.id.centreCentreForward};
-
     public Position() {
     }
 

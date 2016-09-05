@@ -73,9 +73,14 @@ public class LineupDetailsActivityPresenter implements Callback<Lineup> {
      */
     @Override
     public void onResponse(Call<Lineup> call, Response<Lineup> response) {
-        logger.info("lineup request success");
-        this.lineup = response.body();
-        activity.successLoading(response.body());
+        if (response.isSuccessful()) {
+            logger.info("lineup request success");
+            this.lineup = response.body();
+            activity.successLoading(response.body());
+        } else {
+            logger.info("lineup request failed");
+            activity.errorLoading();
+        }
     }
 
     /**

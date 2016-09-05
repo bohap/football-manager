@@ -138,15 +138,17 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
         User user = new User(body.getId(), body.getName(), body.getEmail(), new Date(),
                 new Date(), body.getJwtToken());
         userDBService.open();
-        if (!userDBService.exists(user.getId())) {
-            try {
+        try {
+            if (!userDBService.exists(user.getId())) {
                 userDBService.store(user);
-            } catch (UserException exp) {
-                exp.printStackTrace();
-                activity.showAppErrorMessage();
-                userDBService.close();
-                return;
+            } else {
+                userDBService.update(user);
             }
+        } catch (RuntimeException exp) {
+            exp.printStackTrace();
+            activity.showAppErrorMessage();
+            userDBService.close();
+            return;
         }
         userDBService.close();
         preferences.edit().putInt(AUTH_USER_ID_KEY, user.getId()).apply();

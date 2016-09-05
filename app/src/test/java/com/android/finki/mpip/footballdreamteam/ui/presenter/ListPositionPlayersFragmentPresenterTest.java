@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmnetCreatedWithNotSetExcludePlayersKey() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.KEEPERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         presenter.onFragmentCreated(args);
     }
 
@@ -72,7 +72,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnFragmentCreatedWithKeepersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.KEEPERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -90,7 +90,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnFragmentCreatedWithDefendersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.DEFENDERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -108,7 +108,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnFragmentCreatedWithMidfieldersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.MIDFIELDERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -126,7 +126,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnFragmentCreatedWithAttackersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.ATTACKERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -152,7 +152,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnViewCreatedWithKeepersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.KEEPERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -167,7 +167,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnViewCreatedWithDefendersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.DEFENDERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -182,7 +182,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnViewCreatedWithMidfieldersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.MIDFIELDERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);
@@ -197,7 +197,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Test
     public void testOnViewCreatedWithAttackersPositionPlace() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(Position.POSITION_PLACE.ATTACKERS);
+                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
         presenter.onFragmentCreated(args);

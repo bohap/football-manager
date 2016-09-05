@@ -6,12 +6,12 @@ import com.android.finki.mpip.footballdreamteam.exception.LineupException;
 import com.android.finki.mpip.footballdreamteam.exception.LineupPlayerException;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
 import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -76,9 +76,9 @@ public class CreateLineupViewPresenterTest {
      */
     @Test
     public void testUpdateFormationOnSameFormation() {
-        presenter.updateFormation(LineupPlayers.FORMATION.F_4_4_2);
+        presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
         verify(view, never())
-                .changeFormation(any(LineupPlayers.FORMATION.class), anyListOf(Player.class));
+                .changeFormation(any(LineupUtils.FORMATION.class), anyListOf(Player.class));
     }
 
     /**
@@ -88,9 +88,9 @@ public class CreateLineupViewPresenterTest {
     @Test
     public void testUpdateFormationOnNewFormation() {
         List<Player> players = Arrays.asList(new Player(), new Player());
-        when(view.getPlayers()).thenReturn(players);
-        presenter.updateFormation(LineupPlayers.FORMATION.F_4_2_3_1);
-        verify(view).changeFormation(LineupPlayers.FORMATION.F_4_2_3_1, players);
+        when(view.getPlayersOrdered()).thenReturn(players);
+        presenter.updateFormation(LineupUtils.FORMATION.F_4_2_3_1);
+        verify(view).changeFormation(LineupUtils.FORMATION.F_4_2_3_1, players);
     }
 
     /**

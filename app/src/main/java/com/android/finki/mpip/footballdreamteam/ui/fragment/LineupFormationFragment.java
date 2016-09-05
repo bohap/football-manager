@@ -14,8 +14,9 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupForma
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +132,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      * @param players list of players that are already in the lineup
      * @return LineupFormation fragment instance
      */
-    public static LineupFormationFragment newInstance(LineupPlayers.FORMATION formation,
+    public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation,
                                                       List<Player> players) {
         if (formation == null) {
             String message = "formation can't be null";
@@ -157,7 +158,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      * @param formation lineup formation
      * @return new instance of the fragment
      */
-    public static LineupFormationFragment newInstance(LineupPlayers.FORMATION formation) {
+    public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation) {
         return newInstance(formation, new ArrayList<Player>());
     }
 
@@ -197,15 +198,15 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view;
-        LineupPlayers.FORMATION formation = presenter.getFormation();
+        LineupUtils.FORMATION formation = presenter.getFormation();
         int layoutId = -1;
-        if (formation == LineupPlayers.FORMATION.F_4_4_2) {
+        if (formation == LineupUtils.FORMATION.F_4_4_2) {
             layoutId = R.layout.lineup_formation_4_4_2;
-        } else if (formation == LineupPlayers.FORMATION.F_3_2_3_2) {
+        } else if (formation == LineupUtils.FORMATION.F_3_2_3_2) {
             layoutId = R.layout.lineup_formation_3_2_3_2;
-        } else if (formation == LineupPlayers.FORMATION.F_4_2_3_1) {
+        } else if (formation == LineupUtils.FORMATION.F_4_2_3_1) {
             layoutId = R.layout.lineup_formation_4_2_3_1;
-        } else if (formation == LineupPlayers.FORMATION.F_4_3_3) {
+        } else if (formation == LineupUtils.FORMATION.F_4_3_3) {
             layoutId = R.layout.lineup_formation_4_3_3;
         }
         if (layoutId == -1) {
@@ -299,7 +300,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      * @param place position place on the field for which the players should be listed
      * @param playersToExclude array of players id to exclude from the list
      */
-    public void showListPositionPlayersFragment(Position.POSITION_PLACE place,
+    public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                                 int[] playersToExclude) {
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity())
@@ -365,7 +366,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      *
      * @return lineup formation
      */
-    public LineupPlayers.FORMATION getFormation() {
+    public LineupUtils.FORMATION getFormation() {
         return presenter.getFormation();
     }
 
@@ -392,7 +393,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      */
     public interface Listener {
 
-        void showListPositionPlayersFragment(Position.POSITION_PLACE place,
+        void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                              int[] playersToExclude);
 
         void showPlayerDetailsDialog(int id, boolean editable);

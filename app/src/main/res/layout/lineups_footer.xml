@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/lineupsListView_btnLoadMore"
-    style="@style/Button.Block.Default.NoCornersRadius"
+    style="@style/Button.Block.Primary.NoCornersRadius"
     android:clickable="true">
     <TextView
         android:id="@+id/lineupsListView_btnLoadMoreText"
-        style="@style/TextView.Button.Default"
+        style="@style/TextView.Button.Primary"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/base_horizontalMargin"

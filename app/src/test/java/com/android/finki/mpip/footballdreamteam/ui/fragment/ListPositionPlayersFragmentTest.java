@@ -12,9 +12,9 @@ import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListPositionPlayersAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class ListPositionPlayersFragmentTest {
     private ListPositionPlayersFragmentComponent component;
 
     private ListPositionPlayersFragment fragment;
-    private final Position.POSITION_PLACE place = Position.POSITION_PLACE.ATTACKERS;
+    private final PositionUtils.POSITION_PLACE place = PositionUtils.POSITION_PLACE.ATTACKERS;
     private final int[] playersToExclude = {1, 521 ,21, 10, 4, 45};
     private final List<Player> players = Arrays.asList(new Player(), new Player(), new Player());
 

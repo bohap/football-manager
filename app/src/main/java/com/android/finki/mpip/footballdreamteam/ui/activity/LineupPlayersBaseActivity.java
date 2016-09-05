@@ -7,10 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,10 @@ import java.util.List;
 public abstract class LineupPlayersBaseActivity extends BaseActivity {
 
     private static final Logger logger = LoggerFactory.getLogger(LineupPlayersBaseActivity.class);
+
+    protected abstract boolean isChanged();
+
+    protected abstract void toggleBtnChangeFormation(boolean visible);
 
     /**
      * Make the LineupFormation fragment visible.
@@ -43,7 +48,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
      *
      * @param formation formation for the lineup
      */
-    void showLineupFormationFragment(LineupPlayers.FORMATION formation) {
+    void showLineupFormationFragment(LineupUtils.FORMATION formation) {
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
@@ -56,7 +61,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
      * @param formation formation for the lineup
      * @param players   players that will be in the lineup
      */
-    void showLineupFormationFragment(LineupPlayers.FORMATION formation, List<Player> players) {
+    void showLineupFormationFragment(LineupUtils.FORMATION formation, List<Player> players) {
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation, players);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
@@ -69,7 +74,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
      * @param place            position place
      * @param playersToExclude players to exclude from the list
      */
-    void showListPositionPlayersFragment(Position.POSITION_PLACE place,
+    void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                          int[] playersToExclude) {
         this.checkLineupFormationFragmentVisibility();
         FragmentManager manager = this.getSupportFragmentManager();
@@ -79,6 +84,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
         transaction.addToBackStack(LineupFormationFragment.TAG);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
+        this.toggleBtnChangeFormation(false);
     }
 
     /**
@@ -105,6 +111,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
+        this.toggleBtnChangeFormation(true);
     }
 
     /**
@@ -149,6 +156,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
             this.checkLineupFormationFragmentVisibility();
             ((LineupFormationFragment) this.getSupportFragmentManager()
                     .findFragmentById(R.id.content)).onPlayerSelectedCanceled();
+            this.toggleBtnChangeFormation(true);
         }
     }
 }

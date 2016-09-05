@@ -5,6 +5,7 @@ import com.android.finki.mpip.footballdreamteam.exception.PositionException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.exception.UniqueFieldConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.Position;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,7 +243,7 @@ public class PositionDBService {
      * @return goalkeeper position id
      */
     public int getGoalkeeperId() {
-        return this.getId(Position.POSITION.KEEPER.getName());
+        return this.getId(PositionUtils.POSITION.KEEPER.getName());
     }
 
     /**
@@ -251,7 +252,7 @@ public class PositionDBService {
      * @return centre back position id
      */
     public int getCentreBackId() {
-        return this.getId(Position.POSITION.CENTRE_BACK.getName());
+        return this.getId(PositionUtils.POSITION.CENTRE_BACK.getName());
     }
 
     /**
@@ -260,7 +261,7 @@ public class PositionDBService {
      * @return left back position id
      */
     public int getLeftBackId() {
-        return this.getId(Position.POSITION.LEFT_BACK.getName());
+        return this.getId(PositionUtils.POSITION.LEFT_BACK.getName());
     }
 
     /**
@@ -269,7 +270,7 @@ public class PositionDBService {
      * @return right back position id
      */
     public int getRightBackId() {
-        return this.getId(Position.POSITION.RIGHT_BACK.getName());
+        return this.getId(PositionUtils.POSITION.RIGHT_BACK.getName());
     }
 
     /**
@@ -278,7 +279,7 @@ public class PositionDBService {
      * @return defensive midfield position id
      */
     public int getDefensiveMidfieldId() {
-        return this.getId(Position.POSITION.DEFENSIVE_MIDFIELD.getName());
+        return this.getId(PositionUtils.POSITION.DEFENSIVE_MIDFIELD.getName());
     }
 
     /**
@@ -287,7 +288,7 @@ public class PositionDBService {
      * @return centre midfield position id.
      */
     public int getCentreMidfieldId() {
-        return this.getId(Position.POSITION.CENTRE_MIDFIELD.getName());
+        return this.getId(PositionUtils.POSITION.CENTRE_MIDFIELD.getName());
     }
 
     /**
@@ -296,7 +297,7 @@ public class PositionDBService {
      * @return attacking midfield position id
      */
     public int getAttackingMidfieldId() {
-        return this.getId(Position.POSITION.ATTACKING_MIDFIELD.getName());
+        return this.getId(PositionUtils.POSITION.ATTACKING_MIDFIELD.getName());
     }
 
     /**
@@ -305,7 +306,7 @@ public class PositionDBService {
      * @return left wing position id
      */
     public int getLeftWingId() {
-        return this.getId(Position.POSITION.LEFT_WING.getName());
+        return this.getId(PositionUtils.POSITION.LEFT_WING.getName());
     }
 
     /**
@@ -314,7 +315,7 @@ public class PositionDBService {
      * @return right wing position id
      */
     public int getRightWingId() {
-        return this.getId(Position.POSITION.RIGHT_WING.getName());
+        return this.getId(PositionUtils.POSITION.RIGHT_WING.getName());
     }
 
     /**
@@ -323,7 +324,7 @@ public class PositionDBService {
      * @return centre forward position id
      */
     public int getCentreForwardId() {
-        return this.getId(Position.POSITION.CENTRE_FORWARD.getName());
+        return this.getId(PositionUtils.POSITION.CENTRE_FORWARD.getName());
     }
 
     /**
@@ -332,7 +333,7 @@ public class PositionDBService {
      * @return secondary forward position id
      */
     public int getSecondaryForwardId() {
-        return this.getId(Position.POSITION.SECONDARY_FORWARD.getName());
+        return this.getId(PositionUtils.POSITION.SECONDARY_FORWARD.getName());
     }
 
     /**
@@ -382,19 +383,20 @@ public class PositionDBService {
      *
      * @return mapped positions
      */
-    public Map<Position.POSITION, Integer> mapPositions() {
-        Map<Position.POSITION, Integer> result = new HashMap<>();
-        result.put(Position.POSITION.KEEPER, this.getGoalkeeperId());
-        result.put(Position.POSITION.CENTRE_BACK, this.getCentreBackId());
-        result.put(Position.POSITION.LEFT_BACK, this.getLeftBackId());
-        result.put(Position.POSITION.RIGHT_BACK, this.getRightBackId());
-        result.put(Position.POSITION.DEFENSIVE_MIDFIELD, this.getDefensiveMidfieldId());
-        result.put(Position.POSITION.CENTRE_MIDFIELD, this.getCentreMidfieldId());
-        result.put(Position.POSITION.ATTACKING_MIDFIELD, this.getAttackingMidfieldId());
-        result.put(Position.POSITION.LEFT_WING, this.getLeftWingId());
-        result.put(Position.POSITION.RIGHT_WING, this.getRightWingId());
-        result.put(Position.POSITION.CENTRE_FORWARD, this.getCentreForwardId());
-        result.put(Position.POSITION.SECONDARY_FORWARD, this.getSecondaryForwardId());
+    public Map<PositionUtils.POSITION, Integer> mapPositions() {
+        //TODO change the key to be android resource id (some key will have the same value?)
+        Map<PositionUtils.POSITION, Integer> result = new HashMap<>();
+        result.put(PositionUtils.POSITION.KEEPER, this.getGoalkeeperId());
+        result.put(PositionUtils.POSITION.CENTRE_BACK, this.getCentreBackId());
+        result.put(PositionUtils.POSITION.LEFT_BACK, this.getLeftBackId());
+        result.put(PositionUtils.POSITION.RIGHT_BACK, this.getRightBackId());
+        result.put(PositionUtils.POSITION.DEFENSIVE_MIDFIELD, this.getDefensiveMidfieldId());
+        result.put(PositionUtils.POSITION.CENTRE_MIDFIELD, this.getCentreMidfieldId());
+        result.put(PositionUtils.POSITION.ATTACKING_MIDFIELD, this.getAttackingMidfieldId());
+        result.put(PositionUtils.POSITION.LEFT_WING, this.getLeftWingId());
+        result.put(PositionUtils.POSITION.RIGHT_WING, this.getRightWingId());
+        result.put(PositionUtils.POSITION.CENTRE_FORWARD, this.getCentreForwardId());
+        result.put(PositionUtils.POSITION.SECONDARY_FORWARD, this.getSecondaryForwardId());
         return result;
     }
 }

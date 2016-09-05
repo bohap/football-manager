@@ -169,4 +169,14 @@ public class Lineup extends BaseModel<Integer> implements Serializable {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+    @Override
+    public int hashCode() {
+        return new Integer(id).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Lineup && this.id == ((Lineup) o).getId();
+    }
 }

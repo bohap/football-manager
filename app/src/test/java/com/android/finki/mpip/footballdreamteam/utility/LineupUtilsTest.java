@@ -64,10 +64,22 @@ public class LineupUtilsTest {
             R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
             R.id.rightCentreMidfield, R.id.centreCentreMidfield, R.id.leftCentreForward,
             R.id.rightCentreForward, R.id.centreCentreForward};
+    private Map<PositionUtils.POSITION, Integer> mappedPositions = new HashMap<>();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        mappedPositions.put(PositionUtils.POSITION.KEEPER, keeper.getId());
+        mappedPositions.put(PositionUtils.POSITION.CENTRE_BACK, centreBack.getId());
+        mappedPositions.put(PositionUtils.POSITION.RIGHT_BACK, rightBack.getId());
+        mappedPositions.put(PositionUtils.POSITION.LEFT_BACK, leftBack.getId());
+        mappedPositions.put(PositionUtils.POSITION.DEFENSIVE_MIDFIELD, defensiveMidfield.getId());
+        mappedPositions.put(PositionUtils.POSITION.CENTRE_MIDFIELD, centreMidfield.getId());
+        mappedPositions.put(PositionUtils.POSITION.ATTACKING_MIDFIELD, attackingMidfield.getId());
+        mappedPositions.put(PositionUtils.POSITION.RIGHT_WING, rightWing.getId());
+        mappedPositions.put(PositionUtils.POSITION.LEFT_WING, leftWing.getId());
+        mappedPositions.put(PositionUtils.POSITION.CENTRE_FORWARD, centreForward.getId());
+        mappedPositions.put(PositionUtils.POSITION.SECONDARY_FORWARD, secondaryForward.getId());
         this.mockPositionUtils();
         utils = new LineupUtils(positionUtils);
     }
@@ -76,22 +88,51 @@ public class LineupUtilsTest {
      * Mock the PositionUtils to return specific values in method calls.
      */
     private void mockPositionUtils() {
-        when(positionUtils.getPosition(keeper)).thenReturn(Position.POSITION.KEEPER);
-        when(positionUtils.getPosition(centreBack)).thenReturn(Position.POSITION.CENTRE_BACK);
-        when(positionUtils.getPosition(rightBack)).thenReturn(Position.POSITION.RIGHT_BACK);
-        when(positionUtils.getPosition(leftBack)).thenReturn(Position.POSITION.LEFT_BACK);
+        when(positionUtils.getPosition(keeper)).thenReturn(PositionUtils.POSITION.KEEPER);
+        when(positionUtils.getPosition(centreBack)).thenReturn(PositionUtils.POSITION.CENTRE_BACK);
+        when(positionUtils.getPosition(rightBack)).thenReturn(PositionUtils.POSITION.RIGHT_BACK);
+        when(positionUtils.getPosition(leftBack)).thenReturn(PositionUtils.POSITION.LEFT_BACK);
         when(positionUtils.getPosition(defensiveMidfield))
-                .thenReturn(Position.POSITION.DEFENSIVE_MIDFIELD);
+                .thenReturn(PositionUtils.POSITION.DEFENSIVE_MIDFIELD);
         when(positionUtils.getPosition(centreMidfield))
-                .thenReturn(Position.POSITION.CENTRE_MIDFIELD);
-        when(positionUtils.getPosition(rightWing)).thenReturn(Position.POSITION.RIGHT_WING);
-        when(positionUtils.getPosition(leftWing)).thenReturn(Position.POSITION.LEFT_WING);
+                .thenReturn(PositionUtils.POSITION.CENTRE_MIDFIELD);
+        when(positionUtils.getPosition(rightWing)).thenReturn(PositionUtils.POSITION.RIGHT_WING);
+        when(positionUtils.getPosition(leftWing)).thenReturn(PositionUtils.POSITION.LEFT_WING);
         when(positionUtils.getPosition(attackingMidfield))
-                .thenReturn(Position.POSITION.ATTACKING_MIDFIELD);
+                .thenReturn(PositionUtils.POSITION.ATTACKING_MIDFIELD);
         when(positionUtils.getPosition(centreForward))
-                .thenReturn(Position.POSITION.CENTRE_FORWARD);
+                .thenReturn(PositionUtils.POSITION.CENTRE_FORWARD);
         when(positionUtils.getPosition(secondaryForward))
-                .thenReturn(Position.POSITION.SECONDARY_FORWARD);
+                .thenReturn(PositionUtils.POSITION.SECONDARY_FORWARD);
+        when(positionUtils.getPositionId(R.id.keeper, mappedPositions)).thenReturn(keeper.getId());
+        when(positionUtils.getPositionId(R.id.leftCentreBack, mappedPositions))
+                .thenReturn(centreBack.getId());
+        when(positionUtils.getPositionId(R.id.rightCentreBack, mappedPositions))
+                .thenReturn(centreBack.getId());
+        when(positionUtils.getPositionId(R.id.centreCentreBack, mappedPositions))
+                .thenReturn(centreBack.getId());
+        when(positionUtils.getPositionId(R.id.leftBack, mappedPositions))
+                .thenReturn(leftBack.getId());
+        when(positionUtils.getPositionId(R.id.rightBack, mappedPositions))
+                .thenReturn(rightBack.getId());
+        when(positionUtils.getPositionId(R.id.leftCentreMidfield, mappedPositions))
+                .thenReturn(centreMidfield.getId());
+        when(positionUtils.getPositionId(R.id.rightCentreMidfield, mappedPositions))
+                .thenReturn(centreMidfield.getId());
+        when(positionUtils.getPositionId(R.id.centreCentreMidfield, mappedPositions))
+                .thenReturn(centreMidfield.getId());
+        when(positionUtils.getPositionId(R.id.leftWing, mappedPositions))
+                .thenReturn(leftWing.getId());
+        when(positionUtils.getPositionId(R.id.rightWing, mappedPositions))
+                .thenReturn(rightWing.getId());
+        when(positionUtils.getPositionId(R.id.attackingMidfield, mappedPositions))
+                .thenReturn(attackingMidfield.getId());
+        when(positionUtils.getPositionId(R.id.leftCentreForward, mappedPositions))
+                .thenReturn(centreForward.getId());
+        when(positionUtils.getPositionId(R.id.rightCentreForward, mappedPositions))
+                .thenReturn(centreForward.getId());
+        when(positionUtils.getPositionId(R.id.centreCentreForward, mappedPositions))
+                .thenReturn(centreForward.getId());
     }
 
     /**
@@ -172,20 +213,20 @@ public class LineupUtilsTest {
      *
      * @return generated map
      */
-    private Map<Position.POSITION, Integer> generateCountMap(int centreBacks, int rightBacks,
-                                                             int leftBacks, int centreMidfielders,
-                                                             int attackingMidfielders,
-                                                             int rightWings, int leftWings,
-                                                             int centreForwards) {
-        Map<Position.POSITION, Integer> result = new HashMap<>();
-        result.put(Position.POSITION.CENTRE_BACK, centreBacks);
-        result.put(Position.POSITION.RIGHT_BACK, rightBacks);
-        result.put(Position.POSITION.LEFT_BACK, leftBacks);
-        result.put(Position.POSITION.CENTRE_MIDFIELD, centreMidfielders);
-        result.put(Position.POSITION.ATTACKING_MIDFIELD, attackingMidfielders);
-        result.put(Position.POSITION.RIGHT_WING, rightWings);
-        result.put(Position.POSITION.LEFT_WING, leftWings);
-        result.put(Position.POSITION.CENTRE_FORWARD, centreForwards);
+    private Map<PositionUtils.POSITION, Integer> generateCountMap(int centreBacks, int rightBacks,
+                                                                  int leftBacks, int centreMidfielders,
+                                                                  int attackingMidfielders,
+                                                                  int rightWings, int leftWings,
+                                                                  int centreForwards) {
+        Map<PositionUtils.POSITION, Integer> result = new HashMap<>();
+        result.put(PositionUtils.POSITION.CENTRE_BACK, centreBacks);
+        result.put(PositionUtils.POSITION.RIGHT_BACK, rightBacks);
+        result.put(PositionUtils.POSITION.LEFT_BACK, leftBacks);
+        result.put(PositionUtils.POSITION.CENTRE_MIDFIELD, centreMidfielders);
+        result.put(PositionUtils.POSITION.ATTACKING_MIDFIELD, attackingMidfielders);
+        result.put(PositionUtils.POSITION.RIGHT_WING, rightWings);
+        result.put(PositionUtils.POSITION.LEFT_WING, leftWings);
+        result.put(PositionUtils.POSITION.CENTRE_FORWARD, centreForwards);
         return result;
     }
 
@@ -207,9 +248,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 0, 1, 1, 2));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_4_4_2, formation);
+        assertEquals(LineupUtils.FORMATION.F_4_4_2, formation);
     }
 
     /**
@@ -221,9 +262,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(3, 0, 0, 2, 1, 1, 1, 2));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, formation);
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, formation);
     }
 
     /**
@@ -236,9 +277,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(1, 1, 1, 2, 1, 1, 1, 2));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, formation);
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, formation);
     }
 
     /**
@@ -250,9 +291,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 1, 1, 1, 1));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_4_2_3_1, formation);
+        assertEquals(LineupUtils.FORMATION.F_4_2_3_1, formation);
     }
 
     /**
@@ -264,9 +305,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 3, 0, 0, 0, 3));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_4_3_3, formation);
+        assertEquals(LineupUtils.FORMATION.F_4_3_3, formation);
     }
 
     /**
@@ -279,9 +320,9 @@ public class LineupUtilsTest {
         List<Position> positions = this.getLineupPositions(players);
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(1, 1, 1, 2, 1, 1, 1, 2));
-        LineupPlayers.FORMATION formation = utils.getFormation(positions);
+        LineupUtils.FORMATION formation = utils.getFormation(positions);
         assertNotNull(formation);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, formation);
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, formation);
     }
 
     /**
@@ -301,12 +342,13 @@ public class LineupUtilsTest {
      * Assert that the players in the list are correctly mapped into a map
      * for the given formation.
      *
-     * @param players    List of Player
-     * @param mapPlayers Mapped players
-     * @param formation  lineup formation
+     * @param players           List of Player
+     * @param mapPlayers        Mapped players
+     * @param formation         lineup formation
+     * @param checkLineupPlayer whateve the lineup player should be checked
      */
     private void assertMapPlayers(List<Player> players, Map<Integer, Player> mapPlayers,
-                                  LineupPlayers.FORMATION formation) {
+                                  LineupUtils.FORMATION formation, boolean checkLineupPlayer) {
         int i = 0;
         int[] positions = positions_F_4_4_2;
         switch (formation) {
@@ -331,7 +373,17 @@ public class LineupUtilsTest {
                 Player mapPlayer = mapPlayers.get(position);
                 assertEquals(0, mapPlayer.getId().intValue());
             } else {
-                assertSame(players.get(i), mapPlayers.get(position));
+                if (!checkLineupPlayer) {
+                    assertSame(players.get(i), mapPlayers.get(position));
+                } else {
+                    Player player = players.get(i);
+                    Player mapPlayer = mapPlayers.get(position);
+                    assertEquals(player.getId(), mapPlayer.getId());
+                    assertEquals(player.getName(), mapPlayer.getName());
+                    assertNotNull(mapPlayer.getLineupPlayer());
+                    assertEquals(positionUtils.getPositionId(position, mappedPositions),
+                            mapPlayer.getLineupPositionId());
+                }
             }
             i++;
         }
@@ -394,9 +446,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 0, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_4_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_4_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_4_2);
+                LineupUtils.FORMATION.F_4_4_2, false);
     }
 
     /**
@@ -413,9 +465,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 0, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_4_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_4_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_4_2);
+                LineupUtils.FORMATION.F_4_4_2, false);
     }
 
     /**
@@ -432,9 +484,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 0, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_4_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_4_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_4_2);
+                LineupUtils.FORMATION.F_4_4_2, false);
     }
 
     /**
@@ -450,9 +502,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(3, 0, 0, 2, 1, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_3_2_3_2);
+                LineupUtils.FORMATION.F_3_2_3_2, false);
     }
 
     /**
@@ -469,9 +521,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(3, 0, 0, 2, 1, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_3_2_3_2);
+                LineupUtils.FORMATION.F_3_2_3_2, false);
     }
 
     /**
@@ -488,9 +540,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(3, 0, 0, 2, 1, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_3_2_3_2);
+                LineupUtils.FORMATION.F_3_2_3_2, false);
     }
 
     /**
@@ -507,9 +559,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(1, 1, 1, 2, 1, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_3_2_3_2);
+                LineupUtils.FORMATION.F_3_2_3_2, false);
     }
 
     /**
@@ -525,9 +577,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 1, 1, 1, 1));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_2_3_1);
+                LineupUtils.FORMATION.F_4_2_3_1, false);
     }
 
     /**
@@ -544,9 +596,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 1, 1, 1, 1));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_2_3_1);
+                LineupUtils.FORMATION.F_4_2_3_1, false);
     }
 
     /**
@@ -563,9 +615,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 2, 1, 1, 1, 1));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_2_3_1, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_2_3_1);
+                LineupUtils.FORMATION.F_4_2_3_1, false);
     }
 
     /**
@@ -581,9 +633,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 3, 0, 0, 0, 3));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_3_3, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_3_3, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_3_3);
+                LineupUtils.FORMATION.F_4_3_3, false);
     }
 
     /**
@@ -600,9 +652,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 3, 0, 0, 0, 3));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_3_3, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_3_3, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_3_3);
+                LineupUtils.FORMATION.F_4_3_3, false);
     }
 
     /**
@@ -619,9 +671,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(2, 1, 1, 3, 0, 0, 0, 3));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_4_3_3, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_4_3_3, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_4_3_3);
+                LineupUtils.FORMATION.F_4_3_3, false);
     }
 
     /**
@@ -637,9 +689,9 @@ public class LineupUtilsTest {
         when(positionUtils.countPositions(positions))
                 .thenReturn(this.generateCountMap(1, 1, 1, 2, 1, 1, 1, 2));
         utils.mapPlayers(lineupPlayers);
-        assertEquals(LineupPlayers.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
+        assertEquals(LineupUtils.FORMATION.F_3_2_3_2, lineupPlayers.getFormation());
         this.assertMapPlayers(players, lineupPlayers.getMappedPlayers(),
-                LineupPlayers.FORMATION.F_3_2_3_2);
+                LineupUtils.FORMATION.F_3_2_3_2, false);
     }
 
     /**
@@ -647,7 +699,7 @@ public class LineupUtilsTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGenerateMapOnNullFormation() {
-        utils.generateMap(null, new ArrayList<Player>());
+        utils.generateMap(null, new ArrayList<Player>(), mappedPositions);
     }
 
     /**
@@ -655,7 +707,7 @@ public class LineupUtilsTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGenerateMapWithNullPlayers() {
-        utils.generateMap(LineupPlayers.FORMATION.F_4_4_2, null);
+        utils.generateMap(LineupUtils.FORMATION.F_4_4_2, null, mappedPositions);
     }
 
     /**
@@ -665,8 +717,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_4_2Formation() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 2, 0, 1, 1, 2, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_4_2, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_4_2);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_4_2, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_4_2, true);
     }
 
     /**
@@ -676,8 +729,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_4_2FormationWithNotElevenPlayers() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 0, 0, 0, 0, 0, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_4_2, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_4_2);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_4_2, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_4_2, true);
     }
 
     /**
@@ -687,8 +741,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn3_2_3_2() {
         List<Player> players = this.generatePlayers(3, 0, 0, 0, 2, 1, 1, 1, 2, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_3_2_3_2, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_3_2_3_2);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_3_2_3_2, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_3_2_3_2, true);
     }
 
     /**
@@ -698,8 +753,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn3_2_3_2WithNotElevenPlayers() {
         List<Player> players = this.generatePlayers(3, 0, 0, 0, 0, 0, 2, 0, 0, 1);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_3_2_3_2, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_3_2_3_2);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_3_2_3_2, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_3_2_3_2, true);
     }
 
     /**
@@ -709,8 +765,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_2_3_1() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 2, 1, 1, 1, 1, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_2_3_1, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_2_3_1);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_2_3_1, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_2_3_1, true);
     }
 
     /**
@@ -720,8 +777,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_2_3_1WithNotElevenPlayers() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 0, 0, 0, 0, 0, 1);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_2_3_1, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_2_3_1);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_2_3_1, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_2_3_1, true);
     }
 
     /**
@@ -731,8 +789,9 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_3_3() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 3, 0, 0, 0, 3, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_3_3, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_3_3);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_3_3, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_3_3, true);
     }
 
     /**
@@ -742,9 +801,11 @@ public class LineupUtilsTest {
     @Test
     public void testGenerateMapOn4_3_3WithNotElevenPlayers() {
         List<Player> players = this.generatePlayers(2, 1, 1, 0, 1, 0, 0, 1, 0, 0);
-        Map<Integer, Player> result = utils.generateMap(LineupPlayers.FORMATION.F_4_3_3, players);
-        this.assertMapPlayers(players, result, LineupPlayers.FORMATION.F_4_3_3);
+        Map<Integer, Player> result = utils
+                .generateMap(LineupUtils.FORMATION.F_4_3_3, players, mappedPositions);
+        this.assertMapPlayers(players, result, LineupUtils.FORMATION.F_4_3_3, true);
     }
+
     /**
      * Put the list of players into a map.
      *

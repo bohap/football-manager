@@ -6,7 +6,6 @@ import com.android.finki.mpip.footballdreamteam.database.service.LineupDBService
 import com.android.finki.mpip.footballdreamteam.database.service.LineupPlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
@@ -14,6 +13,7 @@ import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.LineupPlayersActivity;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
 import org.slf4j.Logger;
@@ -41,8 +41,11 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
     private LineupDBService lineupDBService;
     private LineupPlayerDBService lineupPlayerDBService;
     private LineupPlayerValidator validator;
+
+    private boolean lineupValid = false;
     private boolean changed = false;
-    private LineupPlayers.FORMATION formation;
+    private boolean lineupUpdateFailed = false;
+    private LineupUtils.FORMATION formation;
 
     public LineupPlayersViewPresenter(LineupPlayersView view, User user,
                                       LineupApi api, LineupDBService lineupDBService,
@@ -54,6 +57,57 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
         this.lineupDBService = lineupDBService;
         this.lineupPlayerDBService = lineupPlayerDBService;
         this.validator = validator;
+    }
+
+    /**
+     * Check if the authenticated user can edit the lineup.
+     *
+     * @return whatever the user can edit the lineup
+     */
+    public boolean canEditLineup() {
+        int lineupUserId = this.lineup.getUserId();
+        if (lineupUserId < 1 && lineup.getUser() != null) {
+            lineupUserId = lineup.getUser().getId();
+        }
+        return lineupUserId == user.getId();
+    }
+
+    /**
+     * Called when the lineup players has been changed.
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    /**
+     * Checks if the lineup has been changed.
+     *
+     * @return whatever the lineup has been changed
+     */
+    public boolean isChanged() {
+        return changed;
+    }
+
+    /**
+     * Called when the lineup formation has been changed.
+     *
+     * @param lineupValid value indicating whatever the lineup is valid or not
+     */
+    public void setLineupValid(boolean lineupValid) {
+        this.lineupValid = lineupValid;
+    }
+
+    /**
+     * Checks if the lineup is valid.
+     *
+     * @return whatever the lineup is valid
+     */
+    public boolean isLineupValid() {
+        return lineupValid;
+    }
+
+    public boolean isLineupUpdateFailed() {
+        return lineupUpdateFailed;
     }
 
     /**
@@ -101,20 +155,16 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      */
     @Override
     public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
-        logger.info("load players request success");
-        view.showLoadingSuccess(response.body());
-        if (this.canEdit()) {
-            view.showBtnChangeFormation();
+        if (response.isSuccessful()) {
+            logger.info("load players request success");
+            view.showLoadingSuccess(response.body());
+            if (this.canEditLineup()) {
+                view.showBtnChangeFormation();
+            }
+        } else {
+            logger.info("load players request failed");
+            view.showLoadingFailed();
         }
-    }
-
-    /**
-     * Checks if the user can edit the lineup.
-     *
-     * @return whatever the user can edit the lineup
-     */
-    private boolean canEdit() {
-        return this.lineup.getUser().getId().equals(user.getId());
     }
 
     /**
@@ -136,36 +186,16 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
     }
 
     /**
-     * Check if the authenticated user can edit the lineup.
-     *
-     * @return whatever the user can edit the lineup
-     */
-    public boolean canEditLineup() {
-        int lineupUserId = this.lineup.getUserId();
-        if (lineupUserId < 1 && lineup.getUser() != null) {
-            lineupUserId = lineup.getUser().getId();
-        }
-        return lineupUserId == user.getId();
-    }
-
-    /**
-     * Called when the lineup players has been changed.
-     */
-    public void setChanged() {
-        this.changed = true;
-    }
-
-    /**
      * Send a request to update the lineup players.
      *
-     * @param lineupPlayers List of players in the lineup
      */
-    public void update(final List<LineupPlayer> lineupPlayers) {
+    public void update() {
         if (this.lineup == null) {
             String message = "lineup data is not yet sey";
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
+        final List<LineupPlayer> lineupPlayers = view.getLineupPlayers();
         if (!validator.validate(lineupPlayers)) {
             String message = "lineup players are not valid";
             logger.error(message);
@@ -180,16 +210,26 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
         logger.info("sending lineup update request");
         api.update(lineup.getId(), this.createdLineupRequest(lineupPlayers))
                 .enqueue(new Callback<LineupResponse>() {
+                    //TODO server respond with invalid json result on first request
                     @Override
                     public void onResponse(Call<LineupResponse> call,
                                            Response<LineupResponse> response) {
-                        logger.info("lineup update request success");
-                        updateSuccess(lineupPlayers);
+                        if (response.isSuccessful()) {
+                            logger.info("lineup update request success");
+                            lineupUpdateFailed = false;
+                            changed = false;
+                            updateSuccess(lineupPlayers);
+                        } else {
+                            logger.info("lineup update request failed");
+                            lineupUpdateFailed = true;
+                            view.showUpdatingFailed();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<LineupResponse> call, Throwable t) {
                         logger.info("lineup update request failed");
+                        lineupUpdateFailed = true;
                         updateFailed(t);
                     }
                 });
@@ -282,7 +322,7 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      *
      * @param formation new formation
      */
-    public void updateFormation(LineupPlayers.FORMATION formation) {
+    public void updateFormation(LineupUtils.FORMATION formation) {
         if (this.formation == null) {
             this.formation = view.getFormation();
         }
@@ -292,7 +332,7 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
             throw new IllegalArgumentException(message);
         }
         if (!this.formation.equals(formation)) {
-            view.changeFormation(formation, view.getPlayers());
+            view.changeFormation(formation, view.getPlayersOrdered());
             this.formation = formation;
         }
     }

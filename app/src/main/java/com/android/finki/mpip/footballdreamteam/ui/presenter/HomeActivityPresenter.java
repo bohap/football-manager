@@ -40,25 +40,28 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     private PositionApi positionApi;
     private PlayerApi playerApi;
     private LineupApi lineupApi;
-
     private StoreTeamsTask storeTeamsTask;
     private StorePositionsTask storePositionsTask;
     private StorePlayersTask storePlayersTask;
+    private SharedPreferences sharedPreferences;
 
     private String TEAMS_LOADED_KEY;
-    private String POSITIONS_LOADED_JEY;
+    private String POSITIONS_LOADED_KEY;
     private String PLAYERS_LOADED_KEY;
+    private String AUTH_USER_ID_KEY;
 
     private boolean isInfoDialogShowed = false;
+    private boolean refreshingLineupDataFailed = false;
     static final int LINEUPS_LIMIT = 20;
-    private int lineupCounter = 1;
+    private int lineupCounter = 0;
     private boolean isLineupRequestSending = false;
 
     public HomeActivityPresenter(HomeActivity activity, SharedPreferences preferences,
                                  TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
                                  LineupApi lineupApi, StoreTeamsTask storeTeamsTask,
                                  StorePositionsTask storePositionsTask,
-                                 StorePlayersTask storePlayersTask) {
+                                 StorePlayersTask storePlayersTask,
+                                 SharedPreferences sharedPreferences) {
         this.activity = activity;
         this.preferences = preferences;
         this.teamApi = teamApi;
@@ -68,14 +71,16 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
         this.storeTeamsTask = storeTeamsTask;
         this.storePositionsTask = storePositionsTask;
         this.storePlayersTask = storePlayersTask;
+        this.sharedPreferences = sharedPreferences;
 
         this.storePositionsTask.setListener(this);
         this.storeTeamsTask.setListener(this);
         this.storePlayersTask.setListener(this);
 
         this.TEAMS_LOADED_KEY = activity.getString(R.string.preference_teams_loaded_key);
-        this.POSITIONS_LOADED_JEY = activity.getString(R.string.preference_positions_loaded_key);
+        this.POSITIONS_LOADED_KEY = activity.getString(R.string.preference_positions_loaded_key);
         this.PLAYERS_LOADED_KEY = activity.getString(R.string.preference_players_loaded_key);
+        this.AUTH_USER_ID_KEY = activity.getString(R.string.preference_auth_user_id_key);
     }
 
     /**
@@ -116,9 +121,14 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
 
                 @Override
                 public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
-                    logger.info("teams loading success");
-                    List<Team> teams = response.body();
-                    storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
+                    if (response.isSuccessful()) {
+                        logger.info("teams loading success");
+                        List<Team> teams = response.body();
+                        storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
+                    } else {
+                        logger.info("teams loading failed");
+                        activity.showErrorLoading();
+                    }
                 }
 
                 @Override
@@ -174,9 +184,13 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
                 @Override
                 public void onResponse(Call<List<Position>> call,
                                        Response<List<Position>> response) {
-                    logger.info("positions loading success");
-                    List<Position> positions = response.body();
-                    storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
+                    if (response.isSuccessful()) {
+                        logger.info("positions loading success");
+                        List<Position> positions = response.body();
+                        storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
+                    } else {
+                        activity.showErrorLoading();
+                    }
                 }
 
                 @Override
@@ -196,7 +210,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      * @return whatever the positions are loaded
      */
     private boolean isPositionsLoaded() {
-        return preferences.getBoolean(POSITIONS_LOADED_JEY, false);
+        return preferences.getBoolean(POSITIONS_LOADED_KEY, false);
     }
 
     /**
@@ -204,7 +218,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      */
     @Override
     public void onPositionsSavingSuccess() {
-        preferences.edit().putBoolean(POSITIONS_LOADED_JEY, true).apply();
+        preferences.edit().putBoolean(POSITIONS_LOADED_KEY, true).apply();
         loadPlayers();
     }
 
@@ -231,9 +245,13 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
             call.enqueue(new Callback<List<Player>>() {
                 @Override
                 public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
-                    logger.info("players loading success");
-                    List<Player> players = response.body();
-                    storePlayersTask.execute(players.toArray(new Player[players.size()]));
+                    if (response.isSuccessful()) {
+                        logger.info("players loading success");
+                        List<Player> players = response.body();
+                        storePlayersTask.execute(players.toArray(new Player[players.size()]));
+                    } else {
+                        activity.showErrorLoading();
+                    }
                 }
 
                 @Override
@@ -279,17 +297,29 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     public void loadLineups() {
         logger.info("loading lineups data");
         activity.showLineupsLoading();
-        Call<List<Lineup>> call = this.lineupApi.index(null, true, LINEUPS_LIMIT, 0);
+        Call<List<Lineup>> call = this.lineupApi.index(null, true, LINEUPS_LIMIT,
+                lineupCounter * LINEUPS_LIMIT);
         call.enqueue(new Callback<List<Lineup>>() {
             @Override
             public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
-                logger.info("loading lineups success");
-                activity.successLoadingLineups(response.body());
+                if (response.isSuccessful()) {
+                    logger.info("loading lineups success");
+                    if (!refreshingLineupDataFailed) {
+                        lineupCounter++;
+                    }
+                    refreshingLineupDataFailed = false;
+                    activity.successLoadingLineups(response.body());
+                } else {
+                    logger.info("loading lineups failed");
+                    refreshingLineupDataFailed = false;
+                    activity.showErrorLoading();
+                }
             }
 
             @Override
             public void onFailure(Call<List<Lineup>> call, Throwable t) {
                 logger.info("loading lineups failed");
+                refreshingLineupDataFailed = false;
                 requestFailed(t);
             }
         });
@@ -307,19 +337,64 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
             call.enqueue(new Callback<List<Lineup>>() {
                 @Override
                 public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
-                    logger.info("loading more lineups data success");
-                    isLineupRequestSending = false;
-                    lineupCounter++;
-                    activity.successLoadingLineups(response.body());
+                    if (response.isSuccessful()) {
+                        logger.info("loading more lineups data success");
+                        isLineupRequestSending = false;
+                        refreshingLineupDataFailed = false;
+                        lineupCounter++;
+                        activity.successLoadingLineups(response.body());
+                    } else {
+                        activity.showErrorLoading();
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<List<Lineup>> call, Throwable t) {
                     logger.info("loading more lineups request failed");
                     isLineupRequestSending = false;
+                    refreshingLineupDataFailed = false;
                     requestFailed(t);
                 }
             });
         }
+    }
+
+    /**
+     * Refresh the lineup data from the server.
+     */
+    public void refresh() {
+        if (!isLineupRequestSending) {
+            logger.info("refreshing lineups data");
+            activity.showLineupsLoading();
+            final int limit = lineupCounter * LINEUPS_LIMIT;
+            Call<List<Lineup>> call = this.lineupApi.index(null, true, limit, 0);
+            call.enqueue(new Callback<List<Lineup>>() {
+                @Override
+                public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
+                    if (response.isSuccessful()) {
+                        logger.info("refreshing lineups success");
+                        activity.successLoadingLineups(response.body());
+                    } else {
+                        logger.info("refreshing lineup data failed");
+                        refreshingLineupDataFailed = true;
+                        activity.showErrorLoading();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Lineup>> call, Throwable t) {
+                    logger.info("refreshing lineup data failed");
+                    refreshingLineupDataFailed = true;
+                    requestFailed(t);
+                }
+            });
+        }
+    }
+
+    /**
+     * Remove the auth user data from the database.
+     */
+    public void logout() {
+        sharedPreferences.edit().putInt(AUTH_USER_ID_KEY, -1).apply();
     }
 }

@@ -15,6 +15,59 @@ import java.util.Map;
  */
 public class PositionUtils {
 
+    public static final int[] resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+            R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftBack, R.id.rightBack,
+            R.id.leftCentreMidfield, R.id.rightCentreMidfield, R.id.centreCentreMidfield,
+            R.id.attackingMidfield, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
+            R.id.rightCentreForward, R.id.centreCentreForward};
+    public static final int[] formation4_4_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+            R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
+            R.id.rightCentreMidfield, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
+            R.id.rightCentreForward};
+    public static final int[] formation3_2_3_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+            R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftCentreMidfield,
+            R.id.rightCentreMidfield, R.id.attackingMidfield, R.id.leftWing, R.id.rightWing,
+            R.id.leftCentreForward, R.id.rightCentreForward};
+    public static final int[] formation4_2_3_1_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+            R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
+            R.id.rightCentreMidfield, R.id.attackingMidfield, R.id.leftWing, R.id.rightWing,
+            R.id.centreCentreForward};
+    public static final int[] formation4_3_3_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+            R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
+            R.id.rightCentreMidfield, R.id.centreCentreMidfield, R.id.leftCentreForward,
+            R.id.rightCentreForward, R.id.centreCentreForward};
+
+    public enum POSITION {
+        KEEPER("keeper"),
+        RIGHT_BACK("right back"),
+        LEFT_BACK("left back"),
+        CENTRE_BACK("centre back"),
+        DEFENSIVE_MIDFIELD("defensive midfield"),
+        CENTRE_MIDFIELD("centre midfield"),
+        ATTACKING_MIDFIELD("attacking midfield"),
+        RIGHT_WING("right wing"),
+        LEFT_WING("left wing"),
+        CENTRE_FORWARD("centre forward"),
+        SECONDARY_FORWARD("secondary forward");
+
+        private final String name;
+
+        POSITION(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+    }
+
+    public enum POSITION_PLACE {
+        KEEPERS,
+        DEFENDERS,
+        MIDFIELDERS,
+        ATTACKERS
+    }
+
     private static Logger logger = LoggerFactory.getLogger(PositionUtils.class);
 
     /**
@@ -25,7 +78,7 @@ public class PositionUtils {
      */
     boolean isKeeper(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.KEEPER.getName());
+                .equals(POSITION.KEEPER.getName());
     }
 
     /**
@@ -36,7 +89,7 @@ public class PositionUtils {
      */
     boolean isCentreBack(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.CENTRE_BACK.getName());
+                .equals(POSITION.CENTRE_BACK.getName());
     }
 
     /**
@@ -47,7 +100,7 @@ public class PositionUtils {
      */
     boolean isRightBack(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.RIGHT_BACK.getName());
+                .equals(POSITION.RIGHT_BACK.getName());
     }
 
     /**
@@ -58,7 +111,7 @@ public class PositionUtils {
      */
     boolean isLeftBack(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.LEFT_BACK.getName());
+                .equals(POSITION.LEFT_BACK.getName());
     }
 
     /**
@@ -69,7 +122,7 @@ public class PositionUtils {
      */
     boolean isDefensiveMidfield(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.DEFENSIVE_MIDFIELD.getName());
+                .equals(POSITION.DEFENSIVE_MIDFIELD.getName());
     }
 
     /**
@@ -80,7 +133,7 @@ public class PositionUtils {
      */
     boolean isCentreMidfield(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.CENTRE_MIDFIELD.getName());
+                .equals(POSITION.CENTRE_MIDFIELD.getName());
     }
 
     /**
@@ -91,7 +144,7 @@ public class PositionUtils {
      */
     boolean isLeftWing(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.LEFT_WING.getName());
+                .equals(POSITION.LEFT_WING.getName());
     }
 
     /**
@@ -102,7 +155,7 @@ public class PositionUtils {
      */
     boolean isRightWing(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.RIGHT_WING.getName());
+                .equals(POSITION.RIGHT_WING.getName());
     }
 
     /**
@@ -113,7 +166,7 @@ public class PositionUtils {
      */
     boolean isAttackingMidfield(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.ATTACKING_MIDFIELD.getName());
+                .equals(POSITION.ATTACKING_MIDFIELD.getName());
     }
 
     /**
@@ -124,7 +177,7 @@ public class PositionUtils {
      */
     boolean isCentreForward(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.CENTRE_FORWARD.getName());
+                .equals(POSITION.CENTRE_FORWARD.getName());
     }
 
     /**
@@ -135,7 +188,7 @@ public class PositionUtils {
      */
     boolean isSecondaryForward(Position position) {
         return position != null && position.getName().toLowerCase()
-                .equals(Position.POSITION.SECONDARY_FORWARD.getName());
+                .equals(POSITION.SECONDARY_FORWARD.getName());
     }
 
     /**
@@ -177,7 +230,7 @@ public class PositionUtils {
      * @param position Position to be checked
      * @return position name
      */
-    public Position.POSITION getPosition(Position position) {
+    public POSITION getPosition(Position position) {
         if (position == null) {
             String message = "position can't be null";
             logger.error(message);
@@ -189,37 +242,37 @@ public class PositionUtils {
             throw new IllegalArgumentException(message);
         }
         if (this.isKeeper(position)) {
-            return Position.POSITION.KEEPER;
+            return POSITION.KEEPER;
         }
         if (this.isLeftBack(position)) {
-            return Position.POSITION.LEFT_BACK;
+            return POSITION.LEFT_BACK;
         }
         if (this.isRightBack(position)) {
-            return Position.POSITION.RIGHT_BACK;
+            return POSITION.RIGHT_BACK;
         }
         if (this.isCentreBack(position)) {
-            return Position.POSITION.CENTRE_BACK;
+            return POSITION.CENTRE_BACK;
         }
         if (this.isDefensiveMidfield(position)) {
-            return Position.POSITION.DEFENSIVE_MIDFIELD;
+            return POSITION.DEFENSIVE_MIDFIELD;
         }
         if (this.isCentreMidfield(position)) {
-            return Position.POSITION.CENTRE_MIDFIELD;
+            return POSITION.CENTRE_MIDFIELD;
         }
         if (this.isRightWing(position)) {
-            return Position.POSITION.RIGHT_WING;
+            return POSITION.RIGHT_WING;
         }
         if (this.isLeftWing(position)) {
-            return Position.POSITION.LEFT_WING;
+            return POSITION.LEFT_WING;
         }
         if (this.isAttackingMidfield(position)) {
-            return Position.POSITION.ATTACKING_MIDFIELD;
+            return POSITION.ATTACKING_MIDFIELD;
         }
         if (this.isCentreForward(position)) {
-            return Position.POSITION.CENTRE_FORWARD;
+            return POSITION.CENTRE_FORWARD;
         }
         if (this.isSecondaryForward(position)) {
-            return Position.POSITION.SECONDARY_FORWARD;
+            return POSITION.SECONDARY_FORWARD;
         }
         String message = String.format("can't find position with id %d and name %s",
                 position.getId(), position.getName());
@@ -233,7 +286,7 @@ public class PositionUtils {
      * @param position Position to be checked
      * @return position place on the field
      */
-    Position.POSITION_PLACE getPositionPlace(Position position) {
+    POSITION_PLACE getPositionPlace(Position position) {
         if (position == null) {
             String message = "position can't be null";
             logger.error(message);
@@ -245,16 +298,16 @@ public class PositionUtils {
             throw new IllegalArgumentException(message);
         }
         if (this.isKeeper(position)) {
-            return Position.POSITION_PLACE.KEEPERS;
+            return POSITION_PLACE.KEEPERS;
         }
         if (isInDefence(position)) {
-            return Position.POSITION_PLACE.DEFENDERS;
+            return POSITION_PLACE.DEFENDERS;
         }
         if (isInMidfield(position)) {
-            return Position.POSITION_PLACE.MIDFIELDERS;
+            return POSITION_PLACE.MIDFIELDERS;
         }
         if (isInAttack(position)) {
-            return Position.POSITION_PLACE.ATTACKERS;
+            return POSITION_PLACE.ATTACKERS;
         }
         String message = "unknown position";
         logger.error(message);
@@ -267,27 +320,27 @@ public class PositionUtils {
      * @param positionResourceId position resource id
      * @return position place of the field
      */
-    public Position.POSITION_PLACE getPositionPlace(int positionResourceId) {
+    public POSITION_PLACE getPositionPlace(int positionResourceId) {
         switch (positionResourceId) {
             case R.id.keeper:
-                return Position.POSITION_PLACE.KEEPERS;
+                return POSITION_PLACE.KEEPERS;
             case R.id.leftCentreBack:
             case R.id.rightCentreBack:
             case R.id.centreCentreBack:
             case R.id.leftBack:
             case R.id.rightBack:
-                return Position.POSITION_PLACE.DEFENDERS;
+                return POSITION_PLACE.DEFENDERS;
             case R.id.leftCentreMidfield:
             case R.id.rightCentreMidfield:
             case R.id.centreCentreMidfield:
             case R.id.attackingMidfield:
             case R.id.leftWing:
             case R.id.rightWing:
-                return Position.POSITION_PLACE.MIDFIELDERS;
+                return POSITION_PLACE.MIDFIELDERS;
             case R.id.leftCentreForward:
             case R.id.rightCentreForward:
             case R.id.centreCentreForward:
-                return Position.POSITION_PLACE.ATTACKERS;
+                return POSITION_PLACE.ATTACKERS;
         }
         String message = "unknown position resource id";
         logger.error(message);
@@ -300,7 +353,7 @@ public class PositionUtils {
      * @param positions List of positions
      * @return map in where the position is mapped with the number of ids in the array
      */
-    Map<Position.POSITION, Integer> countPositions(List<Position> positions) {
+    Map<POSITION, Integer> countPositions(List<Position> positions) {
         if (positions == null) {
             String message = "position can't be null";
             logger.error(message);
@@ -344,15 +397,15 @@ public class PositionUtils {
                     throw new IllegalArgumentException(message);
             }
         }
-        Map<Position.POSITION, Integer> result = new HashMap<>();
-        result.put(Position.POSITION.CENTRE_BACK, centreBacks);
-        result.put(Position.POSITION.RIGHT_BACK, rightBacks);
-        result.put(Position.POSITION.LEFT_BACK, leftBacks);
-        result.put(Position.POSITION.CENTRE_MIDFIELD, centreMidfielders);
-        result.put(Position.POSITION.RIGHT_WING, rightWings);
-        result.put(Position.POSITION.LEFT_WING, leftWings);
-        result.put(Position.POSITION.ATTACKING_MIDFIELD, attackingMidfielders);
-        result.put(Position.POSITION.CENTRE_FORWARD, centreForwards);
+        Map<POSITION, Integer> result = new HashMap<>();
+        result.put(POSITION.CENTRE_BACK, centreBacks);
+        result.put(POSITION.RIGHT_BACK, rightBacks);
+        result.put(POSITION.LEFT_BACK, leftBacks);
+        result.put(POSITION.CENTRE_MIDFIELD, centreMidfielders);
+        result.put(POSITION.RIGHT_WING, rightWings);
+        result.put(POSITION.LEFT_WING, leftWings);
+        result.put(POSITION.ATTACKING_MIDFIELD, attackingMidfielders);
+        result.put(POSITION.CENTRE_FORWARD, centreForwards);
         return result;
     }
 
@@ -421,7 +474,7 @@ public class PositionUtils {
      * @return position id for the given resource
      */
     public int getPositionId(int positionResourceId,
-                             Map<Position.POSITION, Integer> mappedPositions) {
+                             Map<POSITION, Integer> mappedPositions) {
         if (mappedPositions == null) {
             String message = "mappedPositions can't be null";
             logger.error(message);
@@ -429,29 +482,29 @@ public class PositionUtils {
         }
         switch (positionResourceId) {
             case R.id.keeper:
-                return mappedPositions.get(Position.POSITION.KEEPER);
+                return mappedPositions.get(POSITION.KEEPER);
             case R.id.leftCentreBack:
             case R.id.rightCentreBack:
             case R.id.centreCentreBack:
-                return mappedPositions.get(Position.POSITION.CENTRE_BACK);
+                return mappedPositions.get(POSITION.CENTRE_BACK);
             case R.id.leftBack:
-                return mappedPositions.get(Position.POSITION.LEFT_BACK);
+                return mappedPositions.get(POSITION.LEFT_BACK);
             case R.id.rightBack:
-                return mappedPositions.get(Position.POSITION.RIGHT_BACK);
+                return mappedPositions.get(POSITION.RIGHT_BACK);
             case R.id.leftCentreMidfield:
             case R.id.rightCentreMidfield:
             case R.id.centreCentreMidfield:
-                return mappedPositions.get(Position.POSITION.CENTRE_MIDFIELD);
+                return mappedPositions.get(POSITION.CENTRE_MIDFIELD);
             case R.id.leftWing:
-                return mappedPositions.get(Position.POSITION.LEFT_WING);
+                return mappedPositions.get(POSITION.LEFT_WING);
             case R.id.rightWing:
-                return mappedPositions.get(Position.POSITION.RIGHT_WING);
+                return mappedPositions.get(POSITION.RIGHT_WING);
             case R.id.attackingMidfield:
-                return mappedPositions.get(Position.POSITION.ATTACKING_MIDFIELD);
+                return mappedPositions.get(POSITION.ATTACKING_MIDFIELD);
             case R.id.leftCentreForward:
             case R.id.rightCentreForward:
             case R.id.centreCentreForward:
-                return mappedPositions.get(Position.POSITION.CENTRE_FORWARD);
+                return mappedPositions.get(POSITION.CENTRE_FORWARD);
         }
         String message = "unknown position resource id";
         logger.error(message);

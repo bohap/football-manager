@@ -3,8 +3,10 @@ package com.android.finki.mpip.footballdreamteam.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -16,15 +18,15 @@ import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CreateLineupViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.CreateLineupViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import java.util.List;
 
@@ -71,9 +73,6 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @BindView(R.id.createLineupLayout_mainContent)
     RelativeLayout mainContentLayout;
 
-    @BindView(R.id.createLineupLayout_btnSave)
-    Button btnSave;
-
     @BindView(R.id.createLineupLayout_btnChangeFormation)
     ButtonAwesome btnChangeFormation;
 
@@ -88,6 +87,26 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @Inject
     void setPresenter(CreateLineupViewPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    /**
+     * Checks whatever the formation has been changed.
+     *
+     * @return whatever the formation has been changed
+     */
+    @Override
+    protected boolean isChanged() {
+        return presenter.isChanged();
+    }
+
+    /**
+     * Toggle the button "Change Formation" visibility.
+     *
+     * @param visible whatever the button is visible or not
+     */
+    @Override
+    protected void toggleBtnChangeFormation(boolean visible) {
+        super.toggleVisibility(btnChangeFormation, visible);
     }
 
     /**
@@ -109,6 +128,45 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         }
         this.registerForContextMenu(btnChangeFormation);
         super.showLineupFormationFragment(presenter.getFormation());
+    }
+
+    /**
+     * Called when the options menu is ready to be creted or recreated.
+     *
+     * @param menu menu to be created
+     * @return whatever the action should be canceled or not
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.save_lineup_menu, menu);
+        Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
+        MenuItem item = menu.findItem(R.id.lineupMenu_save);
+        if (fragment instanceof LineupFormationFragment && presenter.isFormationValid()) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
+        return true;
+    }
+
+    /**
+     * Called when the options item is selected.
+     *
+     * @param item selected item
+     * @return whatever the action should be canceled or not
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.lineupMenu_save:
+                presenter.store();
+                return true;
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -139,16 +197,16 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         int id = item.getItemId();
         switch (id) {
             case R.id.formation_4_4_2:
-                presenter.updateFormation(LineupPlayers.FORMATION.F_4_4_2);
+                presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
                 return true;
             case R.id.formation_3_2_3_2:
-                presenter.updateFormation(LineupPlayers.FORMATION.F_3_2_3_2);
+                presenter.updateFormation(LineupUtils.FORMATION.F_3_2_3_2);
                 return true;
             case R.id.formation_4_2_3_1:
-                presenter.updateFormation(LineupPlayers.FORMATION.F_4_2_3_1);
+                presenter.updateFormation(LineupUtils.FORMATION.F_4_2_3_1);
                 return true;
             case R.id.formation_4_3_3:
-                presenter.updateFormation(LineupPlayers.FORMATION.F_4_3_3);
+                presenter.updateFormation(LineupUtils.FORMATION.F_4_3_3);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -170,7 +228,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      * @param playersToExclude what players to exclude from the list
      */
     @Override
-    public void showListPositionPlayersFragment(Position.POSITION_PLACE place,
+    public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                                 int[] playersToExclude) {
         super.showListPositionPlayersFragment(place, playersToExclude);
     }
@@ -191,7 +249,8 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void onValidLineup() {
-        super.toggleVisibility(btnSave, true);
+        presenter.setFormationValid(true);
+        invalidateOptionsMenu();
     }
 
     /**
@@ -199,7 +258,8 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void onInvalidLineup() {
-        super.toggleVisibility(btnSave, false);
+        presenter.setFormationValid(false);
+        invalidateOptionsMenu();
     }
 
     /**
@@ -210,6 +270,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         super.checkLineupFormationFragmentVisibility();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).removeSelectedPlayer();
+        presenter.setChanged(true);
     }
 
     /**
@@ -222,18 +283,31 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         super.removeListPositionPlayersFragment();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).updateLineupPosition(player);
+        presenter.setChanged(true);
     }
 
     /**
-     * Get all the players that are currently in the lineup.
+     * Get all the players that are currently in the lineup ordered by their positions.
      *
      * @return lineup players
      */
     @Override
-    public List<Player> getPlayers() {
+    public List<Player> getPlayersOrdered() {
         super.checkLineupFormationFragmentVisibility();
         return ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).getPlayersOrdered();
+    }
+
+    /**
+     * Get all the players that are in the lienup.
+     *
+     * @return lineup players
+     */
+    @Override
+    public List<LineupPlayer> getLineupPlayers() {
+        super.checkLineupFormationFragmentVisibility();
+        return ((LineupFormationFragment) this.getSupportFragmentManager()
+                .findFragmentById(R.id.content)).getLineupPlayers();
     }
 
     /**
@@ -243,20 +317,9 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      * @param players   players that are already in the lineup
      */
     @Override
-    public void changeFormation(LineupPlayers.FORMATION formation, List<Player> players) {
+    public void changeFormation(LineupUtils.FORMATION formation, List<Player> players) {
         super.checkLineupFormationFragmentVisibility();
         super.showLineupFormationFragment(formation, players);
-    }
-
-    /**
-     * Handle click on the button "Save".
-     */
-    @OnClick(R.id.createLineupLayout_btnSave)
-    void onBtnSaveClick() {
-        super.checkLineupFormationFragmentVisibility();
-        List<LineupPlayer> lineupPlayers = ((LineupFormationFragment)
-                this.getSupportFragmentManager().findFragmentById(R.id.content)).getLineupPlayers();
-        presenter.store(lineupPlayers);
     }
 
     /**
@@ -282,11 +345,11 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     }
 
     /**
-     * Handle click on the button "Try Again".
+     * Handle click on the button "Try Again". v
      */
     @OnClick(R.id.error_loading_btn_tryAgain)
     void onBtnTryAgainClick() {
-        this.onBtnSaveClick();
+        presenter.store();
     }
 
     /**

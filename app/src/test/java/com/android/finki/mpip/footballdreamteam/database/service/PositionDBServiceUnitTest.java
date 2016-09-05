@@ -5,6 +5,7 @@ import com.android.finki.mpip.footballdreamteam.exception.PositionException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.exception.UniqueFieldConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.Position;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -410,18 +411,18 @@ public class PositionDBServiceUnitTest {
      */
     @Test
     public void testMapPositions() {
-        Map<Position.POSITION, Integer> map = service.mapPositions();
+        Map<PositionUtils.POSITION, Integer> map = service.mapPositions();
         assertNotNull(map);
-        assertEquals(keeper.getId(), map.get(Position.POSITION.KEEPER));
-        assertEquals(centreBack.getId(), map.get(Position.POSITION.CENTRE_BACK));
-        assertEquals(leftBack.getId(), map.get(Position.POSITION.LEFT_BACK));
-        assertEquals(rightBack.getId(), map.get(Position.POSITION.RIGHT_BACK));
-        assertEquals(defensiveMidfield.getId(), map.get(Position.POSITION.DEFENSIVE_MIDFIELD));
-        assertEquals(centreMidfield.getId(), map.get(Position.POSITION.CENTRE_MIDFIELD));
-        assertEquals(attackingMidfield.getId(), map.get(Position.POSITION.ATTACKING_MIDFIELD));
-        assertEquals(leftWing.getId(), map.get(Position.POSITION.LEFT_WING));
-        assertEquals(rightWing.getId(), map.get(Position.POSITION.RIGHT_WING));
-        assertEquals(centreForward.getId(), map.get(Position.POSITION.CENTRE_FORWARD));
-        assertEquals(secondaryForward.getId(), map.get(Position.POSITION.SECONDARY_FORWARD));
+        assertEquals(keeper.getId(), map.get(PositionUtils.POSITION.KEEPER));
+        assertEquals(centreBack.getId(), map.get(PositionUtils.POSITION.CENTRE_BACK));
+        assertEquals(leftBack.getId(), map.get(PositionUtils.POSITION.LEFT_BACK));
+        assertEquals(rightBack.getId(), map.get(PositionUtils.POSITION.RIGHT_BACK));
+        assertEquals(defensiveMidfield.getId(), map.get(PositionUtils.POSITION.DEFENSIVE_MIDFIELD));
+        assertEquals(centreMidfield.getId(), map.get(PositionUtils.POSITION.CENTRE_MIDFIELD));
+        assertEquals(attackingMidfield.getId(), map.get(PositionUtils.POSITION.ATTACKING_MIDFIELD));
+        assertEquals(leftWing.getId(), map.get(PositionUtils.POSITION.LEFT_WING));
+        assertEquals(rightWing.getId(), map.get(PositionUtils.POSITION.RIGHT_WING));
+        assertEquals(centreForward.getId(), map.get(PositionUtils.POSITION.CENTRE_FORWARD));
+        assertEquals(secondaryForward.getId(), map.get(PositionUtils.POSITION.SECONDARY_FORWARD));
     }
 }

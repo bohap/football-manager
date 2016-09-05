@@ -26,7 +26,7 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     String infoDialogText;
 
     @BindString(R.string.firstTimeStarted_title)
-    String infoDIalogTitle;
+    String infoDialogTitle;
 
     @Inject
     SplashActivityPresenter presenter;
@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setContentView(R.layout.splash_layout);
         ButterKnife.bind(this);
         ((MainApplication)this.getApplication()).getAppComponent()
                 .plus(new SplashActivityModule(this)).inject(this);
@@ -50,7 +51,7 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
      */
     public void showInfoDialog() {
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-        InfoDialog dialog = InfoDialog.newInstance(infoDIalogTitle, infoDialogText);
+        InfoDialog dialog = InfoDialog.newInstance(infoDialogTitle, infoDialogText);
         dialog.show(transaction, InfoDialog.TAG);
     }
 

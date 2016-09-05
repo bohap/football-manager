@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    style="@style/RootView"
+    android:orientation="vertical">
 
     <include
         layout="@layout/toolbar" />
@@ -47,17 +46,6 @@
                 android:layout_marginStart="@dimen/base_horizontalMargin"
                 android:layout_marginTop="@dimen/base_verticalMargin"
                 android:text="@string/fa_dot_circle_o"
-                android:visibility="gone" />
-            <Button
-                android:id="@+id/lineupPlayersLayout_btnUpdate"
-                style="@style/Button.Small.Primary"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="@dimen/base_horizontalMargin"
-                android:layout_marginEnd="@dimen/base_horizontalMargin"
-                android:layout_alignTop="@+id/lineupPlayersLayout_btnChangeFormation"
-                android:layout_marginTop="@dimen/base_verticalMargin"
-                android:text="@string/lineupPlayersActivity_btnUpdate_text"
                 android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
