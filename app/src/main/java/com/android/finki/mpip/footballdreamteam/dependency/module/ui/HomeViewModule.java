@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.dependency.module.ui;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.finki.mpip.footballdreamteam.background.task.StorePlayersTask;
@@ -9,12 +10,13 @@ import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService
 import com.android.finki.mpip.footballdreamteam.database.service.PositionDBService;
 import com.android.finki.mpip.footballdreamteam.database.service.TeamDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
-import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
+import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.rest.web.PlayerApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.PositionApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,17 +25,18 @@ import dagger.Provides;
  * Created by Borce on 09.08.2016.
  */
 @Module
-public class HomeActivityModule {
+public class HomeViewModule {
 
-    private HomeActivity activity;
+    private HomeView view;
 
-    public HomeActivityModule(HomeActivity activity) {
-        this.activity = activity;
+    public HomeViewModule(HomeView view) {
+        this.view = view;
     }
 
     /**
      * Provides instance of HomeActivity presenter.
      *
+     * @param context instance of application context
      * @param preferences application shared preferences
      * @param teamApi instance of TeamApi
      * @param positionApi instance of PositionApi
@@ -44,17 +47,17 @@ public class HomeActivityModule {
      * @return instance of HomeActivity presenter
      */
     @Provides
-    @ActivityScope
-    HomeActivityPresenter provideHomeActivityPresenter(SharedPreferences preferences,
-                                                       TeamApi teamApi, PositionApi positionApi,
-                                                       PlayerApi playerApi,
-                                                       TeamDBService teamDBService,
-                                                       PositionDBService positionDBService,
-                                                       PlayerDBService playerDBService) {
+    @ViewScope
+    HomeViewPresenter provideHomeActivityPresenter(Context context, SharedPreferences preferences,
+                                                   TeamApi teamApi, PositionApi positionApi,
+                                                   PlayerApi playerApi,
+                                                   TeamDBService teamDBService,
+                                                   PositionDBService positionDBService,
+                                                   PlayerDBService playerDBService) {
         StoreTeamsTask storeTeamsTask = new StoreTeamsTask(teamDBService);
         StorePositionsTask storePositionsTask = new StorePositionsTask(positionDBService);
         StorePlayersTask storePlayersTask = new StorePlayersTask(playerDBService);
-        return new HomeActivityPresenter(activity, preferences, teamApi,
+        return new HomeViewPresenter(view, preferences, context, teamApi,
                 positionApi, playerApi, storeTeamsTask,storePositionsTask, storePlayersTask);
     }
 }

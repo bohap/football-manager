@@ -14,7 +14,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -36,6 +38,19 @@ public class NetModule {
     }
 
     /**
+     * Provides instance of HttpLoggingInterceptor.
+     *
+     * @return instance of HttpLoggingInterceptor
+     */
+    @Provides
+    @Singleton
+    HttpLoggingInterceptor provideHttpLoggingInterceptor() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        return logging;
+    }
+
+    /**
      * Provides the base url to the api.
      *
      * @param context base application context
@@ -49,19 +64,35 @@ public class NetModule {
     }
 
     /**
+     * Provides instance of the default OkHttpClient builder.
+     *
+     * @param loggingInterceptor instance of HttpLoggingInterceptor
+     * @param errorInterceptor Error interceptor for intercepting server error response codes.
+     * @return OkHttpClient builder
+     */
+    @Provides
+    @Singleton
+    OkHttpClient.Builder providesOkHttpClientBuild(HttpLoggingInterceptor loggingInterceptor,
+                                                   ErrorInterceptor errorInterceptor) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectionPool(new ConnectionPool(0, 5 * 60 * 1000, TimeUnit.MILLISECONDS));
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        builder.addInterceptor(errorInterceptor);
+        builder.addInterceptor(loggingInterceptor);
+        return builder;
+    }
+
+    /**
      * Provides instance of the OkHttpClient for when the requests don't need authentication token.
      *
-     * @param interceptor instance of the ErrorInterceptor
+     * @param builder instance of default OkHttpClient builder
      * @return instance of OkHttpClient
      */
     @Provides
     @Named("un_authenticated")
     @Singleton
-    OkHttpClient provideUnAuthenticatedOkHttpClient(ErrorInterceptor interceptor) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS);
-        builder.writeTimeout(30, TimeUnit.SECONDS);
-        builder.addInterceptor(interceptor);
+    OkHttpClient provideUnAuthenticatedOkHttpClient(OkHttpClient.Builder builder) {
         return builder.build();
     }
 

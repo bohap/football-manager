@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
@@ -184,7 +182,7 @@ public class ListLineupsAdapter extends BaseAdapter {
             if (lineup == null) {
                 throw new IllegalArgumentException("lineup not set");
             }
-            listener.showLineupPlayers(lineup);
+            listener.onLineupPlayersSelected(lineup);
         }
 
         /**
@@ -195,7 +193,7 @@ public class ListLineupsAdapter extends BaseAdapter {
             if (lineup == null) {
                 throw new IllegalArgumentException("lineup not set");
             }
-            listener.showLineupLikes(lineup);
+            listener.onLineupLikesSelected(lineup);
         }
 
         /**
@@ -206,16 +204,16 @@ public class ListLineupsAdapter extends BaseAdapter {
             if (lineup == null) {
                 throw new IllegalArgumentException("lineup not set");
             }
-            listener.showLineupComments(lineup);
+            listener.onLineupCommentsSelected(lineup);
         }
     }
 
     public interface Listener {
 
-        void showLineupPlayers(Lineup lineup);
+        void onLineupPlayersSelected(Lineup lineup);
 
-        void showLineupLikes(Lineup lineup);
+        void onLineupLikesSelected(Lineup lineup);
 
-        void showLineupComments(Lineup lineup);
+        void onLineupCommentsSelected(Lineup lineup);
     }
 }

@@ -76,7 +76,7 @@ public class LikeFragmentPresenterTest {
 //    @Captor
 //    private ArgumentCaptor<Callback<Void>> callbackDeleteLikeCaptor;
 
-    private LikeFragmentPresenter presenter;
+    private LikeViewPresenter presenter;
     private final User user = new User(214, "User 214");
     private final Lineup lineup = new Lineup(1, 1);
     private List<UserLike> likes;
@@ -84,7 +84,7 @@ public class LikeFragmentPresenterTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        presenter = new LikeFragmentPresenter(fragment, api, user, lineupDBService, likeDBService);
+        presenter = new LikeViewPresenter(fragment, api, user, lineupDBService, likeDBService);
         when(api.likes(anyInt(), anyBoolean(), anyInt(), anyInt()))
                 .thenReturn(callListUserLikes);
         when(api.addLike(anyInt())).thenReturn(callAddLike);

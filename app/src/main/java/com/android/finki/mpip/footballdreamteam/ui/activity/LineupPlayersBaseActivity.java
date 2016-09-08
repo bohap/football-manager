@@ -1,5 +1,7 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -7,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.ui.dialog.ConfirmDialog;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
@@ -21,13 +24,24 @@ import java.util.List;
 /**
  * Created by Borce on 23.08.2016.
  */
-public abstract class LineupPlayersBaseActivity extends BaseActivity {
+public abstract class LineupPlayersBaseActivity extends BaseActivity implements
+                                                                        ConfirmDialog.Listener {
+
+    private String confirmDialogTitle;
+    private String confirmDialogMessage;
 
     private static final Logger logger = LoggerFactory.getLogger(LineupPlayersBaseActivity.class);
 
     protected abstract boolean isChanged();
 
     protected abstract void toggleBtnChangeFormation(boolean visible);
+
+    @Override
+    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onCreate(savedInstanceState, persistentState);
+        this.confirmDialogTitle = this.getString(R.string.lineupActivity_confirmDialog_title);
+        this.confirmDialogMessage = this.getString(R.string.lineupActivity_confirmDialog_message);
+    }
 
     /**
      * Make the LineupFormation fragment visible.
@@ -40,7 +54,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(playersList);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     /**
@@ -52,7 +66,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     /**
@@ -65,7 +79,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation, players);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
     /**
@@ -83,7 +97,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
                 .newInstance(place, playersToExclude);
         transaction.addToBackStack(LineupFormationFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
         this.toggleBtnChangeFormation(false);
     }
 
@@ -144,12 +158,13 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onBackPressed() {
-        //Add the confirm dialog
         boolean playerSelectCanceled = false;
         FragmentManager manager = this.getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.content);
         if (currentFragment != null && currentFragment instanceof ListPositionPlayersFragment) {
             playerSelectCanceled = true;
+        } else if (manager.getBackStackEntryCount() == 0 && this.isChanged()) {
+            this.showConfirmDialog();
         }
         super.onBackPressed();
         if (playerSelectCanceled) {
@@ -158,5 +173,22 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity {
                     .findFragmentById(R.id.content)).onPlayerSelectedCanceled();
             this.toggleBtnChangeFormation(true);
         }
+    }
+
+    /**
+     * Show the confirm dialog for when the user wants to exit but the changes is not yet saved.
+     */
+    private void showConfirmDialog() {
+        ConfirmDialog dialog = ConfirmDialog.newInstance(confirmDialogTitle, confirmDialogMessage);
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        dialog.show(transaction, ConfirmDialog.TAG);
+    }
+
+    /**
+     * Called when the ConfirmDialog is closed click the yes button.
+     */
+    @Override
+    public void onDialogConfirm() {
+        super.onBackPressed();
     }
 }

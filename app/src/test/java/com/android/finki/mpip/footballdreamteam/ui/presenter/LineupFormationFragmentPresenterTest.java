@@ -518,7 +518,7 @@ public class LineupFormationFragmentPresenterTest {
             }
         }
         presenter.onPlayerClick(positionsResourcesIds[notElevenPlayers.size() + 1]);
-        verify(fragment).showListPositionPlayersFragment(place, aPlayersToExclude);
+        verify(fragment).showListPositionPlayersView(place, aPlayersToExclude);
     }
 
     /**

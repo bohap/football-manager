@@ -7,8 +7,8 @@ import android.support.v7.app.AlertDialog;
 
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashActivityComponent;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashViewComponent;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,10 +41,10 @@ import static org.robolectric.Shadows.shadowOf;
 public class SplashActivityTest {
 
     @Mock
-    private SplashActivityComponent component;
+    private SplashViewComponent component;
 
     @Mock
-    private SplashActivityPresenter presenter;
+    private SplashViewPresenter presenter;
 
     private ActivityController<SplashActivity> controller;
     private SplashActivity activity;

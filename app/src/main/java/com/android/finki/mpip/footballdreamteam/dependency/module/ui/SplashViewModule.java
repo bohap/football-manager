@@ -6,22 +6,22 @@ import android.content.SharedPreferences;
 import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
 import com.android.finki.mpip.footballdreamteam.ui.activity.SplashActivity;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
 
 /**
  * Created by Borce on 06.08.2016.
  */
 @Module
-public class SplashActivityModule {
+public class SplashViewModule {
 
-    private SplashActivity activity;
+    private SplashView view;
 
-    public SplashActivityModule(SplashActivity activity) {
-        this.activity = activity;
+    public SplashViewModule(SplashView view) {
+        this.view = view;
     }
 
     /**
@@ -34,8 +34,8 @@ public class SplashActivityModule {
      */
     @Provides
     @ActivityScope
-    SplashActivityPresenter provideSplashActivityPresenter(Context context,
-                                        SharedPreferences preferences, UserDBService service) {
-        return new SplashActivityPresenter(activity, context, preferences, service);
+    SplashViewPresenter provideSplashActivityPresenter(Context context,
+                                                       SharedPreferences preferences, UserDBService service) {
+        return new SplashViewPresenter(view, context, preferences, service);
     }
 }

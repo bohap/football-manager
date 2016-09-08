@@ -15,10 +15,10 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeActivityComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListLineupsAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -58,10 +58,10 @@ import static org.robolectric.Shadows.shadowOf;
 public class HomeActivityTest {
 
     @Mock
-    private HomeActivityPresenter presenter;
+    private HomeViewPresenter presenter;
 
     @Mock
-    private HomeActivityComponent component;
+    private HomeViewComponent component;
 
     private ActivityController<HomeActivity> controller;
     private HomeActivity activity;

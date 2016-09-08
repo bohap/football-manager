@@ -3,25 +3,23 @@ package com.android.finki.mpip.footballdreamteam;
 import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.UserComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLineupViewComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeActivityComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeFragmentComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupDetailsActivityComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupPlayersViewComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginActivityComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsDialogComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashActivityComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CreateLineupViewModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeActivityModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeFragmentModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupDetailsActivityModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationFragmentModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupPlayersViewModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersFragmentModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginActivityModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.PlayerDetailsDialogModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashActivityModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.PlayerDetailsViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashViewModule;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -34,16 +32,16 @@ public class MockApplication extends MainApplication {
 
     private AppComponent appComponent;
     private UserComponent userComponent;
-    private SplashActivityComponent splashActivityComponent;
-    private LoginActivityComponent loginActivityComponent;
-    private HomeActivityComponent homeActivityComponent;
+    private SplashViewComponent splashActivityComponent;
+    private LoginViewComponent loginActivityComponent;
+    private HomeViewComponent homeActivityComponent;
     private LineupDetailsActivityComponent lineupDetailsActivityComponent;
     private LineupPlayersViewComponent lineupPlayerActivityComponent;
-    private LineupFormationFragmentComponent lineupFormationFragmentComponent;
-    private ListPositionPlayersFragmentComponent listPositionPlayersFragmentComponent;
-    private PlayerDetailsDialogComponent playerDetailsDialogComponent;
+    private LineupFormationViewComponent lineupFormationFragmentComponent;
+    private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
+    private PlayerDetailsViewComponent playerDetailsDialogComponent;
     private CreateLineupViewComponent createLineupViewComponent;
-    private LikeFragmentComponent likeFragmentComponent;
+    private LikeViewComponent likeFragmentComponent;
 
     /**
      * Get a instance of mocked AppComponent.
@@ -54,9 +52,9 @@ public class MockApplication extends MainApplication {
     public AppComponent getAppComponent() {
         if (appComponent == null) {
             appComponent = mock(AppComponent.class);
-            when(appComponent.plus(any(SplashActivityModule.class)))
+            when(appComponent.plus(any(SplashViewModule.class)))
                     .thenReturn(splashActivityComponent);
-            when(appComponent.plus(any(LoginActivityModule.class)))
+            when(appComponent.plus(any(LoginViewModule.class)))
                     .thenReturn(loginActivityComponent);
         }
         return appComponent;
@@ -71,19 +69,19 @@ public class MockApplication extends MainApplication {
     public UserComponent getUserComponent() {
         if (userComponent == null) {
             userComponent = mock(UserComponent.class);
-            when(userComponent.plus(any(HomeActivityModule.class)))
+            when(userComponent.plus(any(HomeViewModule.class)))
                     .thenReturn(homeActivityComponent);
             when(userComponent.plus(any(LineupDetailsActivityModule.class)))
                     .thenReturn(lineupDetailsActivityComponent);
-            when(userComponent.plus(any(LikeFragmentModule.class)))
+            when(userComponent.plus(any(LikeViewModule.class)))
                     .thenReturn(likeFragmentComponent);
             when(userComponent.plus(any(LineupPlayersViewModule.class)))
                     .thenReturn(lineupPlayerActivityComponent);
-            when(userComponent.plus(any(LineupFormationFragmentModule.class)))
+            when(userComponent.plus(any(LineupFormationViewModule.class)))
                     .thenReturn(lineupFormationFragmentComponent);
-            when(userComponent.plus(any(ListPositionPlayersFragmentModule.class)))
+            when(userComponent.plus(any(ListPositionPlayersViewModule.class)))
                     .thenReturn(listPositionPlayersFragmentComponent);
-            when(userComponent.plus(any(PlayerDetailsDialogModule.class)))
+            when(userComponent.plus(any(PlayerDetailsViewModule.class)))
                     .thenReturn(playerDetailsDialogComponent);
             when(userComponent.plus(any(CreateLineupViewModule.class)))
                     .thenReturn(createLineupViewComponent);
@@ -92,29 +90,29 @@ public class MockApplication extends MainApplication {
     }
 
     /**
-     * Set a mocked instance of SplashActivityComponent.
+     * Set a mocked instance of SplashViewComponent.
      *
-     * @param component mocked SplashActivityComponent
+     * @param component mocked SplashViewComponent
      */
-    public void setSplashActivityComponent(SplashActivityComponent component) {
+    public void setSplashActivityComponent(SplashViewComponent component) {
         this.splashActivityComponent = component;
     }
 
     /**
-     * Set a mocked instance of LoginActivityComponent.
+     * Set a mocked instance of LoginViewComponent.
      *
-     * @param component mocked LoginActivityComponent
+     * @param component mocked LoginViewComponent
      */
-    public void setLoginActivityComponent(LoginActivityComponent component) {
+    public void setLoginActivityComponent(LoginViewComponent component) {
         this.loginActivityComponent = component;
     }
 
     /**
-     * Set a mocked instance of HomeActivityComponent.
+     * Set a mocked instance of HomeViewComponent.
      *
-     * @param component mocked instance eof HomeActivityComponent
+     * @param component mocked instance eof HomeViewComponent
      */
-    public void setHomeActivityComponent(HomeActivityComponent component) {
+    public void setHomeActivityComponent(HomeViewComponent component) {
         this.homeActivityComponent = component;
     }
 
@@ -128,11 +126,11 @@ public class MockApplication extends MainApplication {
     }
 
     /**
-     * Set a mocked instance of the LikeFragmentComponent.
+     * Set a mocked instance of the LikeViewComponent.
      *
-     * @param component mocked instance of the LikeFragmentComponent
+     * @param component mocked instance of the LikeViewComponent
      */
-    public void setLikeFragmentComponent(LikeFragmentComponent component) {
+    public void setLikeFragmentComponent(LikeViewComponent component) {
         this.likeFragmentComponent = component;
     }
 
@@ -146,11 +144,11 @@ public class MockApplication extends MainApplication {
     }
 
     /**
-     * Set a mocked instance of the LineupFormationFragmentComponent.
+     * Set a mocked instance of the LineupFormationViewComponent.
      *
-     * @param component mocked instance of the LineupFormationFragmentComponent
+     * @param component mocked instance of the LineupFormationViewComponent
      */
-    public void setLineupFormationFragmentComponent(LineupFormationFragmentComponent component) {
+    public void setLineupFormationFragmentComponent(LineupFormationViewComponent component) {
         this.lineupFormationFragmentComponent = component;
     }
 
@@ -160,16 +158,16 @@ public class MockApplication extends MainApplication {
      * @param component mocked instance of the ListPositionPlayersComponent
      */
     public void setListPositionPlayersFragmentComponent(
-            ListPositionPlayersFragmentComponent component) {
+            ListPositionPlayersViewComponent component) {
         this.listPositionPlayersFragmentComponent = component;
     }
 
     /**
-     * Set a mocked instance of the PlayerDetailsDialogComponent.
+     * Set a mocked instance of the PlayerDetailsViewComponent.
      *
-     * @param component mocked instance of the PlayerDetailsDialogComponent
+     * @param component mocked instance of the PlayerDetailsViewComponent
      */
-    public void setPlayerDetailsDialogComponent(PlayerDetailsDialogComponent component) {
+    public void setPlayerDetailsDialogComponent(PlayerDetailsViewComponent component) {
         this.playerDetailsDialogComponent = component;
     }
 

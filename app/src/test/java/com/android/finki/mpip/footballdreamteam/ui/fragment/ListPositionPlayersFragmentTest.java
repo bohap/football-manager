@@ -10,10 +10,10 @@ import android.widget.Toast;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListPositionPlayersAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
@@ -47,10 +47,10 @@ import static org.robolectric.Shadows.shadowOf;
 public class ListPositionPlayersFragmentTest {
 
     @Mock
-    private ListPositionPlayersFragmentPresenter presenter;
+    private ListPositionPlayersViewPresenter presenter;
 
     @Mock
-    private ListPositionPlayersFragmentComponent component;
+    private ListPositionPlayersViewComponent component;
 
     private ListPositionPlayersFragment fragment;
     private final PositionUtils.POSITION_PLACE place = PositionUtils.POSITION_PLACE.ATTACKERS;

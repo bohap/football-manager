@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
-import com.android.finki.mpip.footballdreamteam.ui.component.CommentView;
+import com.android.finki.mpip.footballdreamteam.ui.component.CommentsView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class CommentsViewPresenter implements Callback<List<Comment>> {
 
     private static final Logger logger = LoggerFactory.getLogger(CommentsViewPresenter.class);
 
-    private CommentView view;
+    private CommentsView view;
     private LineupApi api;
     private User user;
 
@@ -31,7 +31,7 @@ public class CommentsViewPresenter implements Callback<List<Comment>> {
     private boolean loadingComments = false;
     private boolean viewCreated = false;
 
-    public CommentsViewPresenter(CommentView view, LineupApi api, User user) {
+    public CommentsViewPresenter(CommentsView view, LineupApi api, User user) {
         this.view = view;
         this.api = api;
         this.user = user;
@@ -52,7 +52,7 @@ public class CommentsViewPresenter implements Callback<List<Comment>> {
      * @param args view bundle state
      */
     public void loadComments(Bundle args) {
-        lineupId = args.getInt(CommentView.LINEUP_ID_KEY, 1);
+        lineupId = args.getInt(CommentsView.LINEUP_ID_KEY, 1);
         if (lineupId == -1) {
             throw new IllegalArgumentException("lineup id is not set");
         }

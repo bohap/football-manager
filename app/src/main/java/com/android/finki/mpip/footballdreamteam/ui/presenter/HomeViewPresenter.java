@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.finki.mpip.footballdreamteam.R;
@@ -12,12 +13,11 @@ import com.android.finki.mpip.footballdreamteam.model.Team;
 import com.android.finki.mpip.footballdreamteam.rest.web.PlayerApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.PositionApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
-import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
+import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -27,12 +27,13 @@ import retrofit2.Response;
 /**
  * Created by Borce on 09.08.2016.
  */
-public class HomeActivityPresenter implements StoreTeamsTask.Listener,
-        StorePositionsTask.Listener, StorePlayersTask.Listener {
+public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.Listener,
+                                                                StorePositionsTask.Listener,
+                                                                StorePlayersTask.Listener {
 
-    private Logger logger = LoggerFactory.getLogger(HomeActivityPresenter.class);
+    private Logger logger = LoggerFactory.getLogger(HomeViewPresenter.class);
 
-    private HomeActivity activity;
+    private HomeView view;
     private SharedPreferences preferences;
     private TeamApi teamApi;
     private PositionApi positionApi;
@@ -45,16 +46,16 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     private String POSITIONS_LOADED_KEY;
     private String PLAYERS_LOADED_KEY;
     private String AUTH_USER_ID_KEY;
+    private String JWT_TOKEN;
 
     private boolean isInfoDialogShowed = false;
     private boolean mainViewVisible = false;
 
-    public HomeActivityPresenter(HomeActivity activity, SharedPreferences preferences,
-                                 TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
-                                 StoreTeamsTask storeTeamsTask,
-                                 StorePositionsTask storePositionsTask,
-                                 StorePlayersTask storePlayersTask) {
-        this.activity = activity;
+    public HomeViewPresenter(HomeView view, SharedPreferences preferences, Context context,
+                             TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
+                             StoreTeamsTask storeTeamsTask, StorePositionsTask storePositionsTask,
+                             StorePlayersTask storePlayersTask) {
+        this.view = view;
         this.preferences = preferences;
         this.teamApi = teamApi;
         this.positionApi = positionApi;
@@ -67,10 +68,11 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
         this.storeTeamsTask.setListener(this);
         this.storePlayersTask.setListener(this);
 
-        this.TEAMS_LOADED_KEY = activity.getString(R.string.preference_teams_loaded_key);
-        this.POSITIONS_LOADED_KEY = activity.getString(R.string.preference_positions_loaded_key);
-        this.PLAYERS_LOADED_KEY = activity.getString(R.string.preference_players_loaded_key);
-        this.AUTH_USER_ID_KEY = activity.getString(R.string.preference_auth_user_id_key);
+        this.TEAMS_LOADED_KEY = context.getString(R.string.preference_teams_loaded_key);
+        this.POSITIONS_LOADED_KEY = context.getString(R.string.preference_positions_loaded_key);
+        this.PLAYERS_LOADED_KEY = context.getString(R.string.preference_players_loaded_key);
+        this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
+        this.JWT_TOKEN = context.getString(R.string.preference_jwt_token_key);
     }
 
     /**
@@ -98,12 +100,8 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      */
     private void requestFailed(Throwable t) {
         t.printStackTrace();
-        activity.showErrorLoading();
-        if (t instanceof SocketTimeoutException) {
-            activity.showConnectionTimeoutMessage();
-        } else {
-            activity.showServerErrorMessage();
-        }
+        view.showErrorLoadingInitialData();
+        super.onRequestFailed(view, t);
     }
 
     /**
@@ -119,24 +117,19 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     private void loadTeams() {
         if (!this.isTeamsLoaded()) {
             logger.info("sending index teams request");
-            activity.showInitialDataLoading();
+            view.showInitialDataLoading();
             if (!isInfoDialogShowed) {
                 isInfoDialogShowed = true;
-                activity.showInfoDialog();
+                view.showInitialDataInfoDialog();
             }
             Call<List<Team>> call = teamApi.index(null, null, null);
             call.enqueue(new Callback<List<Team>>() {
 
                 @Override
                 public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
-                    if (response.isSuccessful()) {
-                        logger.info("teams loading success");
-                        List<Team> teams = response.body();
-                        storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
-                    } else {
-                        logger.info("teams loading failed");
-                        activity.showErrorLoading();
-                    }
+                    logger.info("teams loading success");
+                    List<Team> teams = response.body();
+                    storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
                 }
 
                 @Override
@@ -173,7 +166,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      */
     @Override
     public void onTeamsSavingFailed() {
-        activity.showErrorLoading();
+        view.showInternalServerError();
     }
 
     /**
@@ -182,23 +175,19 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     private void loadPositions() {
         if (!this.isPositionsLoaded()) {
             logger.info("sending index positions request");
-            activity.showInitialDataLoading();
+            view.showInitialDataLoading();
             if (!isInfoDialogShowed) {
                 isInfoDialogShowed = true;
-                activity.showInfoDialog();
+                view.showInitialDataInfoDialog();
             }
             Call<List<Position>> call = positionApi.index(null, null, null);
             call.enqueue(new Callback<List<Position>>() {
                 @Override
                 public void onResponse(Call<List<Position>> call,
                                        Response<List<Position>> response) {
-                    if (response.isSuccessful()) {
-                        logger.info("positions loading success");
-                        List<Position> positions = response.body();
-                        storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
-                    } else {
-                        activity.showErrorLoading();
-                    }
+                    logger.info("positions loading success");
+                    List<Position> positions = response.body();
+                    storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
                 }
 
                 @Override
@@ -235,7 +224,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      */
     @Override
     public void onPositionsSavingFailed() {
-        activity.showErrorLoading();
+        view.showErrorLoadingInitialData();
     }
 
     /**
@@ -244,22 +233,18 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     private void loadPlayers() {
         if (!this.isPlayersLoaded()) {
             logger.info("sending index players request");
-            activity.showInitialDataLoading();
+            view.showInitialDataLoading();
             if (!isInfoDialogShowed) {
                 isInfoDialogShowed = true;
-                activity.showInfoDialog();
+                view.showInitialDataInfoDialog();
             }
             Call<List<Player>> call = playerApi.index(false, null, null);
             call.enqueue(new Callback<List<Player>>() {
                 @Override
                 public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
-                    if (response.isSuccessful()) {
-                        logger.info("players loading success");
-                        List<Player> players = response.body();
-                        storePlayersTask.execute(players.toArray(new Player[players.size()]));
-                    } else {
-                        activity.showErrorLoading();
-                    }
+                    logger.info("players loading success");
+                    List<Player> players = response.body();
+                    storePlayersTask.execute(players.toArray(new Player[players.size()]));
                 }
 
                 @Override
@@ -269,7 +254,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
                 }
             });
         } else {
-            activity.showSuccessLoading();
+            view.showInitialDataLoadingSuccess();
         }
     }
 
@@ -288,7 +273,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
     @Override
     public void onPlayersSavingSuccess() {
         preferences.edit().putBoolean(PLAYERS_LOADED_KEY, true).apply();
-        activity.showSuccessLoading();
+        view.showInitialDataLoadingSuccess();
     }
 
     /**
@@ -296,7 +281,7 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      */
     @Override
     public void onPlayersSavingFailed() {
-        activity.showErrorLoading();
+        view.showErrorLoadingInitialData();
     }
 
 
@@ -304,6 +289,9 @@ public class HomeActivityPresenter implements StoreTeamsTask.Listener,
      * Remove the auth user data from the database.
      */
     public void logout() {
-        preferences.edit().putInt(AUTH_USER_ID_KEY, -1).apply();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(AUTH_USER_ID_KEY, -1);
+        editor.putString(JWT_TOKEN, null);
+        editor.apply();
     }
 }

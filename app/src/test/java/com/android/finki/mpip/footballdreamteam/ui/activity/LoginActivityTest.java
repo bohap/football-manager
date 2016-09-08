@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginActivityComponent;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginViewComponent;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginViewPresenter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,10 +49,10 @@ import static org.robolectric.Shadows.*;
 public class LoginActivityTest {
 
     @Mock
-    private LoginActivityComponent component;
+    private LoginViewComponent component;
 
     @Mock
-    private LoginActivityPresenter presenter;
+    private LoginViewPresenter presenter;
 
     private ActivityController<LoginActivity> controller;
     private LoginActivity activity;

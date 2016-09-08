@@ -39,7 +39,9 @@ import butterknife.OnClick;
  * Created by Borce on 15.08.2016.
  */
 public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
-        LineupPlayersView, ListPositionPlayersFragment.Listener, LineupFormationFragment.Listener,
+                                                            LineupPlayersView,
+                                                            ListPositionPlayersFragment.Listener,
+                                                            LineupFormationFragment.Listener,
         PlayerDetailsDialog.Listener {
 
     public static final String LINEUP_BUNDLE_KEY = "lineup";
@@ -79,26 +81,6 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
 
     @BindView(R.id.lineupPlayersLayout_btnChangeFormation)
     ButtonAwesome btnChangeFormation;
-
-    /**
-     * Checks if the formation has been changed.
-     *
-     * @return whatever the formation has been changed
-     */
-    @Override
-    protected boolean isChanged() {
-        return presenter.isChanged();
-    }
-
-    /**
-     * Toggle the button "Change Formation" visibility.
-     *
-     * @param visible whatever the button is visible or not
-     */
-    @Override
-    protected void toggleBtnChangeFormation(boolean visible) {
-        super.toggleVisibility(btnChangeFormation, visible);
-    }
 
     /**
      * Called when the activity is ready to be created.
@@ -200,6 +182,26 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Checks if the formation has been changed.
+     *
+     * @return whatever the formation has been changed
+     */
+    @Override
+    protected boolean isChanged() {
+        return presenter.isChanged();
+    }
+
+    /**
+     * Toggle the button "Change Formation" visibility.
+     *
+     * @param visible whatever the button is visible or not
+     */
+    @Override
+    protected void toggleBtnChangeFormation(boolean visible) {
+        super.toggleVisibility(btnChangeFormation, visible);
     }
 
     /**
@@ -367,7 +369,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      * Called when the lineup formation is valid.
      */
     @Override
-    public void onValidLineup() {
+    public void showValidLineup() {
         super.checkLineupFormationFragmentVisibility();
         presenter.setLineupValid(true);
         this.invalidateOptionsMenu();
@@ -377,7 +379,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      * Called when the lineup formation is invalid.
      */
     @Override
-    public void onInvalidLineup() {
+    public void showInvalidLineup() {
         super.checkLineupFormationFragmentVisibility();
         presenter.setLineupValid(false);
         this.invalidateOptionsMenu();

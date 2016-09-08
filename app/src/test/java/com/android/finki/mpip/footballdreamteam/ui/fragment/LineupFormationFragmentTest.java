@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
@@ -62,7 +62,7 @@ import static org.robolectric.Shadows.shadowOf;
 public class LineupFormationFragmentTest {
 
     @Mock
-    private LineupFormationFragmentComponent component;
+    private LineupFormationViewComponent component;
 
     @Mock
     private LineupFormationFragmentPresenter presenter;
@@ -531,14 +531,14 @@ public class LineupFormationFragmentTest {
     }
 
     /**
-     * Test the behavior when showListPositionPlayersFragment is called.
+     * Test the behavior when showListPositionPlayersView is called.
      */
     @Test
     public void testShowListPositionPlayersFragment() {
         when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_3_3);
         fragment = LineupFormationFragment.newInstance(lineupPlayers);
         SupportFragmentTestUtil.startVisibleFragment(fragment, TestActivity.class, 0);
-        fragment.showListPositionPlayersFragment(null, null);
+        fragment.showListPositionPlayersView(null, null);
         assertEquals(SHOW_LIST_POSITION_PLAYERS_TOAST, ShadowToast.getTextOfLatestToast());
     }
 
@@ -601,12 +601,12 @@ public class LineupFormationFragmentTest {
         }
 
         @Override
-        public void onValidLineup() {
+        public void showValidLineup() {
             Toast.makeText(this, ON_VALID_FORMATION_TOAST, Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onInvalidLineup() {
+        public void showInvalidLineup() {
             Toast.makeText(this, ON_INVALID_FORMATION_TOAST, Toast.LENGTH_SHORT).show();
         }
     }

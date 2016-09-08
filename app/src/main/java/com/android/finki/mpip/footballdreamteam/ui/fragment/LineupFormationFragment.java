@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +9,11 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationFragmentModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationViewModule;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
@@ -33,7 +33,8 @@ import butterknife.Unbinder;
 /**
  * Created by Borce on 13.08.2016.
  */
-public class LineupFormationFragment extends Fragment implements View.OnClickListener {
+public class LineupFormationFragment extends BaseFragment implements LineupFormationView,
+                                                                    View.OnClickListener {
 
     private static Logger logger = LoggerFactory.getLogger(LineupFormationFragment.class);
     public static final String TAG = "LineupFormationFragment";
@@ -181,7 +182,7 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
-                .plus(new LineupFormationFragmentModule(this)).inject(this);
+                .plus(new LineupFormationViewModule(this)).inject(this);
         presenter.onFragmentCreated(this.getArguments());
     }
 
@@ -231,7 +232,12 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
     /**
      * Bind the players data to tbe view.
      */
+    @Override
     public void bindPlayers() {
+        /**
+         * We are not loading nothing from the server for this fragment so this method will be
+         * called right after onCreateView.
+         */
         keeper.setText(presenter.getPlayerAt(R.id.keeper));
         keeper.setOnClickListener(this);
         leftCentreBack.setText(presenter.getPlayerAt(R.id.leftCentreBack));
@@ -300,8 +306,9 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      * @param place position place on the field for which the players should be listed
      * @param playersToExclude array of players id to exclude from the list
      */
-    public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
-                                                int[] playersToExclude) {
+    @Override
+    public void showListPositionPlayersView(PositionUtils.POSITION_PLACE place,
+                                            int[] playersToExclude) {
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity())
                     .showListPositionPlayersFragment(place, playersToExclude);
@@ -314,7 +321,8 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
      * @param id player id
      * @param editable whatever the player is editable
      */
-    public void showPlayerDetailsDialog(int id, boolean editable) {
+    @Override
+    public void showPlayerDetailsView(int id, boolean editable) {
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).showPlayerDetailsDialog(id, editable);
         }
@@ -346,18 +354,20 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
     /**
      * Called when the formation is valid.
      */
-    public void lineupValid() {
+    @Override
+    public void showValidLineup() {
         if (this.getActivity() instanceof Listener) {
-            ((Listener) this.getActivity()).onValidLineup();
+            ((Listener) this.getActivity()).showValidLineup();
         }
     }
 
     /**
      * Called when the formation is invalid.
      */
-    public void lineupInvalid() {
+    @Override
+    public void showInvalidLineup() {
         if (this.getActivity() instanceof Listener) {
-            ((Listener) this.getActivity()).onInvalidLineup();
+            ((Listener) this.getActivity()).showInvalidLineup();
         }
     }
 
@@ -398,8 +408,8 @@ public class LineupFormationFragment extends Fragment implements View.OnClickLis
 
         void showPlayerDetailsDialog(int id, boolean editable);
 
-        void onValidLineup();
+        void showValidLineup();
 
-        void onInvalidLineup();
+        void showInvalidLineup();
     }
 }

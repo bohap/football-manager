@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +10,12 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersFragmentModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListPositionPlayersAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayersView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -31,13 +28,9 @@ import butterknife.OnItemClick;
 /**
  * Created by Borce on 17.08.2016.
  */
-public class ListPositionPlayersFragment extends Fragment {
+public class ListPositionPlayersFragment extends BaseFragment implements ListPositionPlayersView {
 
-    private static Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
-    private static final String PLACE_KEY = "place";
-    private static final String EXCLUDE_LAYERS_KEY = "exclude_players";
-
-    private ListPositionPlayersFragmentPresenter presenter;
+    private ListPositionPlayersViewPresenter presenter;
     private PositionUtils utils;
 
     @BindView(R.id.positionPlayersLayout_headerText)
@@ -57,14 +50,10 @@ public class ListPositionPlayersFragment extends Fragment {
     public static ListPositionPlayersFragment newInstance(PositionUtils.POSITION_PLACE place,
                                                           int[] playersToExclude) {
         if (place == null) {
-            String message = "position place can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position place can't be null");
         }
         if (playersToExclude == null) {
-            String message = "players to exclude can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("players to exclude can't be null");
         }
         ListPositionPlayersFragment fragment = new ListPositionPlayersFragment();
         Bundle args = new Bundle();
@@ -80,36 +69,18 @@ public class ListPositionPlayersFragment extends Fragment {
      * @param presenter fragment presenter
      */
     @Inject
-    public void setPresenter(ListPositionPlayersFragmentPresenter presenter) {
+    public void setPresenter(ListPositionPlayersViewPresenter presenter) {
         this.presenter = presenter;
     }
 
     /**
      * Inject the position utils.
      *
-     * @param utils instance of PositionUtilss
+     * @param utils instance of PositionUtils
      */
     @Inject
     void setPositionUtils(PositionUtils utils) {
         this.utils = utils;
-    }
-
-    /**
-     * Get the bundle key for the formation place data.
-     *
-     * @return bundle key
-     */
-    public static String getPlaceKey() {
-        return PLACE_KEY;
-    }
-
-    /**
-     * Get the bundle key for the players to exclude data.
-     *
-     * @return bundle key
-     */
-    public static String getExcludeLayersKey() {
-        return EXCLUDE_LAYERS_KEY;
     }
 
     /**
@@ -121,7 +92,7 @@ public class ListPositionPlayersFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
-                .plus(new ListPositionPlayersFragmentModule(this)).inject(this);
+                .plus(new ListPositionPlayersViewModule(this)).inject(this);
         presenter.onFragmentCreated(this.getArguments());
     }
 
@@ -148,9 +119,12 @@ public class ListPositionPlayersFragment extends Fragment {
      *
      * @param players position players
      */
+    @Override
     public void setAdapter(List<Player> players) {
-        adapter = new ListPositionPlayersAdapter(this.getActivity(), players, utils);
-        listView.setAdapter(adapter);
+        if (this.isVisible()) {
+            adapter = new ListPositionPlayersAdapter(this.getActivity(), players, utils);
+            listView.setAdapter(adapter);
+        }
     }
 
     /**
@@ -158,6 +132,7 @@ public class ListPositionPlayersFragment extends Fragment {
      *
      * @param place position place
      */
+    @Override
     public void setPositionPlace(String place) {
         txtPositionPlace.setText(place);
     }

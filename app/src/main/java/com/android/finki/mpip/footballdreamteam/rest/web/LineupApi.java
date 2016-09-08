@@ -123,7 +123,6 @@ public interface LineupApi {
      * @return success response
      */
     @POST("lineups/{id}/likes")
-    @Headers("Connection:close")
     Call<ServerResponse> addLike(@Path("id") int id);
 
     /**
@@ -133,7 +132,6 @@ public interface LineupApi {
      * @return Empty server response
      */
     @DELETE("lineups/{id}/likes")
-    @Headers("Connection:close")
     Call<Void> deleteLike(@Path("id") int id);
 
     /**

@@ -28,14 +28,14 @@ public class ListPositionPlayersFragmentPresenterTest {
     @Mock
     private Bundle args;
 
-    private ListPositionPlayersFragmentPresenter presenter;
+    private ListPositionPlayersViewPresenter presenter;
 
     private int[] playersToExclude = {1, 35, 2356};
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        presenter = new ListPositionPlayersFragmentPresenter
+        presenter = new ListPositionPlayersViewPresenter
                 (fragment, playerDBService);
     }
 

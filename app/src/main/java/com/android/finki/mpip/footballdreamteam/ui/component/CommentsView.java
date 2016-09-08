@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Borce on 05.09.2016.
  */
-public interface CommentView {
+public interface CommentsView {
 
     String LINEUP_ID_KEY = "lineup_id";
 

@@ -6,12 +6,9 @@ import android.content.SharedPreferences;
 import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
 import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
-import com.android.finki.mpip.footballdreamteam.ui.activity.LoginActivity;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.component.LoginView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginViewPresenter;
 
-import javax.inject.Singleton;
-
-import butterknife.OnEditorAction;
 import dagger.Module;
 import dagger.Provides;
 
@@ -19,17 +16,18 @@ import dagger.Provides;
  * Created by Borce on 06.08.2016.
  */
 @Module
-public class LoginActivityModule {
+public class LoginViewModule {
 
-    private LoginActivity activity;
+    private LoginView view;
 
-    public LoginActivityModule(LoginActivity activity) {
-        this.activity = activity;
+    public LoginViewModule(LoginView view) {
+        this.view = view;
     }
 
     /**
      * Provides instance of the LoginActivity presenter.
      *
+     * @param context instance of application context
      * @param preferences application shared preferences
      * @param userDBService instance of UserDBService
      * @param authApi instance of authentication retrofit api
@@ -37,8 +35,10 @@ public class LoginActivityModule {
      */
     @Provides
     @ActivityScope
-    LoginActivityPresenter provideLoginActivityPresenter(SharedPreferences preferences,
-                                             UserDBService userDBService, AuthApi authApi) {
-        return new LoginActivityPresenter(activity,  preferences, userDBService, authApi);
+    LoginViewPresenter provideLoginActivityPresenter(SharedPreferences preferences,
+                                                     Context context,
+                                                     UserDBService userDBService,
+                                                     AuthApi authApi) {
+        return new LoginViewPresenter(view, preferences, context, userDBService, authApi);
     }
 }

@@ -44,20 +44,16 @@ public class UserNetModule {
     /**
      * Provides instance of the OkHttpClient for requests that need authentication token.
      *
+     * @param builder instance of default OkHttpClient builder
      * @param interceptor instance of the JWT interceptor
-     * @param errorInterceptor instance of the ErrorInterceptor
      * @return instance of OkHttpClient
      */
     @Provides
     @Named("authenticated")
     @UserScope
-    OkHttpClient provideAuthenticatedOkHttpClient(JWTTokenInterceptor interceptor,
-                                                  ErrorInterceptor errorInterceptor) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(30, TimeUnit.SECONDS);
-        builder.writeTimeout(30, TimeUnit.SECONDS);
+    OkHttpClient provideAuthenticatedOkHttpClient(OkHttpClient.Builder builder,
+                                                  JWTTokenInterceptor interceptor) {
         builder.addInterceptor(interceptor);
-        builder.addInterceptor(errorInterceptor);
         return builder.build();
     }
 

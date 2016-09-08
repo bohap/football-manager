@@ -3,13 +3,10 @@ package com.android.finki.mpip.footballdreamteam.ui.presenter;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.ListLineupsView;
-import com.android.finki.mpip.footballdreamteam.utility.ArrayUtils;
-import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,14 +19,13 @@ import retrofit2.Response;
 /**
  * Created by Borce on 05.09.2016.
  */
-public class ListLineupsViewPresenter {
+public class ListLineupsViewPresenter extends BasePresenter {
 
     private static final Logger logger = LoggerFactory.getLogger(ListLineupsViewPresenter.class);
     private ListLineupsView view;
     private LineupApi api;
 
     private boolean isLineupRequestSending = false;
-    private boolean refreshingLineupDataFailed = false;
     private boolean viewCreated = false;
     static final int LINEUPS_LIMIT = 20;
     private int lineupCounter = 0;
@@ -99,26 +95,24 @@ public class ListLineupsViewPresenter {
      */
     private void loadData(int limit, int offset) {
         Call<List<Lineup>> call = this.api.index(null, true,
-                LINEUPS_LIMIT, lineupCounter * LINEUPS_LIMIT);
+                limit, offset);
         call.enqueue(new Callback<List<Lineup>>() {
             @Override
             public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
-                if (response.isSuccessful()) {
-                    logger.info("loading lineups data success");
-                    isLineupRequestSending = false;
-                    lineupCounter++;
-                    view.showLoadingSuccess(response.body());
-                    lineups.addAll(response.body());
-                } else {
-                    view.showLoadingFailed();
-                }
+                logger.info("loading lineups data success");
+                isLineupRequestSending = false;
+                lineupCounter++;
+                view.showLoadingSuccess(response.body());
+                lineups.addAll(response.body());
             }
 
             @Override
             public void onFailure(Call<List<Lineup>> call, Throwable t) {
                 logger.info("loading lineups request failed");
+                t.printStackTrace();
                 isLineupRequestSending = false;
                 view.showLoadingFailed();
+                onRequestFailed(view, t);
             }
         });
     }

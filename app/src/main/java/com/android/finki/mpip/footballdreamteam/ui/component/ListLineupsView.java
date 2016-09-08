@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Borce on 05.09.2016.
  */
-public interface ListLineupsView {
+public interface ListLineupsView extends BaseView {
 
     void showLoading();
 

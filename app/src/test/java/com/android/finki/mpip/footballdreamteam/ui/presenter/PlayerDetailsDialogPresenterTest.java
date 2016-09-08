@@ -34,7 +34,7 @@ public class PlayerDetailsDialogPresenterTest {
     @Mock
     private Bundle args;
 
-    private PlayerDetailsDialogPresenter presenter;
+    private PlayerDetailsViewPresenter presenter;
 
     private final int year = 2016, month = 8, day = 20;
     private final Calendar calendar = new GregorianCalendar(year, month, day);
@@ -44,7 +44,7 @@ public class PlayerDetailsDialogPresenterTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        presenter = new PlayerDetailsDialogPresenter(dialog, dbService);
+        presenter = new PlayerDetailsViewPresenter(dialog, dbService);
     }
 
     /**

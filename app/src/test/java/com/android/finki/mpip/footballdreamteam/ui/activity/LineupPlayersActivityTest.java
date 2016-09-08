@@ -13,19 +13,18 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupPlayersViewComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsDialogComponent;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupPlayersViewPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsDialogPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
@@ -53,7 +52,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -76,22 +74,22 @@ public class LineupPlayersActivityTest {
     private LineupPlayersViewPresenter presenter;
 
     @Mock
-    private LineupFormationFragmentComponent lineupFormationFragmentComponent;
+    private LineupFormationViewComponent lineupFormationFragmentComponent;
 
     @Mock
     private LineupFormationFragmentPresenter lineupFormationFragmentPresenter;
 
     @Mock
-    private ListPositionPlayersFragmentComponent listPositionPlayersFragmentComponent;
+    private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
 
     @Mock
-    private ListPositionPlayersFragmentPresenter listPositionPlayersFragmentPresenter;
+    private ListPositionPlayersViewPresenter listPositionPlayersFragmentPresenter;
 
     @Mock
-    private PlayerDetailsDialogComponent playerDetailsDialogComponent;
+    private PlayerDetailsViewComponent playerDetailsDialogComponent;
 
     @Mock
-    private PlayerDetailsDialogPresenter playerDetailsDialogPresenter;
+    private PlayerDetailsViewPresenter playerDetailsDialogPresenter;
 
     private LineupPlayersActivity activity;
     private FragmentManager manager;
@@ -349,7 +347,7 @@ public class LineupPlayersActivityTest {
     }
 
     /**
-     * Test the behavior on the activity when showListPositionPlayersFragment method is called and
+     * Test the behavior on the activity when showListPositionPlayersView method is called and
      * LineupFormationFragment is not yet displayed.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -358,7 +356,7 @@ public class LineupPlayersActivityTest {
     }
 
     /**
-     * Test the behavior on the activity when showListPositionPlayersFragment method is celled.
+     * Test the behavior on the activity when showListPositionPlayersView method is celled.
      */
     @Test
     public void testShowListPositionPlayersFragment() {

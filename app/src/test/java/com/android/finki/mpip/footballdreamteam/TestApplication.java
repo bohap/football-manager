@@ -4,16 +4,9 @@ import android.app.Application;
 
 import com.android.finki.mpip.footballdreamteam.dependency.component.DaggerTestAppComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.TestAppComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginActivityComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashActivityComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.TestAppModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.TestAuthModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.TestNetModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginActivityModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashActivityModule;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Created by Borce on 25.07.2016.

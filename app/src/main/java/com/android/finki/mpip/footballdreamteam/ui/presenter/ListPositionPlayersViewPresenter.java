@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayersView;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
@@ -16,24 +17,24 @@ import java.util.List;
 /**
  * Created by Borce on 17.08.2016.
  */
-public class ListPositionPlayersFragmentPresenter {
+public class ListPositionPlayersViewPresenter {
 
     private static Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
-    private ListPositionPlayersFragment fragment;
+    private ListPositionPlayersView view;
     private PlayerDBService playerDBService;
     private List<Player> players;
     private PositionUtils.POSITION_PLACE place;
 
-    public ListPositionPlayersFragmentPresenter(ListPositionPlayersFragment fragment,
-                                                PlayerDBService playerDBService) {
-        this.fragment = fragment;
+    public ListPositionPlayersViewPresenter(ListPositionPlayersView view,
+                                            PlayerDBService playerDBService) {
+        this.view = view;
         this.playerDBService = playerDBService;
     }
 
     /**
-     * Called when the fragment has been created.
+     * Called when the view has been created.
      *
-     * @param args fragment arguments
+     * @param args view arguments
      */
     public void onFragmentCreated(Bundle args) {
         if (args == null) {
@@ -42,14 +43,13 @@ public class ListPositionPlayersFragmentPresenter {
             throw new IllegalArgumentException(message);
         }
         Serializable serializable = args
-                .getSerializable(ListPositionPlayersFragment.getPlaceKey());
+                .getSerializable(ListPositionPlayersView.PLACE_KEY);
         if (serializable == null || ! (serializable instanceof PositionUtils.POSITION_PLACE)) {
             String message = "position place must be set";
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
-        int[] playersToExclude = args.getIntArray(ListPositionPlayersFragment
-                .getExcludeLayersKey());
+        int[] playersToExclude = args.getIntArray(ListPositionPlayersView.EXCLUDE_LAYERS_KEY);
         if (playersToExclude == null) {
             String message = "players to exclude must be set";
             logger.error(message);
@@ -96,19 +96,19 @@ public class ListPositionPlayersFragmentPresenter {
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
-        fragment.setAdapter(this.players);
+        view.setAdapter(this.players);
         switch (place) {
             case KEEPERS:
-                fragment.setPositionPlace("Keepers");
+                view.setPositionPlace("Keepers");
                 break;
             case DEFENDERS:
-                fragment.setPositionPlace("Defenders");
+                view.setPositionPlace("Defenders");
                 break;
             case MIDFIELDERS:
-                fragment.setPositionPlace("Midfielders");
+                view.setPositionPlace("Midfielders");
                 break;
             case ATTACKERS:
-                fragment.setPositionPlace("Attackers");
+                view.setPositionPlace("Attackers");
                 break;
         }
     }

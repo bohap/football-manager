@@ -2,15 +2,13 @@ package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
 import android.os.Bundle;
 
-import com.android.finki.mpip.footballdreamteam.database.service.LikeDBService;
-import com.android.finki.mpip.footballdreamteam.database.service.LineupDBService;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupLike;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.rest.response.ServerResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
+import com.android.finki.mpip.footballdreamteam.ui.component.LikeView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,15 +24,13 @@ import retrofit2.Response;
 /**
  * Created by Borce on 15.08.2016.
  */
-public class LikeFragmentPresenter implements Callback<List<UserLike>> {
+public class LikeViewPresenter extends BasePresenter implements Callback<List<UserLike>> {
 
-    private static Logger logger = LoggerFactory.getLogger(LikeFragmentPresenter.class);
+    private static Logger logger = LoggerFactory.getLogger(LikeViewPresenter.class);
 
-    private LikeFragment fragment;
+    private LikeView view;
     private LineupApi api;
     private User user;
-    private final LineupDBService lineupDBService;
-    private final LikeDBService likeDBService;
 
     private Lineup lineup;
     private boolean viewCreated = false;
@@ -43,13 +38,10 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
     private boolean likeAdded = false;
 
 
-    public LikeFragmentPresenter(LikeFragment fragment, LineupApi api, User user,
-                                 LineupDBService lineupDBService, LikeDBService likeDBService) {
-        this.fragment = fragment;
+    public LikeViewPresenter(LikeView view, LineupApi api, User user) {
+        this.view = view;
         this.api = api;
         this.user = user;
-        this.lineupDBService = lineupDBService;
-        this.likeDBService = likeDBService;
     }
 
     /**
@@ -59,13 +51,13 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
      */
     public void loadLikes(Bundle args) {
         if (args == null) {
-            String message  = "bundle can't be null";
+            String message = "bundle can't be null";
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
-        Serializable serializable = args.getSerializable(LikeFragment.LINEUP_KEY);
+        Serializable serializable = args.getSerializable(LikeView.LINEUP_KEY);
         if (!(serializable instanceof Lineup)) {
-            String message = "lineup is required for this fragment";
+            String message = "lineup is required for this view";
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
@@ -94,7 +86,7 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
         Call<List<UserLike>> call = api.likes(lineup.getId(), true, null, null);
         call.enqueue(this);
         if (viewCreated) {
-            fragment.showLoading();
+            view.showLoading();
         }
     }
 
@@ -104,35 +96,29 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
     public void onViewCreated() {
         viewCreated = true;
         if (requestSending) {
-            fragment.showLoading();
+            view.showLoading();
         }
     }
 
     /**
      * Called when loading the likes is successful.
      *
-     * @param call retrofit call
+     * @param call     retrofit call
      * @param response server response
      */
     @Override
     public void onResponse(Call<List<UserLike>> call, Response<List<UserLike>> response) {
-        if (response.isSuccessful()) {
-            logger.info("likes request success");
-            requestSending = false;
-            List<UserLike> likes = response.body();
-            fragment.showLoadingSuccess(likes);
-            final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
-            if (likes.contains(userLike)) {
-                fragment.showRemoveLikeButton();
-                likeAdded = true;
-            } else {
-                fragment.showAddLikeButton();
-                likeAdded = false;
-            }
+        logger.info("likes request success");
+        requestSending = false;
+        List<UserLike> likes = response.body();
+        view.showLoadingSuccess(likes);
+        final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
+        if (likes.contains(userLike)) {
+            view.showRemoveLikeButton();
+            likeAdded = true;
         } else {
-            logger.info("likes request failed");
-            requestSending = false;
-            fragment.showLoadingFailed();
+            view.showAddLikeButton();
+            likeAdded = false;
         }
     }
 
@@ -140,14 +126,15 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
      * Called when loading the likes failed.
      *
      * @param call retrofit call
-     * @param t exception that has been thrown
+     * @param t    exception that has been thrown
      */
     @Override
     public void onFailure(Call<List<UserLike>> call, Throwable t) {
         logger.info("likes request failed");
         requestSending = false;
         t.printStackTrace();
-        fragment.showLoadingFailed();
+        view.showLoadingFailed();
+        super.onRequestFailed(view, t);
     }
 
     /**
@@ -155,45 +142,30 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
      */
     public void addLike() {
         if (this.lineup == null) {
-            String message = "lineup is not set yet";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup is not set yet");
         }
         if (likeAdded) {
-            String message = "like already added";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("like already added");
         }
         logger.info("sending add like request");
-        fragment.showLikeAdding();
+        view.showLikeAdding();
         api.addLike(lineup.getId()).enqueue(new Callback<ServerResponse>() {
             @Override
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
-                if (response.isSuccessful()) {
-                    logger.info("add like request success");
-                    addLikeSuccess();
-                } else {
-                    logger.info("add like request failed");
-                    fragment.showLikeAddingFailed();
-                }
+                logger.info("add like request success");
+                likeAdded = true;
+                view.showLikeAddingSuccess(new UserLike(user.getId(), user.getName(),
+                        new LineupLike(user, lineup, new Date())));
             }
 
             @Override
             public void onFailure(Call<ServerResponse> call, Throwable t) {
                 logger.info("add like request failed");
                 t.printStackTrace();
-                fragment.showLikeAddingFailed();
+                view.showLikeAddingFailed();
+                onRequestFailed(view, t);
             }
         });
-    }
-
-    /**
-     * Called when adding the like is successful.
-     */
-    private void addLikeSuccess() {
-        this.likeAdded = true;
-        fragment.showLikeAddingSuccess(new UserLike(user.getId(), user.getName(),
-                new LineupLike(user, lineup, new Date())));
     }
 
     /**
@@ -201,49 +173,29 @@ public class LikeFragmentPresenter implements Callback<List<UserLike>> {
      */
     public void removeLike() {
         if (this.lineup == null) {
-            String message = "lineup is not set yet";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup is not set yet");
         }
         if (!this.likeAdded) {
-            String message = "lineup not liked";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup not liked");
         }
         logger.info("sending remove like request");
-        fragment.showLikeRemoving();
+        view.showLikeRemoving();
         api.deleteLike(lineup.getId()).enqueue(new Callback<Void>() {
 
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    likeRemovingSuccess();
-                } else {
-                    likeRemovingFailed();
-                }
+                logger.info("remove like request success");
+                likeAdded = false;
+                view.showLikeRemovingSuccess(new UserLike(user.getId(), user.getName(), null));
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                likeRemovingFailed();
+                logger.info("remove like request failed");
+                t.printStackTrace();
+                view.showLikeRemovingFailed();
+                onRequestFailed(view, t);
             }
         });
-    }
-
-    /**
-     * Called when removing the like is successful.
-     */
-    private void likeRemovingSuccess() {
-        logger.info("remove like request success");
-        this.likeAdded = false;
-        fragment.showLikeRemovingSuccess(new UserLike(user.getId(), user.getName(), null));
-    }
-
-    /**
-     * Called when removing the like failed.
-     */
-    private void likeRemovingFailed() {
-        logger.info("remove like request failed");
-        fragment.showLikeRemovingFailed();
     }
 }

@@ -2,8 +2,9 @@ package com.android.finki.mpip.footballdreamteam.dependency.module.ui;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.FragmentScope;
+import com.android.finki.mpip.footballdreamteam.ui.component.PlayerDetailsView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsDialogPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,12 +13,12 @@ import dagger.Provides;
  * Created by Borce on 17.08.2016.
  */
 @Module
-public class PlayerDetailsDialogModule {
+public class PlayerDetailsViewModule {
 
-    private PlayerDetailsDialog dialog;
+    private PlayerDetailsView view;
 
-    public PlayerDetailsDialogModule(PlayerDetailsDialog dialog) {
-        this.dialog = dialog;
+    public PlayerDetailsViewModule(PlayerDetailsView view) {
+        this.view = view;
     }
 
     /**
@@ -28,8 +29,8 @@ public class PlayerDetailsDialogModule {
      */
     @Provides
     @FragmentScope
-    PlayerDetailsDialogPresenter providePlayerDetailsFragmentPresenter(
+    PlayerDetailsViewPresenter providePlayerDetailsFragmentPresenter(
             PlayerDBService playerDBService) {
-        return new PlayerDetailsDialogPresenter(dialog, playerDBService);
+        return new PlayerDetailsViewPresenter(view, playerDBService);
     }
 }

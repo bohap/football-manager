@@ -11,8 +11,8 @@ import android.widget.Toast;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsDialogComponent;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsDialogPresenter;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,9 +48,9 @@ public class PlayerDetailsDialogTest {
     private final String age = "30";
     private final String position = "Position";
     @Mock
-    private PlayerDetailsDialogComponent component;
+    private PlayerDetailsViewComponent component;
     @Mock
-    private PlayerDetailsDialogPresenter presenter;
+    private PlayerDetailsViewPresenter presenter;
     private PlayerDetailsDialog dialog;
 
     @Before

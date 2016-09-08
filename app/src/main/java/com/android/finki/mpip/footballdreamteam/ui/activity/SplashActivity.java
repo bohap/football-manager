@@ -8,9 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashActivityModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashViewModule;
+import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter;
 
 import javax.inject.Inject;
 
@@ -20,7 +22,9 @@ import butterknife.ButterKnife;
 /**
  * Created by Borce on 25.07.2016.
  */
-public class SplashActivity extends AppCompatActivity implements InfoDialog.Listener {
+public class SplashActivity extends AppCompatActivity implements SplashView, InfoDialog.Listener {
+
+    private SplashViewPresenter presenter;
 
     @BindString(R.string.firstTimeStarted_message)
     String infoDialogText;
@@ -28,8 +32,15 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     @BindString(R.string.firstTimeStarted_title)
     String infoDialogTitle;
 
+    /**
+     * Set the presenter for the activity.
+     *
+     * @param presenter activity presenter
+     */
     @Inject
-    SplashActivityPresenter presenter;
+    public void setPresenter(SplashViewPresenter presenter) {
+        this.presenter = presenter;
+    }
 
     /**
      * Called when the activity is ready to be created.
@@ -41,13 +52,14 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         ((MainApplication)this.getApplication()).getAppComponent()
-                .plus(new SplashActivityModule(this)).inject(this);
+                .plus(new SplashViewModule(this)).inject(this);
         presenter.onActivityCreated();
     }
 
     /**
      * Show the info dialog.
      */
+    @Override
     public void showInfoDialog() {
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         InfoDialog dialog = InfoDialog.newInstance(infoDialogTitle, infoDialogText);
@@ -65,7 +77,8 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     /**
      * Show the LoginActivity.
      */
-    public void showLoginActivity() {
+    @Override
+    public void showLoginView() {
         this.startActivity(new Intent(this, LoginActivity.class));
         super.finish();
     }
@@ -73,8 +86,19 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     /**
      * Show the HomeActivity.
      */
-    public void showHomeActivity() {
+    @Override
+    public void showHomeView() {
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
+    }
+
+    /**
+     * Crete the UserComponent for the application.
+     *
+     * @param user authenticated user
+     */
+    @Override
+    public void createUserComponent(User user) {
+        ((MainApplication)this.getApplication()).createUserComponent(user);
     }
 }

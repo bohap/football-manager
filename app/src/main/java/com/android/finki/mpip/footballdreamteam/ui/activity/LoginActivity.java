@@ -12,11 +12,10 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginActivityModule;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginActivityPresenter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginViewModule;
+import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.ui.component.LoginView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginViewPresenter;
 
 import java.util.List;
 
@@ -30,15 +29,15 @@ import butterknife.OnClick;
 /**
  * Created by Borce on 26.07.2016.
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements LoginView {
 
-    public enum EMAIL_ERROR {
-        REQUIRED,
-        INVALID
-    }
+    private LoginViewPresenter presenter;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindString(R.string.loginActivity_title)
+    String title;
 
     @BindView(R.id.loginLayout_txtEmail)
     EditText txtEmail;
@@ -61,19 +60,15 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_errors)
     LinearLayout errorsContainer;
 
-    @BindString(R.string.loginActivity_title)
-    String title;
-
-    @BindString(R.string.server_connectionTimeoutMessage)
-    String connectionTimeoutMessage;
-
-    @BindString(R.string.server_errorMessage)
-    String serverErrorMessage;
-
+    /**
+     * Set the presenter for the activity.
+     *
+     * @param presenter activity presenter
+     */
     @Inject
-    LoginActivityPresenter presenter;
-
-    private Logger logger = LoggerFactory.getLogger(LoginActivity.class);
+    public void setPresenter(LoginViewPresenter presenter) {
+        this.presenter = presenter;
+    }
 
     /**
      * Called when the activity is ready to be created.
@@ -86,7 +81,7 @@ public class LoginActivity extends BaseActivity {
         this.setContentView(R.layout.login_layout);
         ButterKnife.bind(this);
         ((MainApplication) this.getApplication()).getAppComponent()
-                .plus(new LoginActivityModule(this)).inject(this);
+                .plus(new LoginViewModule(this)).inject(this);
         /* Set the toolbar */
         this.setSupportActionBar(toolbar);
         if (this.getSupportActionBar() != null) {
@@ -130,12 +125,13 @@ public class LoginActivity extends BaseActivity {
     /**
      * Add a error for the email edit text field.
      */
-    public void errorEmail(EMAIL_ERROR error) {
+    @Override
+    public void showEmailError(EMAIL_ERROR error) {
         this.toggleEditTextBackground(txtEmail, true);
         if (error == EMAIL_ERROR.REQUIRED) {
             this.toggleVisibility(emailErrorRequired, true);
             this.toggleVisibility(emailErrorInvalid, false);
-        } else if(error == EMAIL_ERROR.INVALID) {
+        } else if (error == EMAIL_ERROR.INVALID) {
             this.toggleVisibility(emailErrorInvalid, true);
             this.toggleVisibility(emailErrorRequired, false);
         }
@@ -144,7 +140,8 @@ public class LoginActivity extends BaseActivity {
     /**
      * Remove the errors (if he has) from the email edit text field.
      */
-    public void okEmail() {
+    @Override
+    public void showEmailOk() {
         this.toggleEditTextBackground(txtEmail, false);
         this.toggleVisibility(emailErrorRequired, false);
         this.toggleVisibility(emailErrorInvalid, false);
@@ -153,7 +150,8 @@ public class LoginActivity extends BaseActivity {
     /**
      * Add a error for the password edit text field.
      */
-    public void errorPassword() {
+    @Override
+    public void showPasswordError() {
         this.toggleEditTextBackground(txtPassword, true);
         this.toggleVisibility(passwordErrorRequired, true);
     }
@@ -161,7 +159,8 @@ public class LoginActivity extends BaseActivity {
     /**
      * Remove the error (if he has) from the password text field.
      */
-    public void okPassword() {
+    @Override
+    public void showPasswordOk() {
         this.toggleEditTextBackground(txtPassword, false);
         this.toggleVisibility(passwordErrorRequired, false);
     }
@@ -169,27 +168,30 @@ public class LoginActivity extends BaseActivity {
     /**
      * Show a spinner indicating that the app is waiting for a response from the server.
      */
-    public void showLoading() {
+    @Override
+    public void showLogging() {
         this.toggleVisibility(spinner, true);
     }
 
     /**
      * Called when the login is successful.
      */
-    public void successfulLogin() {
+    @Override
+    public void showLoginSuccessful() {
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
 
     /**
-     * Called when the login failed.
+     * Called when the login failed and the server responded with body containing error messages.
      *
      * @param errors login errors
      */
-    public void failedLogin(List<String> errors) {
+    @SuppressWarnings("deprecation")
+    @Override
+    public void showLoginFailed(List<String> errors) {
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, true);
-        //Remove prevous chidler
         errorsContainer.removeAllViews();
         for (String error : errors) {
             TextView txtError = new TextView(this);
@@ -204,9 +206,20 @@ public class LoginActivity extends BaseActivity {
     }
 
     /**
-     * Called when there is some problem with the login request.
+     * Called when the login failed and the server returned body containing no messages.
      */
-    public void loginError() {
-        this.toggleVisibility(spinner, false);
+    @Override
+    public void showLoginFailed() {
+        super.toggleVisibility(spinner, false);
+    }
+
+    /**
+     * Create the user component for the application.
+     *
+     * @param user authenticated user
+     */
+    @Override
+    public void createUserComponent(User user) {
+        ((MainApplication) this.getApplication()).createUserComponent(user);
     }
 }

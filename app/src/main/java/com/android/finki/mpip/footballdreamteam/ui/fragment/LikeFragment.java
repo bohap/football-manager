@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +13,13 @@ import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeFragmentModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.LikesAdapter;
+import com.android.finki.mpip.footballdreamteam.ui.component.LikeView;
 import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeFragmentPresenter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeViewPresenter;
 
 import java.util.List;
 
@@ -37,12 +34,9 @@ import butterknife.Unbinder;
 /**
  * Created by Borce on 15.08.2016.
  */
-public class LikeFragment extends Fragment {
+public class LikeFragment extends BaseFragment implements LikeView {
 
-    private static Logger logger = LoggerFactory.getLogger(LikeFragment.class);
-    public static final String LINEUP_KEY = "lineup_id";
-
-    private LikeFragmentPresenter presenter;
+    private LikeViewPresenter presenter;
 
     @BindString(R.string.likesFragment_title)
     String title;
@@ -95,9 +89,7 @@ public class LikeFragment extends Fragment {
      */
     public static LikeFragment newInstance(Lineup lineup) {
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         LikeFragment fragment = new LikeFragment();
         Bundle args = new Bundle();
@@ -112,7 +104,7 @@ public class LikeFragment extends Fragment {
      * @param presenter fragment presenter
      */
     @Inject
-    public void setPresenter(LikeFragmentPresenter presenter) {
+    public void setPresenter(LikeViewPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -125,15 +117,15 @@ public class LikeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
-                .plus(new LikeFragmentModule(this)).inject(this);
+                .plus(new LikeViewModule(this)).inject(this);
         presenter.loadLikes(this.getArguments());
     }
 
     /**
      * Celled when the fragment view is ready to be created.
      *
-     * @param inflater system Layout inflater
-     * @param container fragment root container
+     * @param inflater           system Layout inflater
+     * @param container          fragment root container
      * @param savedInstanceState save state for when the fragment is recreated
      * @return fragment view
      */
@@ -162,12 +154,28 @@ public class LikeFragment extends Fragment {
     /**
      * Called when the likes has started loading from the server.
      */
+    @Override
     public void showLoading() {
         if (this.isVisible()) {
             txtSpinner.setText(spinnerText);
             spinner.setVisibility(View.VISIBLE);
             errorLoadingLayout.setVisibility(View.GONE);
             mainContent.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Called when the likes data is successfully loaded.
+     *
+     * @param likes List of Lineup likes
+     */
+    public void showLoadingSuccess(List<UserLike> likes) {
+        if (this.isVisible()) {
+            mainContent.setVisibility(View.VISIBLE);
+            errorLoadingLayout.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            adapter = new LikesAdapter(this.getActivity(), likes);
+            likesListView.setAdapter(adapter);
         }
     }
 
@@ -191,23 +199,9 @@ public class LikeFragment extends Fragment {
     }
 
     /**
-     * Called when the likes data is successfully loaded.
-     *
-     * @param likes List of Lineup likes
-     */
-    public void showLoadingSuccess(List<UserLike> likes) {
-        if (this.isVisible()) {
-            mainContent.setVisibility(View.VISIBLE);
-            errorLoadingLayout.setVisibility(View.GONE);
-            spinner.setVisibility(View.GONE);
-            adapter = new LikesAdapter(this.getActivity(), likes);
-            likesListView.setAdapter(adapter);
-        }
-    }
-
-    /**
      * Show the addLike like button.
      */
+    @Override
     public void showAddLikeButton() {
         if (this.isVisible()) {
             btnAddLike.setVisibility(View.VISIBLE);
@@ -218,6 +212,7 @@ public class LikeFragment extends Fragment {
     /**
      * Show the removeLike like button.
      */
+    @Override
     public void showRemoveLikeButton() {
         if (this.isVisible()) {
             btnRemoveLike.setVisibility(View.VISIBLE);
@@ -236,6 +231,7 @@ public class LikeFragment extends Fragment {
     /**
      * Called when a request has been send to addLike a like to the lineup.
      */
+    @Override
     public void showLikeAdding() {
         spinnerLikeAdding.setVisibility(View.VISIBLE);
     }
@@ -243,17 +239,19 @@ public class LikeFragment extends Fragment {
     /**
      * Called when adding the like is successful.
      */
-    public void showLikeAddingSuccess(UserLike userLike) {
+    @Override
+    public void showLikeAddingSuccess(UserLike like) {
         if (this.isVisible()) {
             spinnerLikeAdding.setVisibility(View.GONE);
             this.showRemoveLikeButton();
-            adapter.addLike(userLike);
+            adapter.addLike(like);
         }
     }
 
     /**
      * Called when adding the like failed
      */
+    @Override
     public void showLikeAddingFailed() {
         if (this.isVisible()) {
             spinnerLikeAdding.setVisibility(View.GONE);
@@ -272,6 +270,7 @@ public class LikeFragment extends Fragment {
     /**
      * Called when a request has been send to removeLike the lineup like.
      */
+    @Override
     public void showLikeRemoving() {
         spinnerLikeRemoving.setVisibility(View.VISIBLE);
     }
@@ -279,6 +278,7 @@ public class LikeFragment extends Fragment {
     /**
      * Called when removing the like is successful.
      */
+    @Override
     public void showLikeRemovingSuccess(UserLike userLike) {
         if (this.isVisible()) {
             spinnerLikeRemoving.setVisibility(View.GONE);
@@ -290,6 +290,7 @@ public class LikeFragment extends Fragment {
     /**
      * Called when removing the like failed.
      */
+    @Override
     public void showLikeRemovingFailed() {
         if (this.isVisible()) {
             spinnerLikeRemoving.setVisibility(View.GONE);

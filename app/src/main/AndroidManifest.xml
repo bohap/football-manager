@@ -12,24 +12,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!--Activities-->
-        <activity android:name=".ui.activity.SplashActivity">
+        <activity android:name=".ui.activity.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.LoginActivity"></activity>
-        <activity android:name=".ui.activity.RegisterActivity"></activity>
-        <activity android:name=".ui.activity.HomeActivity"></activity>
-        <activity android:name=".ui.activity.LineupDetailsActivity"></activity>
+        <activity android:name=".ui.activity.LoginActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".ui.activity.RegisterActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".ui.activity.HomeActivity"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.activity.LineupPlayersActivity"
             android:screenOrientation="landscape"></activity>
         <activity android:name=".ui.activity.CreateLineupActivity"
-            android:screenOrientation="landscape"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:screenOrientation="landscape"></activity>
     </application>
 
 </manifest>

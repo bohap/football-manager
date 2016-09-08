@@ -31,7 +31,7 @@ import retrofit2.Response;
 /**
  * Created by Borce on 16.08.2016.
  */
-public class LineupPlayersViewPresenter implements Callback<List<Player>> {
+public class LineupPlayersViewPresenter extends BasePresenter implements Callback<List<Player>> {
 
     private static Logger logger = LoggerFactory.getLogger(LineupPlayersViewPresenter.class);
     private LineupPlayersView view;
@@ -129,21 +129,16 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      */
     void extractLineup(Bundle args) {
         if (args == null) {
-            String message = "view arguments can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("view arguments can't be null");
         }
         Serializable serializable = args.getSerializable(LineupPlayersActivity.LINEUP_BUNDLE_KEY);
         if (serializable == null || !(serializable instanceof Lineup)) {
-            String message = "lineup must be provided for the presenter";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup must be provided for the presenter");
         }
         this.lineup = (Lineup) serializable;
         if (this.lineup.getId() < 1) {
-            String message = String.format("invalid lineup id, %d", lineup.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("invalid lineup id, %d", lineup.getId()));
         }
     }
 
@@ -155,15 +150,10 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      */
     @Override
     public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
-        if (response.isSuccessful()) {
-            logger.info("load players request success");
-            view.showLoadingSuccess(response.body());
-            if (this.canEditLineup()) {
-                view.showBtnChangeFormation();
-            }
-        } else {
-            logger.info("load players request failed");
-            view.showLoadingFailed();
+        logger.info("load players request success");
+        view.showLoadingSuccess(response.body());
+        if (this.canEditLineup()) {
+            view.showBtnChangeFormation();
         }
     }
 
@@ -176,13 +166,9 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
     @Override
     public void onFailure(Call<List<Player>> call, Throwable t) {
         logger.info("load players request failed");
+        t.printStackTrace();
         view.showLoadingFailed();
-        //TODO
-//        if (t instanceof SocketTimeoutException) {
-//            view.showConnectionTimeoutMessage();
-//        } else {
-//            view.showServerErrorMessage();
-//        }
+        super.onRequestFailed(view, t);
     }
 
     /**
@@ -191,39 +177,27 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      */
     public void update() {
         if (this.lineup == null) {
-            String message = "lineup data is not yet sey";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup data is not yet sey");
         }
         final List<LineupPlayer> lineupPlayers = view.getLineupPlayers();
         if (!validator.validate(lineupPlayers)) {
-            String message = "lineup players are not valid";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup players are not valid");
         }
         if (!this.changed) {
-            String message = "update called but data was not changed";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("update called but data was not changed");
         }
         view.showUpdating();
         logger.info("sending lineup update request");
         api.update(lineup.getId(), this.createdLineupRequest(lineupPlayers))
                 .enqueue(new Callback<LineupResponse>() {
-                    //TODO server respond with invalid json result on first request
+
                     @Override
                     public void onResponse(Call<LineupResponse> call,
                                            Response<LineupResponse> response) {
-                        if (response.isSuccessful()) {
-                            logger.info("lineup update request success");
-                            lineupUpdateFailed = false;
-                            changed = false;
-                            updateSuccess(lineupPlayers);
-                        } else {
-                            logger.info("lineup update request failed");
-                            lineupUpdateFailed = true;
-                            view.showUpdatingFailed();
-                        }
+                        logger.info("lineup update request success");
+                        lineupUpdateFailed = false;
+                        changed = false;
+                        updateSuccess(lineupPlayers);
                     }
 
                     @Override
@@ -307,14 +281,10 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
      * @param t exception that has been thrown
      */
     private void updateFailed(Throwable t) {
-        view.showUpdatingFailed();
+        logger.info("lineup update request failed");
         t.printStackTrace();
-        //TODO
-//        if (t instanceof SocketTimeoutException) {
-//            view.showConnectionTimeoutMessage();
-//        } else {
-//            view.showServerErrorMessage();
-//        }
+        view.showUpdatingFailed();
+        super.onRequestFailed(view, t);
     }
 
     /**
@@ -327,9 +297,7 @@ public class LineupPlayersViewPresenter implements Callback<List<Player>> {
             this.formation = view.getFormation();
         }
         if (this.formation == null) {
-            String message = "formation can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("formation can't be null");
         }
         if (!this.formation.equals(formation)) {
             view.changeFormation(formation, view.getPlayersOrdered());

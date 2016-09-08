@@ -16,7 +16,7 @@ import com.android.finki.mpip.footballdreamteam.dependency.component.ui.Comments
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CommentsViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.CommentsAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.component.CommentView;
+import com.android.finki.mpip.footballdreamteam.ui.component.CommentsView;
 import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.CommentsViewPresenter;
 
@@ -37,7 +37,7 @@ import butterknife.Unbinder;
 /**
  * Created by Borce on 15.08.2016.
  */
-public class CommentsFragment extends Fragment implements CommentView, CommentsAdapter.Listener {
+public class CommentsFragment extends Fragment implements CommentsView, CommentsAdapter.Listener {
 
     private static Logger logger = LoggerFactory.getLogger(CommentsFragment.class);
 
@@ -77,7 +77,7 @@ public class CommentsFragment extends Fragment implements CommentView, CommentsA
     public static CommentsFragment newInstance(int lineupId) {
         CommentsFragment fragment = new CommentsFragment();
         Bundle args = new Bundle();
-        args.putInt(CommentView.LINEUP_ID_KEY, lineupId);
+        args.putInt(CommentsView.LINEUP_ID_KEY, lineupId);
         fragment.setArguments(args);
         return fragment;
     }

@@ -1,53 +1,13 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
-import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
-import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLineupViewComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsDialogComponent;
-import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.CreateLineupViewPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsDialogPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
-import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
-import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.fakes.RoboMenuItem;
-import org.robolectric.util.ActivityController;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,12 +15,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
@@ -78,22 +34,22 @@ public class CreateLineupActivityTest {
 //    private CreateLineupViewComponent component;
 //
 //    @Mock
-//    private LineupFormationFragmentComponent lineupFormationFragmentComponent;
+//    private LineupFormationViewComponent lineupFormationFragmentComponent;
 //
 //    @Mock
 //    private LineupFormationFragmentPresenter lineupFormationFragmentPresenter;
 //
 //    @Mock
-//    private ListPositionPlayersFragmentComponent listPositionPlayersFragmentComponent;
+//    private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
 //
 //    @Mock
-//    private ListPositionPlayersFragmentPresenter listPositionPlayersFragmentPresenter;
+//    private ListPositionPlayersViewPresenter listPositionPlayersFragmentPresenter;
 //
 //    @Mock
-//    private PlayerDetailsDialogComponent playerDetailsDialogComponent;
+//    private PlayerDetailsViewComponent playerDetailsDialogComponent;
 //
 //    @Mock
-//    private PlayerDetailsDialogPresenter playerDetailsDialogPresenter;
+//    private PlayerDetailsViewPresenter playerDetailsDialogPresenter;
 //
 //    private ActivityController<CreateLineupActivity> controller;
 //    private CreateLineupActivity activity;
@@ -247,7 +203,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test
 //    public void testShowListPositionPlayersFragment() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        FragmentManager manager = activity.getSupportFragmentManager();
 //        assertTrue(manager.findFragmentById(R.id.content) instanceof ListPositionPlayersFragment);
 //        assertEquals(1, manager.getBackStackEntryCount());
@@ -259,8 +215,8 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testShowListPositionPlayersIsCalledWithLineupFormationFragmentNoVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //    }
 //
 //    /**
@@ -282,16 +238,16 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testShowPlayerDetailsDialogWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.showPlayerDetailsDialog(1, false);
 //    }
 //
 //    /**
-//     * Test the behavior when onValidLineup is called.
+//     * Test the behavior when showValidLineup is called.
 //     */
 //    @Test
 //    public void testOnValidFormation() {
-//        activity.onValidLineup();
+//        activity.showValidLineup();
 //        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
 //        assertNotNull(btn);
 //        assertEquals(View.VISIBLE, btn.getVisibility());
@@ -302,7 +258,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test
 //    public void testOnInvalidFormation() {
-//        activity.onInvalidLineup();
+//        activity.showInvalidLineup();
 //        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
 //        assertNotNull(btn);
 //        assertEquals(View.GONE, btn.getVisibility());
@@ -313,7 +269,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testRemovePlayerOnLineupFormationFragmentNoVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.removePlayer();
 //    }
 //
@@ -341,7 +297,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test
 //    public void testOnPlayerSelected() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.onPlayerSelected(new Player());
 //        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
 //                instanceof LineupFormationFragment);
@@ -353,7 +309,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testGetPlayersWhenLineupFormationFragmnetIsNotVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.getPlayersOrdered();
 //    }
 //
@@ -371,7 +327,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testUpdateFormationWhenLineupFormationIsNotVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.changeFormation(LineupUtils.FORMATION.F_4_3_3, new ArrayList<Player>());
 //    }
 //
@@ -398,7 +354,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testBtnSaveClickWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
 //        assertNotNull(btn);
 //        btn.performClick();
@@ -449,7 +405,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testBtnTryAgainWhenLineupFormationIsNotActive() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        Button btn = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
 //        assertNotNull(btn);
 //        btn.performClick();
@@ -503,7 +459,7 @@ public class CreateLineupActivityTest {
 //     */
 //    @Test
 //    public void testOnBackBtnPressedWhenListPositionPlayersFragmentIsActive() {
-//        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        FragmentManager manager = activity.getSupportFragmentManager();
 //        assertTrue(manager.findFragmentById(R.id.content) instanceof ListPositionPlayersFragment);
 //        activity.onBackPressed();

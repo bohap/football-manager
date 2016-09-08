@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
@@ -78,6 +79,9 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
 
     @BindString(R.string.formationContextMenuTitle)
     String contextMenuTitle;
+
+    @BindString(R.string.createLineupView_lineupCreateSuccessful_text)
+    String lineupCreateSuccessfullyText;
 
     /**
      * Set the presenter for the activity.
@@ -248,7 +252,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      * Called when lineup formation is valid.
      */
     @Override
-    public void onValidLineup() {
+    public void showValidLineup() {
         presenter.setFormationValid(true);
         invalidateOptionsMenu();
     }
@@ -257,7 +261,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      * Called when lineup formation is not valid.
      */
     @Override
-    public void onInvalidLineup() {
+    public void showInvalidLineup() {
         presenter.setFormationValid(false);
         invalidateOptionsMenu();
     }
@@ -359,9 +363,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showStoringSuccessful(Lineup lineup) {
-        Intent intent = new Intent(this, LineupDetailsActivity.class);
-        intent.putExtra(LineupDetailsActivity.LINEUP_ID_BUNDLE_KEY, lineup.getId());
-        this.startActivity(intent);
+        Toast.makeText(this, lineupCreateSuccessfullyText, Toast.LENGTH_LONG).show();
         super.finish();
     }
 }

@@ -18,15 +18,15 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeActivityModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.ui.adapter.ListLineupsAdapter;
+import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListLineupsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeActivityPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 
 import javax.inject.Inject;
 
@@ -38,11 +38,11 @@ import butterknife.OnClick;
 /**
  * Created by Borce on 06.08.2016.
  */
-public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Listener,
+public class HomeActivity extends BaseActivity implements HomeView,
+        ListLineupsFragment.Listener,
         ActivityTitleSetterListener {
 
-    @Inject
-    HomeActivityPresenter presenter;
+    private HomeViewPresenter presenter;
 
     @BindString(R.string.homeActivity_title)
     String title;
@@ -83,6 +83,16 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
     FrameLayout content;
 
     /**
+     * Set the presenter for the actiivty.
+     *
+     * @param presenter activity presenter
+     */
+    @Inject
+    public void setPresenter(HomeViewPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    /**
      * Called when the activity is ready to be created.
      *
      * @param savedInstanceState saved instance state when the activity is recreated.
@@ -94,7 +104,7 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
 
         ButterKnife.bind(this);
         ((MainApplication) this.getApplication()).getUserComponent()
-                .plus(new HomeActivityModule(this)).inject(this);
+                .plus(new HomeViewModule(this)).inject(this);
 
         this.setSupportActionBar(toolbar);
         this.setTitle(title);
@@ -146,18 +156,6 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
                 invalidateOptionsMenu();
             }
         };
-    }
-
-    /**
-     * Set the activity title.
-     *
-     * @param title activity title
-     */
-    @Override
-    public void setTitle(String title) {
-        if (this.getSupportActionBar() != null) {
-            this.getSupportActionBar().setTitle(title);
-        }
     }
 
     /**
@@ -250,8 +248,34 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
     }
 
     /**
+     * Called when the back button is pressed.
+     */
+    @Override
+    public void onBackPressed() {
+        if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            this.setTitle(title);
+            presenter.setMainViewVisible(true);
+            this.invalidateOptionsMenu();
+        }
+        super.onBackPressed();
+    }
+
+    /**
+     * Set the activity title.
+     *
+     * @param title activity title
+     */
+    @Override
+    public void setTitle(String title) {
+        if (this.getSupportActionBar() != null) {
+            this.getSupportActionBar().setTitle(title);
+        }
+    }
+
+    /**
      * Show the spinner for when the initial data is loading.
      */
+    @Override
     public void showInitialDataLoading() {
         txtSpinner.setText(spinnerText);
         super.toggleVisibility(spinner, true);
@@ -262,16 +286,32 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
     /**
      * Show the info dialog for when the initial data is laoding.
      */
-    public void showInfoDialog() {
+    @Override
+    public void showInitialDataInfoDialog() {
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         InfoDialog dialog = InfoDialog.newInstance(infoDialogTitle, infoDialogMessage);
         dialog.show(transaction, InfoDialog.TAG);
     }
 
     /**
+     * Called when loading the initial data is successful.
+     */
+    @Override
+    public void showInitialDataLoadingSuccess() {
+        super.toggleVisibility(content, true);
+        super.toggleVisibility(spinner, false);
+        super.toggleVisibility(errorLoadingLayout, false);
+        this.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, new ListLineupsFragment()).commit();
+        presenter.setMainViewVisible(true);
+        this.invalidateOptionsMenu();
+    }
+
+    /**
      * Show the error layout when a error occurred while loading the data.
      */
-    public void showErrorLoading() {
+    @Override
+    public void showErrorLoadingInitialData() {
         super.toggleVisibility(errorLoadingLayout, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(content, false);
@@ -284,19 +324,6 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
     @OnClick(R.id.error_loading_btn_tryAgain)
     void reload() {
         presenter.loadData();
-    }
-
-    /**
-     * Called when loading the initial data is successful.
-     */
-    public void showSuccessLoading() {
-        super.toggleVisibility(content, true);
-        super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
-        this.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content, new ListLineupsFragment()).commit();
-        presenter.setMainViewVisible(true);
-        this.invalidateOptionsMenu();
     }
 
     /**
@@ -314,7 +341,7 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
      * @param lineup lineup for which the players will be showed
      */
     @Override
-    public void showLineupPlayers(Lineup lineup) {
+    public void showLineupPlayersView(Lineup lineup) {
         Intent intent = new Intent(this, LineupPlayersActivity.class);
         intent.putExtra(LineupPlayersActivity.LINEUP_BUNDLE_KEY, lineup);
         this.startActivity(intent);
@@ -326,12 +353,12 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
      * @param lineup lineup for which the likes will be displayed
      */
     @Override
-    public void showLineupLikes(Lineup lineup) {
+    public void showLineupLikesView(Lineup lineup) {
         LikeFragment fragment = LikeFragment.newInstance(lineup);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
         presenter.setMainViewVisible(false);
         this.invalidateOptionsMenu();
     }
@@ -342,26 +369,13 @@ public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Lis
      * @param lineup lineup for which the comments will be displayed
      */
     @Override
-    public void showLineupComments(Lineup lineup) {
+    public void showLineupCommentsView(Lineup lineup) {
         CommentsFragment fragment = CommentsFragment.newInstance(lineup.getId());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
         presenter.setMainViewVisible(false);
         this.invalidateOptionsMenu();
-    }
-
-    /**
-     * Called when the back button is pressed.
-     */
-    @Override
-    public void onBackPressed() {
-        if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            this.setTitle(title);
-            presenter.setMainViewVisible(true);
-            this.invalidateOptionsMenu();
-        }
-        super.onBackPressed();
     }
 }

@@ -59,6 +59,7 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setTitle(title)
                 .setMessage(message)
+                .setCancelable(false)
                 .setPositiveButton("Yes", this)
                 .setNegativeButton("Cancel", this);
         return builder.create();
@@ -82,6 +83,7 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
      * dialog is closed.
      */
     public interface Listener {
+
         void onDialogConfirm();
     }
 }

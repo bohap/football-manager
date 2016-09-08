@@ -13,13 +13,10 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupDetailsActivityComponent;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
-import com.android.finki.mpip.footballdreamteam.ui.adapter.LineupsDetailsViewPagerAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupDetailsActivityPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.junit.After;

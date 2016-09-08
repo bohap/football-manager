@@ -2,8 +2,9 @@ package com.android.finki.mpip.footballdreamteam.dependency.module.ui;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.FragmentScope;
+import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayersView;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,12 +13,12 @@ import dagger.Provides;
  * Created by Borce on 17.08.2016.
  */
 @Module
-public class ListPositionPlayersFragmentModule {
+public class ListPositionPlayersViewModule {
 
-    private ListPositionPlayersFragment fragment;
+    private ListPositionPlayersView view;
 
-    public ListPositionPlayersFragmentModule(ListPositionPlayersFragment fragment) {
-        this.fragment = fragment;
+    public ListPositionPlayersViewModule(ListPositionPlayersView view) {
+        this.view = view;
     }
 
     /**
@@ -28,8 +29,8 @@ public class ListPositionPlayersFragmentModule {
      */
     @Provides
     @FragmentScope
-    ListPositionPlayersFragmentPresenter provideListPositionPlayersFragmentPresenter(
+    ListPositionPlayersViewPresenter provideListPositionPlayersFragmentPresenter(
             PlayerDBService playerDBService) {
-        return new ListPositionPlayersFragmentPresenter(fragment, playerDBService);
+        return new ListPositionPlayersViewPresenter(view, playerDBService);
     }
 }

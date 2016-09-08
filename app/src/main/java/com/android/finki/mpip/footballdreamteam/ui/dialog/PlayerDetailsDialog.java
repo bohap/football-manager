@@ -13,8 +13,9 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.PlayerDetailsDialogModule;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsDialogPresenter;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.PlayerDetailsViewModule;
+import com.android.finki.mpip.footballdreamteam.ui.component.PlayerDetailsView;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +29,12 @@ import butterknife.OnClick;
 /**
  * Created by Borce on 20.08.2016.
  */
-public class PlayerDetailsDialog extends DialogFragment {
+public class PlayerDetailsDialog extends DialogFragment implements PlayerDetailsView {
 
     private static Logger logger = LoggerFactory.getLogger(PlayerDetailsDialog.class);
     public static final String TAG = "PLAYER_DETAILS_DIALOG";
-    private static final String BUNDLE_PLAYER_ID_KEY = "player_id";
-    private static final String BUNDLE_EDITABLE_KEY = "editable";
 
-    private PlayerDetailsDialogPresenter presenter;
+    private PlayerDetailsViewPresenter presenter;
 
     @BindView(R.id.playerDetailsLayout_name)
     TextView txtName;
@@ -79,26 +78,8 @@ public class PlayerDetailsDialog extends DialogFragment {
      * @param presenter instance of the dialog presenter
      */
     @Inject
-    public void setPresenter(PlayerDetailsDialogPresenter presenter) {
+    public void setPresenter(PlayerDetailsViewPresenter presenter) {
         this.presenter = presenter;
-    }
-
-    /**
-     * Get the key to the bundle where the player id is saved.
-     *
-     * @return bundle key
-     */
-    public static String getBundlePlayerIdKey() {
-        return BUNDLE_PLAYER_ID_KEY;
-    }
-
-    /**
-     * Get the key to the bundle where the editable value is saved,
-     *
-     * @return bundle key
-     */
-    public static String getBundleEditableKey() {
-        return BUNDLE_EDITABLE_KEY;
     }
 
     /**
@@ -110,7 +91,7 @@ public class PlayerDetailsDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
-                .plus(new PlayerDetailsDialogModule(this)).inject(this);
+                .plus(new PlayerDetailsViewModule(this)).inject(this);
         this.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
         presenter.onDialogCreated(this.getArguments());
     }
@@ -143,8 +124,12 @@ public class PlayerDetailsDialog extends DialogFragment {
      * @param position name of the player position
      * @param editable whatever the user can removeLike the player
      */
+    @Override
     public void bindPlayer(String name, String team, String age,
                            String position, boolean editable) {
+        if (!this.isVisible()) {
+            return;
+        }
         txtName.setText(name);
         txtTeam.setText(team);
         txtAge.setText(age);

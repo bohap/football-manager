@@ -12,11 +12,11 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeFragmentComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.LikesAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeViewPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,10 +51,10 @@ import static org.mockito.Mockito.verify;
 public class LikeFragmentTest {
 
     @Mock
-    private LikeFragmentComponent component;
+    private LikeViewComponent component;
 
     @Mock
-    private LikeFragmentPresenter presenter;
+    private LikeViewPresenter presenter;
 
     private LikeFragment fragment;
     private RelativeLayout spinner;

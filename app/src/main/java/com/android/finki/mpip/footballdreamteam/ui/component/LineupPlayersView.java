@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Borce on 28.08.2016.
  */
-public interface LineupPlayersView {
+public interface LineupPlayersView extends BaseView {
 
     void showBtnChangeFormation();
 

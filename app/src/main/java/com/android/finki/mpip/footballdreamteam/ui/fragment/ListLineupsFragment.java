@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,8 @@ import butterknife.Unbinder;
 /**
  * Created by Borce on 05.09.2016.
  */
-public class ListLineupsFragment extends Fragment implements ListLineupsView {
+public class ListLineupsFragment extends BaseFragment implements ListLineupsView,
+        ListLineupsAdapter.Listener {
 
     public static final String TAG = "LIST_LINEUPS_FRAGMENT";
     private ListLineupsViewPresenter presenter;
@@ -72,10 +72,6 @@ public class ListLineupsFragment extends Fragment implements ListLineupsView {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (! (this.getActivity() instanceof ListLineupsAdapter.Listener)) {
-            throw new IllegalArgumentException(
-                    "activity must implement ListLineupsAdapter.Listener");
-        }
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new ListLineupsViewModule(this)).inject(this);
         presenter.loadLineups();
@@ -99,8 +95,7 @@ public class ListLineupsFragment extends Fragment implements ListLineupsView {
         View footer = inflater.inflate(R.layout.lineups_footer, null);
         listViewFooterHolder = new LineupsListViewFooterHolder(footer);
         listView.addFooterView(footer);
-        adapter = new ListLineupsAdapter(this.getActivity(),
-                (ListLineupsAdapter.Listener)this.getActivity());
+        adapter = new ListLineupsAdapter(this.getActivity(), this);
         listView.setAdapter(adapter);
         adapter.update(presenter.getLineups());
         return view;
@@ -166,6 +161,42 @@ public class ListLineupsFragment extends Fragment implements ListLineupsView {
     }
 
     /**
+     * Called when the lineup players from the list has been selected.
+     *
+     * @param lineup selected lineup in the list
+     */
+    @Override
+    public void onLineupPlayersSelected(Lineup lineup) {
+        if (this.getActivity() instanceof Listener) {
+            ((Listener) this.getActivity()).showLineupPlayersView(lineup);
+        }
+    }
+
+    /**
+     * Called when lineup likes from the list has been selected.
+     *
+     * @param lineup selected lineup in the list
+     */
+    @Override
+    public void onLineupLikesSelected(Lineup lineup) {
+        if (this.getActivity() instanceof Listener) {
+            ((Listener) this.getActivity()).showLineupLikesView(lineup);
+        }
+    }
+
+    /**
+     * Called when lineup comments from the list has been selected.
+     *
+     * @param lineup selected lineup in the list.
+     */
+    @Override
+    public void onLineupCommentsSelected(Lineup lineup) {
+        if (this.getActivity() instanceof Listener) {
+            ((Listener) this.getActivity()).showLineupCommentsView(lineup);
+        }
+    }
+
+    /**
      * Class holder for the lineups list view footer.
      */
     class LineupsListViewFooterHolder {
@@ -191,5 +222,17 @@ public class ListLineupsFragment extends Fragment implements ListLineupsView {
             lineupsListViewSpinner.setVisibility(View.VISIBLE);
             presenter.loadMoreLineups();
         }
+    }
+
+    /**
+     * Fragment listener user for communication with the activity.
+     */
+    public interface Listener {
+
+        void showLineupPlayersView(Lineup lineup);
+
+        void showLineupLikesView(Lineup lineup);
+
+        void showLineupCommentsView(Lineup lineup);
     }
 }

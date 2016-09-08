@@ -2,6 +2,7 @@ package com.android.finki.mpip.footballdreamteam.dependency.module.ui;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PositionDBService;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.FragmentScope;
+import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
@@ -16,12 +17,12 @@ import dagger.Provides;
  * Created by Borce on 13.08.2016.
  */
 @Module
-public class LineupFormationFragmentModule {
+public class LineupFormationViewModule {
 
-    private LineupFormationFragment fragment;
+    private LineupFormationView view;
 
-    public LineupFormationFragmentModule(LineupFormationFragment fragment) {
-        this.fragment = fragment;
+    public LineupFormationViewModule(LineupFormationView view) {
+        this.view = view;
     }
 
     /**
@@ -40,7 +41,7 @@ public class LineupFormationFragmentModule {
             PositionDBService positionDBService, LineupUtils lineupUtils,
             PlayerUtils playerUtils, PositionUtils positionUtils,
             LineupPlayerValidator validator) {
-        return new LineupFormationFragmentPresenter(fragment, positionDBService,
+        return new LineupFormationFragmentPresenter(view, positionDBService,
                 lineupUtils, playerUtils, positionUtils, validator);
     }
 }

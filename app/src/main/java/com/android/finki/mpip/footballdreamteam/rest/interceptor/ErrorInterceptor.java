@@ -1,8 +1,12 @@
 package com.android.finki.mpip.footballdreamteam.rest.interceptor;
 
+import com.android.finki.mpip.footballdreamteam.exception.InternalServerErrorException;
+import com.android.finki.mpip.footballdreamteam.exception.NotAuthenticatedException;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -19,6 +23,20 @@ public class ErrorInterceptor implements Interceptor {
      */
     @Override
     public Response intercept(Chain chain) throws IOException {
-        return chain.proceed(chain.request());
+        Request request = chain.request();
+        Response response = chain.proceed(request);
+        int code = response.code();
+        if (code != 200 && code >= 400 && code <= 500) {
+            switch (code) {
+                case 401:
+                    throw new NotAuthenticatedException(response);
+                case 500:
+                    throw new InternalServerErrorException(response);
+                default:
+                    throw new IOException(String
+                            .format("server responded with error code %d", code));
+            }
+        }
+        return response;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Borce on 22.08.2016.
  */
-public interface CreatedLineupView {
+public interface CreatedLineupView extends BaseView {
 
     List<Player> getPlayersOrdered();
 

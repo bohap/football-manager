@@ -1,18 +1,18 @@
 package com.android.finki.mpip.footballdreamteam.dependency.component;
 
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginActivityComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashActivityComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.BaseViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.AppModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.AuthModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.NetModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginActivityModule;
-import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashActivityModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashViewModule;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
-import retrofit2.Retrofit;
 
 /**
  * Created by Borce on 25.07.2016.
@@ -21,9 +21,11 @@ import retrofit2.Retrofit;
 @Component(modules = {AppModule.class, NetModule.class, AuthModule.class})
 public interface AppComponent {
 
-    SplashActivityComponent plus(SplashActivityModule module);
+    BaseViewComponent plus();
 
-    LoginActivityComponent plus(LoginActivityModule module);
+    SplashViewComponent plus(SplashViewModule module);
+
+    LoginViewComponent plus(LoginViewModule module);
 
     UserComponent plus(UserModule module);
 }

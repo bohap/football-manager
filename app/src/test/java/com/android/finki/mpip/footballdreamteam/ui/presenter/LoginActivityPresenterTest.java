@@ -73,7 +73,7 @@ public class LoginActivityPresenterTest {
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
-    private LoginActivityPresenter presenter;
+    private LoginViewPresenter presenter;
 
     private String AUTH_USER_ID_KEY = "auth_user_id_key";
     private User user = new User(1, "User", "user@user.com", null, null, "token");
@@ -95,7 +95,7 @@ public class LoginActivityPresenterTest {
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(this);
         this.initMocks();
-        presenter = new LoginActivityPresenter(activity, preferences, userDBService, authApi);
+        presenter = new LoginViewPresenter(activity, preferences, userDBService, authApi);
     }
 
     @SuppressLint("CommitPrefEdits")

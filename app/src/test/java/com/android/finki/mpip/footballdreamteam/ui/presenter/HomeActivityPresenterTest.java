@@ -126,7 +126,7 @@ public class HomeActivityPresenterTest {
     @Captor
     private ArgumentCaptor<Team> teamCaptor;
 
-    private HomeActivityPresenter presenter;
+    private HomeViewPresenter presenter;
 
     private String TEAMS_LOADED_KEY = "teams_loaded";
     private String POSITIONS_LOADED_KEY = "positions_loaded";
@@ -149,7 +149,7 @@ public class HomeActivityPresenterTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.initMocks();
-        presenter = new HomeActivityPresenter(activity, preferences, teamApi, positionApi,
+        presenter = new HomeViewPresenter(activity, preferences, teamApi, positionApi,
                 playerApi, lineupApi, storeTeamsTask, storePositionsTask, storePlayersTask);
     }
 
@@ -426,7 +426,7 @@ public class HomeActivityPresenterTest {
      */
     @Test
     public void testLoadMoreLineupsSuccess() {
-        final int limit = HomeActivityPresenter.LINEUPS_LIMIT;
+        final int limit = HomeViewPresenter.LINEUPS_LIMIT;
         presenter.loadMoreLineups();
         verify(lineupCall).enqueue(lineupsCaptor.capture());
         lineupsCaptor.getValue().onResponse(lineupCall, Response.success(lineups));
@@ -455,7 +455,7 @@ public class HomeActivityPresenterTest {
      */
     @Test
     public void testLoadMoreLineupsFailed() {
-        final int limit = HomeActivityPresenter.LINEUPS_LIMIT;
+        final int limit = HomeViewPresenter.LINEUPS_LIMIT;
         presenter.loadMoreLineups();
         verify(lineupCall).enqueue(lineupsCaptor.capture());
         lineupsCaptor.getValue().onFailure(lineupCall, new Throwable());

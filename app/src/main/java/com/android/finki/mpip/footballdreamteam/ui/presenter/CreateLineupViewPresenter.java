@@ -23,7 +23,7 @@ import retrofit2.Response;
 /**
  * Created by Borce on 22.08.2016.
  */
-public class CreateLineupViewPresenter implements Callback<LineupResponse> {
+public class CreateLineupViewPresenter extends BasePresenter implements Callback<LineupResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateLineupViewPresenter.class);
     private CreatedLineupView view;
@@ -128,40 +128,35 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
      */
     @Override
     public void onResponse(Call<LineupResponse> call, Response<LineupResponse> response) {
-        if (response.isSuccessful()) {
-            Lineup lineup = response.body().getLineup();
-            if (lineup == null) {
-                String message = "lineup can't be null";
-                logger.error(message);
-                throw new IllegalArgumentException(message);
-            }
-            view.showStoringSuccessful(lineup);
-            lineupDBService.open();
-            boolean lineupSavingError = false;
-            if (!lineupDBService.exists(lineup.getId())) {
-                try {
-                    lineupDBService.store(lineup);
-                } catch (RuntimeException exp) {
-                    logger.error("error occurred while saving the lineup");
-                    lineupSavingError = true;
-                } finally {
-                    lineupDBService.close();
-                }
-            } else {
+        Lineup lineup = response.body().getLineup();
+        if (lineup == null) {
+            throw new IllegalArgumentException("lineup is be null");
+        }
+        view.showStoringSuccessful(lineup);
+        lineupDBService.open();
+        boolean lineupSavingError = false;
+        if (!lineupDBService.exists(lineup.getId())) {
+            try {
+                lineupDBService.store(lineup);
+            } catch (RuntimeException exp) {
+                logger.error("error occurred while saving the lineup");
+                exp.printStackTrace();
+                lineupSavingError = true;
+            } finally {
                 lineupDBService.close();
             }
-            if (!lineupSavingError) {
-                lineupPlayerDBService.open();
-                try {
-                    lineupPlayerDBService.storePlayers(players);
-                } catch (RuntimeException exp) {
-                    logger.error("error occurred while saving the players");
-                } finally {
-                    lineupPlayerDBService.close();
-                }
-            }
         } else {
-            view.showStoringFailed();
+            lineupDBService.close();
+        }
+        if (!lineupSavingError) {
+            lineupPlayerDBService.open();
+            try {
+                lineupPlayerDBService.storePlayers(players);
+            } catch (RuntimeException exp) {
+                logger.error("error occurred while saving the players");
+            } finally {
+                lineupPlayerDBService.close();
+            }
         }
     }
 
@@ -174,6 +169,6 @@ public class CreateLineupViewPresenter implements Callback<LineupResponse> {
     @Override
     public void onFailure(Call<LineupResponse> call, Throwable t) {
         view.showStoringFailed();
-        //Check the exception
+        super.onRequestFailed(view, t);
     }
 }

@@ -1,17 +1,18 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
-import com.android.finki.mpip.footballdreamteam.exception.UserException;
+import com.android.finki.mpip.footballdreamteam.exception.NotAuthenticatedException;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.request.AuthenticateUserRequest;
 import com.android.finki.mpip.footballdreamteam.rest.response.AuthenticateUserResponse;
 import com.android.finki.mpip.footballdreamteam.rest.response.AuthenticationFailedResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.LoginActivity;
+import com.android.finki.mpip.footballdreamteam.ui.component.LoginView;
 import com.android.finki.mpip.footballdreamteam.utility.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -20,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.IllegalStateException;
-import java.net.SocketTimeoutException;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -31,10 +30,10 @@ import retrofit2.Response;
 /**
  * Created by Borce on 06.08.2016.
  */
-public class LoginActivityPresenter implements Callback<AuthenticateUserResponse> {
+public class LoginViewPresenter extends BasePresenter implements Callback<AuthenticateUserResponse> {
 
-    private Logger logger = LoggerFactory.getLogger(LoginActivityPresenter.class);
-    private LoginActivity activity;
+    private Logger logger = LoggerFactory.getLogger(LoginViewPresenter.class);
+    private LoginView view;
     private SharedPreferences preferences;
     private final UserDBService userDBService;
     private final AuthApi authApi;
@@ -43,15 +42,15 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
     private String JWT_TOKEN_KEY;
     private boolean isSending = false;
 
-    public LoginActivityPresenter(LoginActivity activity, SharedPreferences preferences,
-                                  UserDBService userDBService, AuthApi authApi) {
-        this.activity = activity;
+    public LoginViewPresenter(LoginView view, SharedPreferences preferences, Context context,
+                              UserDBService userDBService, AuthApi authApi) {
+        this.view = view;
         this.preferences = preferences;
         this.userDBService = userDBService;
         this.authApi = authApi;
 
-        this.AUTH_USER_ID_KEY = activity.getString(R.string.preference_auth_user_id_key);
-        this.JWT_TOKEN_KEY = activity.getString(R.string.preference_jwt_token_key);
+        this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
+        this.JWT_TOKEN_KEY = context.getString(R.string.preference_jwt_token_key);
     }
 
     /**
@@ -62,14 +61,14 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      */
     private boolean isEmailValid(String email) {
         if (StringUtils.isEmpty(email)) {
-            activity.errorEmail(LoginActivity.EMAIL_ERROR.REQUIRED);
+            view.showEmailError(LoginActivity.EMAIL_ERROR.REQUIRED);
             return false;
         }
         if (!StringUtils.isValidEmail(email)) {
-            activity.errorEmail(LoginActivity.EMAIL_ERROR.INVALID);
+            view.showEmailError(LoginActivity.EMAIL_ERROR.INVALID);
             return false;
         }
-        activity.okEmail();
+        view.showEmailOk();
         return true;
     }
 
@@ -81,10 +80,10 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      */
     private boolean isPasswordValid(String password) {
         if (StringUtils.isEmpty(password)) {
-            activity.errorPassword();
+            view.showPasswordError();
             return false;
         }
-        activity.okPassword();
+        view.showPasswordOk();
         return true;
     }
 
@@ -95,16 +94,14 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      * @param password user password
      */
     public void login(String email, String password) {
-        boolean valid = true;
-        valid = this.isEmailValid(email);
+        boolean valid = this.isEmailValid(email);
         valid = this.isPasswordValid(password) && valid;
-        if (valid && ! isSending) {
+        if (valid && !isSending) {
             isSending = true;
             logger.info("sending login request");
-            activity.showLoading();
+            view.showLogging();
             AuthenticateUserRequest request = new AuthenticateUserRequest(email, password);
-            Call<AuthenticateUserResponse> call = authApi.login(request);
-            call.enqueue(this);
+            authApi.login(request).enqueue(this);
         }
     }
 
@@ -118,15 +115,26 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
     public void onResponse(Call<AuthenticateUserResponse> call,
                            Response<AuthenticateUserResponse> response) {
         isSending = false;
-        if (response.isSuccessful()) {
-            logger.info("Login request succeeded");
-            this.loginSuccess(response);
-        } else if (response.code() == 401) {
-            logger.info("login response return 401");
-            this.authenticationFailed(response);
+        logger.info("Login request succeeded");
+        this.loginSuccess(response);
+    }
+
+    /**
+     * Called when the login request failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has throw
+     */
+    @Override
+    public void onFailure(Call<AuthenticateUserResponse> call, Throwable t) {
+        logger.error("login request error");
+        t.printStackTrace();
+        isSending = false;
+        if (t instanceof NotAuthenticatedException) {
+            this.authenticationFailed(((NotAuthenticatedException) t).getResponse());
         } else {
-            logger.info(String.format("login response with code %d", response.code()));
-            activity.showServerErrorMessage();
+            view.showLoginFailed();
+            super.onRequestFailed(view, t);
         }
     }
 
@@ -137,8 +145,8 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      */
     private void loginSuccess(Response<AuthenticateUserResponse> response) {
         AuthenticateUserResponse body = response.body();
-        User user = new User(body.getId(), body.getName(), body.getEmail(),
-                new Date(), new Date());
+        User user = new User(body.getId(), body.getName(),
+                body.getEmail(), new Date(), new Date());
         userDBService.open();
         try {
             if (!userDBService.exists(user.getId())) {
@@ -148,15 +156,16 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
             }
         } catch (RuntimeException exp) {
             exp.printStackTrace();
-            activity.showAppErrorMessage();
+            view.showLoginFailed();
+            view.showInternalServerError();
             userDBService.close();
             return;
         }
         userDBService.close();
         preferences.edit().putInt(AUTH_USER_ID_KEY, user.getId()).apply();
         preferences.edit().putString(JWT_TOKEN_KEY, body.getJwtToken()).apply();
-        ((MainApplication) activity.getApplication()).createUserComponent(user);
-        activity.successfulLogin();
+        view.createUserComponent(user);
+        view.showLoginSuccessful();
     }
 
     /**
@@ -164,35 +173,16 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      *
      * @param response server response
      */
-    private void authenticationFailed(Response<AuthenticateUserResponse> response) {
+    private void authenticationFailed(okhttp3.Response response) {
         Gson gson = new Gson();
         try {
-            AuthenticationFailedResponse error = gson.fromJson(response.errorBody().string(),
+            AuthenticationFailedResponse error = gson.fromJson(response.body().string(),
                     AuthenticationFailedResponse.class);
-            activity.failedLogin(error.getErrors());
+            view.showLoginFailed(error.getErrors());
         } catch (IOException | JsonSyntaxException exp) {
             exp.printStackTrace();
-            activity.loginError();
-            activity.showServerErrorMessage();
-        }
-    }
-
-    /**
-     * Called when the login request failed.
-     *
-     * @param call retrofit call
-     * @param t exception that has throw
-     */
-    @Override
-    public void onFailure(Call<AuthenticateUserResponse> call, Throwable t) {
-        logger.error("login request error");
-        isSending = false;
-        activity.loginError();
-        t.printStackTrace();
-        if (t instanceof SocketTimeoutException) {
-            activity.showConnectionTimeoutMessage();
-        } else {
-            activity.showServerErrorMessage();
+            view.showLoginFailed();
+            view.showInternalServerError();
         }
     }
 }

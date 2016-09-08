@@ -42,7 +42,7 @@ public class SplashActivityPresenterTest {
     @Mock
     private MainApplication application;
 
-    private SplashActivityPresenter presenter;
+    private SplashViewPresenter presenter;
 
     private String FIRST_TIME_KEY = "first_time";
     private String AUTH_USER_ID_KEY = "auth_user_id";
@@ -52,7 +52,7 @@ public class SplashActivityPresenterTest {
         MockitoAnnotations.initMocks(this);
         this.initContext();
         when(activity.getApplication()).thenReturn(application);
-        presenter = new SplashActivityPresenter(activity, context, preferences, service);
+        presenter = new SplashViewPresenter(activity, context, preferences, service);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
+import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.utility.ArrayUtils;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
@@ -29,7 +30,7 @@ public class LineupFormationFragmentPresenter {
 
     private static Logger logger = LoggerFactory.getLogger(LineupFormationFragmentPresenter.class);
 
-    private LineupFormationFragment fragment;
+    private LineupFormationView view;
     private PositionDBService positionDBService;
     private LineupUtils lineupUtils;
     private PlayerUtils playerUtils;
@@ -41,12 +42,12 @@ public class LineupFormationFragmentPresenter {
     private boolean editable = false;
     private int selectedPositionResourceId = -1;
 
-    public LineupFormationFragmentPresenter(LineupFormationFragment fragment,
+    public LineupFormationFragmentPresenter(LineupFormationView view,
                                             PositionDBService positionDBService,
                                             LineupUtils lineupUtils, PlayerUtils playerUtils,
                                             PositionUtils positionUtils,
                                             LineupPlayerValidator validator) {
-        this.fragment = fragment;
+        this.view = view;
         this.positionDBService = positionDBService;
         this.lineupUtils = lineupUtils;
         this.playerUtils = playerUtils;
@@ -55,9 +56,9 @@ public class LineupFormationFragmentPresenter {
     }
 
     /**
-     * Called when the fragment is created.
+     * Called when the view is created.
      *
-     * @param args Fragment arguments
+     * @param args view arguments
      */
     public void onFragmentCreated(Bundle args) {
         if (args == null) {
@@ -71,7 +72,7 @@ public class LineupFormationFragmentPresenter {
             serializable = args.getSerializable(LineupFormationFragment.FORMATION_KEY);
             if (!(serializable instanceof LineupUtils.FORMATION)) {
                 throw new IllegalArgumentException(
-                        "neither player of formation provided for fragment");
+                        "neither player of formation provided for view");
             }
             LineupUtils.FORMATION formation = (LineupUtils.FORMATION) serializable;
             serializable = args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY);
@@ -158,9 +159,9 @@ public class LineupFormationFragmentPresenter {
         positionDBService.close();
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
         if (validator.validate(lineupPlayers)) {
-            fragment.lineupValid();
+            view.showInvalidLineup();
         } else {
-            fragment.lineupInvalid();
+            view.showInvalidLineup();
         }
     }
 
@@ -174,10 +175,10 @@ public class LineupFormationFragmentPresenter {
     }
 
     /**
-     * Called when the fragment view has been created.
+     * Called when the view view has been created.
      */
     public void onViewCreated() {
-        fragment.bindPlayers();
+        view.bindPlayers();
     }
 
     /**
@@ -216,7 +217,7 @@ public class LineupFormationFragmentPresenter {
         }
         int playerId = player.getId();
         if (playerId > 0) {
-            fragment.showPlayerDetailsDialog(playerId, editable);
+            view.showPlayerDetailsView(playerId, editable);
         } else if (playerId == 0) {
             PositionUtils.POSITION_PLACE place = positionUtils.getPositionPlace(positionResourceId);
             List<Integer> playersToExclude = new ArrayList<>();
@@ -226,7 +227,7 @@ public class LineupFormationFragmentPresenter {
                     playersToExclude.add(mapPlayer.getId());
                 }
             }
-            fragment.showListPositionPlayersFragment(place, ArrayUtils.toInt(playersToExclude));
+            view.showListPositionPlayersView(place, ArrayUtils.toInt(playersToExclude));
         } else {
             throw new IllegalArgumentException(String.format("invalid player id, %d", playerId));
         }
@@ -250,13 +251,13 @@ public class LineupFormationFragmentPresenter {
         player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
         mappedPlayers.put(selectedPositionResourceId, player);
 
-        fragment.bindPlayers();
+        view.bindPlayers();
         selectedPositionResourceId = -1;
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
         if (validator.validate(lineupPlayers)) {
-            fragment.lineupValid();
+            view.showValidLineup();
         } else {
-            fragment.lineupInvalid();
+            view.showInvalidLineup();
         }
     }
 
@@ -269,8 +270,8 @@ public class LineupFormationFragmentPresenter {
         }
         mappedPlayers.put(selectedPositionResourceId, new Player());
         selectedPositionResourceId = -1;
-        fragment.bindPlayers();
-        fragment.lineupInvalid();
+        view.bindPlayers();
+        view.showInvalidLineup();
     }
 
     /**
@@ -281,7 +282,7 @@ public class LineupFormationFragmentPresenter {
             throw new IllegalArgumentException("position not selected");
         }
         selectedPositionResourceId = -1;
-        fragment.lineupInvalid();
+        view.showInvalidLineup();
     }
 
     /**

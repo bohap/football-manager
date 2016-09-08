@@ -40,6 +40,7 @@ dependencies {
     /* Retrofit */
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     /* Unit Tests */
@@ -57,5 +58,4 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestApt 'com.google.dagger:dagger-compiler:2.5'
-    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }
