@@ -22,11 +22,6 @@ public class AuthenticateUserResponse extends AuthUser implements Serializable {
         this.jwtToken = jwtToken;
     }
 
-    public AuthenticateUserResponse(User user) {
-        super(user.getId(), user.getName(), user.getEmail());
-        this.jwtToken = user.getJwtToken();
-    }
-
     public String getJwtToken() {
         return jwtToken;
     }

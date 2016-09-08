@@ -3,8 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     created_at DATETIME,
-    updated_at DATETIME,
-    jwt_token VARCHAR(255)
+    updated_at DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS teams (

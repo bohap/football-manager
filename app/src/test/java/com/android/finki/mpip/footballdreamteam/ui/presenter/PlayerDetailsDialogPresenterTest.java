@@ -122,7 +122,7 @@ public class PlayerDetailsDialogPresenterTest {
     }
 
     /**
-     * Test the behavior when onViewCreated is called.
+     * Test the behavior when loadComments is called.
      */
     @Test
     public void testOnViewCreated() {

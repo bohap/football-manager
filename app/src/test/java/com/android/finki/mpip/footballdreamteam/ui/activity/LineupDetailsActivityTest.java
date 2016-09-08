@@ -17,7 +17,7 @@ import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupDe
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.LineupsDetailsViewPagerAdapter;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupDetailsActivityPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
@@ -73,7 +73,7 @@ public class LineupDetailsActivityTest {
     private LikeFragment likeFragment;
 
     @Mock
-    private CommentFragment commentFragment;
+    private CommentsFragment commentFragment;
 
     private final int VIEW_PAGER_PAGES = 2;
 

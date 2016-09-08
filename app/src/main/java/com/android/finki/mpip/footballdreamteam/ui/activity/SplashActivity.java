@@ -39,7 +39,6 @@ public class SplashActivity extends AppCompatActivity implements InfoDialog.List
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.splash_layout);
         ButterKnife.bind(this);
         ((MainApplication)this.getApplication()).getAppComponent()
                 .plus(new SplashActivityModule(this)).inject(this);

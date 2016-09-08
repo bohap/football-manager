@@ -57,4 +57,5 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestApt 'com.google.dagger:dagger-compiler:2.5'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

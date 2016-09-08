@@ -10,7 +10,7 @@ import com.android.finki.mpip.footballdreamteam.MockActivity;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 
 import org.junit.Before;
@@ -78,7 +78,7 @@ public class LineupsDetailsViewPagerAdapterTest {
     @Test
     public void testAdapterListCorrectlySet() {
         assertTrue(adapter.getItem(0) instanceof LikeFragment);
-        assertTrue(adapter.getItem(1) instanceof CommentFragment);
+        assertTrue(adapter.getItem(1) instanceof CommentsFragment);
     }
 
     /**

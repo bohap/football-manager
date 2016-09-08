@@ -139,7 +139,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onViewCreated when position place is not set.
+     * Test the behavior on loadComments when position place is not set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnViewCreatedWhenPositionPlaceIsNotSet() {
@@ -147,7 +147,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onViewCreated when position place is keepers.
+     * Test the behavior on loadComments when position place is keepers.
      */
     @Test
     public void testOnViewCreatedWithKeepersPositionPlace() {
@@ -162,7 +162,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onViewCreated when position place is defenders.
+     * Test the behavior on loadComments when position place is defenders.
      */
     @Test
     public void testOnViewCreatedWithDefendersPositionPlace() {
@@ -177,7 +177,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onViewCreated when position place is midfielders.
+     * Test the behavior on loadComments when position place is midfielders.
      */
     @Test
     public void testOnViewCreatedWithMidfieldersPositionPlace() {
@@ -192,7 +192,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onViewCreated when position place is attackers.
+     * Test the behavior on loadComments when position place is attackers.
      */
     @Test
     public void testOnViewCreatedWithAttackersPositionPlace() {

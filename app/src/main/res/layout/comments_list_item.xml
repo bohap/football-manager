@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MainContent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/commentListItem_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+            android:id="@+id/commentListItem_userIcon"
+            style="@style/TextView.Icon.Small"
+            android:layout_marginRight="@dimen/small_verticalMargin"
+            android:layout_marginEnd="@dimen/small_verticalMargin"
+            android:text="@string/fa_user" />
+        <TextView
+            android:id="@+id/commentListItem_user"
+            style="@style/TextView"
+            android:layout_toRightOf="@+id/commentListItem_userIcon"
+            android:layout_toEndOf="@+id/commentListItem_userIcon" />
+        <TextView
+            android:id="@+id/commentListItem_body"
+            style="@style/TextView.Block"
+            android:textSize="@dimen/smallTextSize"
+            android:clickable="true"
+            android:maxLines="2"
+            android:ellipsize= "end"
+            android:layout_below="@+id/commentListItem_user"
+            android:layout_marginTop="@dimen/small_verticalMargin"
+            android:layout_toLeftOf="@+id/commentListItem_btnsHolder"
+            android:layout_toStartOf="@+id/commentListItem_btnsHolder"
+            android:layout_marginRight="@dimen/small_horizontalMargin"
+            android:layout_marginEnd="@dimen/small_horizontalMargin" />
+        <EditText
+            android:id="@+id/commentListItem_txtBody"
+            style="@style/EditText"
+            android:textSize="@dimen/smallTextSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="10000"
+            android:inputType="textMultiLine"
+            android:layout_below="@+id/commentListItem_user"
+            android:layout_marginTop="@dimen/small_verticalMargin"
+            android:layout_toLeftOf="@+id/commentListItem_btnsHolder"
+            android:layout_toStartOf="@+id/commentListItem_btnsHolder"
+            android:layout_marginRight="@dimen/small_horizontalMargin"
+            android:layout_marginEnd="@dimen/small_horizontalMargin"
+            android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/commentListItem_btnsHolder"
+            android:layout_width="wrap_content"
+            android:minWidth="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@+id/commentListItem_userIcon"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+            <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                android:id="@+id/commentListItem_btnEdit"
+                style="@style/Button.Small.Primary.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/fa_pencil_square_o"
+                android:visibility="gone"/>
+            <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                android:id="@+id/commentListItem_btnUpdate"
+                style="@style/Button.Small.Success.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/fa_check"
+                android:visibility="gone" />
+            <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                android:id="@+id/commentListItem_btnRemove"
+                style="@style/Button.Small.Danger.Icon"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/small_verticalMargin"
+                android:text="@string/fa_trash"
+                android:visibility="gone"/>
+            <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                android:id="@+id/commentListItem_btnCancelUpdate"
+                style="@style/Button.Small.Danger.Icon"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/small_verticalMargin"
+                android:text="@string/fa_times"
+                 android:visibility="gone" />
+        </LinearLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/commentListItem_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+        <ProgressBar
+            style="@style/Spinner"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+    </LinearLayout>
+</LinearLayout>

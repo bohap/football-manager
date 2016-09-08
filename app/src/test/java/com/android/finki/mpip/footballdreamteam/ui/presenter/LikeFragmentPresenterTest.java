@@ -319,7 +319,7 @@ public class LikeFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior when onViewCreated is called and a request to load the lineups is
+     * Test the behavior when loadComments is called and a request to load the lineups is
      * not sending at the moment.
      */
     @Test
@@ -329,7 +329,7 @@ public class LikeFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior when onViewCreated is called and a request to load the lineups is
+     * Test the behavior when loadComments is called and a request to load the lineups is
      * sending at the moment.
      */
     @Test

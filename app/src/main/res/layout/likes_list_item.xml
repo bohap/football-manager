@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MainContent"
     android:orientation="vertical">
+    <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+        android:id="@+id/likeListItem_userIcon"
+        style="@style/TextView.Icon.Small"
+        android:layout_marginRight="@dimen/small_horizontalMargin"
+        android:layout_marginEnd="@dimen/small_horizontalMargin"
+        android:text="@string/fa_user" />
     <TextView
         android:id="@+id/likesListItem_user"
-        style="@style/TextView" />
+        style="@style/TextView"
+        android:layout_toRightOf="@+id/likeListItem_userIcon"
+        android:layout_toEndOf="@+id/likeListItem_userIcon" />
+    <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
+        android:id="@+id/likeListItem_timeIcon"
+        style="@style/TextView.Icon.Tiny"
+        android:layout_below="@+id/likesListItem_user"
+        android:layout_marginTop="@dimen/small_verticalMargin"
+        android:layout_marginRight="@dimen/small_horizontalMargin"
+        android:layout_marginEnd="@dimen/small_horizontalMargin"
+        android:text="@string/fa_clock_o" />
     <TextView
         android:id="@+id/likesListItem_cratedAt"
-        style="@style/TextView" />
-</LinearLayout>
+        style="@style/TextView.Small"
+        android:layout_alignTop="@+id/likeListItem_timeIcon"
+        android:layout_toRightOf="@+id/likeListItem_timeIcon"
+        android:layout_toEndOf="@+id/likeListItem_timeIcon" />
+</RelativeLayout>

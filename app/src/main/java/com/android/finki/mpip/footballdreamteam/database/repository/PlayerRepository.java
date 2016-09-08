@@ -1,7 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.database.repository;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 
 import com.android.finki.mpip.footballdreamteam.R;
@@ -104,8 +103,8 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
     /**
      * Create a sql query that will also get team and position for the player.
      *
-     * @param team indicates if the team should be taken
-     * @param  position indicates if hte position should be taken
+     * @param team     indicates if the team should be taken
+     * @param position indicates if hte position should be taken
      * @return sql query
      */
     private String getQuery(boolean team, boolean position) {
@@ -236,7 +235,7 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
      * their id is not in the array of players to exclude.
      *
      * @param playersToExclude arrays of players ids
-     * @param positionsIds array of positions ids
+     * @param positionsIds     array of positions ids
      * @return List if Players
      */
     public List<Player> getPositionPlayers(int[] playersToExclude, Integer... positionsIds) {
@@ -265,6 +264,6 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
         if (playersToExclude.length > 0) {
             where.append(")");
         }
-        return super.getMultiple(this.getQuery(true, false), where.toString(), whereArgs);
+        return super.getMultiple(this.getQuery(true, true), where.toString(), whereArgs);
     }
 }

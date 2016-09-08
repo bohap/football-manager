@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by Borce on 10.08.2016.
@@ -29,10 +32,12 @@ public class ListLineupsAdapter extends BaseAdapter {
     private static Logger logger = LoggerFactory.getLogger(ListLineupsAdapter.class);
 
     private Context context;
+    private Listener listener;
     private List<Lineup> lineups;
 
-    public ListLineupsAdapter(Context context) {
+    public ListLineupsAdapter(Context context, Listener listener) {
         this.context = context;
+        this.listener = listener;
         lineups = new ArrayList<>();
     }
 
@@ -135,22 +140,22 @@ public class ListLineupsAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-
         Lineup lineup = lineups.get(position);
-        if (lineup != null) {
-            User user = lineup.getUser();
-            if (user != null) {
-                holder.txtUser.setText(String.format("by %s", user.getName()));
-            }
-            holder.txtUpdatedAt.setText(DateUtils.dayNameFormat(lineup.getUpdatedAt()));
+        holder.setLineup(lineup);
+        User user = lineup.getUser();
+        if (user != null) {
+            holder.txtUser.setText(String.format("by %s", user.getName()));
         }
+        holder.txtUpdatedAt.setText(DateUtils.dayNameFormat(lineup.getUpdatedAt()));
         return view;
     }
 
     /**
      * View holder for the list layout to improve view searching.
      */
-    static class ViewHolder {
+    public class ViewHolder {
+
+        private Lineup lineup;
 
         @BindView(R.id.lineupsItem_user)
         TextView txtUser;
@@ -161,5 +166,56 @@ public class ListLineupsAdapter extends BaseAdapter {
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
+
+        /**
+         * Set the holder lineup.
+         *
+         * @param lineup ViewHolder lineup
+         */
+        public void setLineup(Lineup lineup) {
+            this.lineup = lineup;
+        }
+
+        /**
+         * Handle click on the main content.
+         */
+        @OnClick(R.id.lineupsListItem_main)
+        void onMainContentClick() {
+            if (lineup == null) {
+                throw new IllegalArgumentException("lineup not set");
+            }
+            listener.showLineupPlayers(lineup);
+        }
+
+        /**
+         * Handle click on the likes content.
+         */
+        @OnClick(R.id.lineupsListItem_likes)
+        void onLikedClick() {
+            if (lineup == null) {
+                throw new IllegalArgumentException("lineup not set");
+            }
+            listener.showLineupLikes(lineup);
+        }
+
+        /**
+         * Handle click on the comments content.
+         */
+        @OnClick(R.id.lineupsListItem_comments)
+        void onCommentsClick() {
+            if (lineup == null) {
+                throw new IllegalArgumentException("lineup not set");
+            }
+            listener.showLineupComments(lineup);
+        }
+    }
+
+    public interface Listener {
+
+        void showLineupPlayers(Lineup lineup);
+
+        void showLineupLikes(Lineup lineup);
+
+        void showLineupComments(Lineup lineup);
     }
 }

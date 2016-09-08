@@ -40,6 +40,7 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
     private final AuthApi authApi;
 
     private String AUTH_USER_ID_KEY;
+    private String JWT_TOKEN_KEY;
     private boolean isSending = false;
 
     public LoginActivityPresenter(LoginActivity activity, SharedPreferences preferences,
@@ -50,6 +51,7 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
         this.authApi = authApi;
 
         this.AUTH_USER_ID_KEY = activity.getString(R.string.preference_auth_user_id_key);
+        this.JWT_TOKEN_KEY = activity.getString(R.string.preference_jwt_token_key);
     }
 
     /**
@@ -135,8 +137,8 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
      */
     private void loginSuccess(Response<AuthenticateUserResponse> response) {
         AuthenticateUserResponse body = response.body();
-        User user = new User(body.getId(), body.getName(), body.getEmail(), new Date(),
-                new Date(), body.getJwtToken());
+        User user = new User(body.getId(), body.getName(), body.getEmail(),
+                new Date(), new Date());
         userDBService.open();
         try {
             if (!userDBService.exists(user.getId())) {
@@ -152,6 +154,7 @@ public class LoginActivityPresenter implements Callback<AuthenticateUserResponse
         }
         userDBService.close();
         preferences.edit().putInt(AUTH_USER_ID_KEY, user.getId()).apply();
+        preferences.edit().putString(JWT_TOKEN_KEY, body.getJwtToken()).apply();
         ((MainApplication) activity.getApplication()).createUserComponent(user);
         activity.successfulLogin();
     }

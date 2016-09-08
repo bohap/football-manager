@@ -90,7 +90,7 @@ public class HomeActivityTest {
         assertNotNull(txtSpinner);
         lineupsListContent = (RelativeLayout) activity.findViewById(R.id.homeLayout_mainContent);
         assertNotNull(lineupsListContent);
-        lineupsListView = (ListView) activity.findViewById(R.id.homeLayout_lineupsListView);
+        lineupsListView = (ListView) activity.findViewById(R.id.listLineupsLayout_listVIew);
         assertNotNull(lineupsListView);
         lineupsLoadMoreSpinner = (ProgressBar) activity
                 .findViewById(R.id.lineupsListVIew_spinnerLoadMore);
@@ -167,7 +167,7 @@ public class HomeActivityTest {
      */
     @Test
     public void testShowLineupsLoading() {
-        String text = activity.getString(R.string.homeActivity_spinnerLineupsLoading_text);
+        String text = activity.getString(R.string.listLineupsLayout_spinner_text);
         errorLoadingLayout.setVisibility(View.VISIBLE);
         lineupsListContent.setVisibility(View.VISIBLE);
         activity.showLineupsLoading();

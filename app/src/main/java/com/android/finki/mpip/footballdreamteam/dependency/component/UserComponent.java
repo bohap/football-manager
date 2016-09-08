@@ -1,23 +1,27 @@
 package com.android.finki.mpip.footballdreamteam.dependency.component;
 
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CommentsViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLineupViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeActivityComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeFragmentComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupDetailsActivityComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationFragmentComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupPlayersViewComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListLineupsViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersFragmentComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsDialogComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserApiModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserNetModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserPersistenceModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CommentsViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CreateLineupViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeActivityModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeFragmentModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupDetailsActivityModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationFragmentModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupPlayersViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListLineupsViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.ListPositionPlayersFragmentModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.PlayerDetailsDialogModule;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.UserScope;
@@ -36,9 +40,13 @@ public interface UserComponent {
 
     LineupDetailsActivityComponent plus(LineupDetailsActivityModule module);
 
-    LineupPlayersViewComponent plus(LineupPlayersViewModule module);
+    ListLineupsViewComponent plus(ListLineupsViewModule module);
 
     LikeFragmentComponent plus(LikeFragmentModule module);
+
+    CommentsViewComponent plus(CommentsViewModule module);
+
+    LineupPlayersViewComponent plus(LineupPlayersViewModule module);
 
     LineupFormationFragmentComponent plus(LineupFormationFragmentModule module);
 

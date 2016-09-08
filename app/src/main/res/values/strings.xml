@@ -66,10 +66,13 @@
     <string name="homeActivity_spinnerInitialDataLoading_text">
         Loading initial data…
     </string>
-    <string name="homeActivity_spinnerLineupsLoading_text">
+    <!--ListLineupsFragment-->
+    <string name="listLineupsLayout_spinner_text">
         Loading latest lineups…
     </string>
-    <string name="homeActivity_lineupsList_headerText">Latest lineups</string>
+    <string name="listLineupsLayout_headerText">Latest lineups</string>
+
+
     <!--LineupDetails Activity-->
     <string name="lineupDetailsActivity_title">Lineup Details</string>
     <string name="lineupDetailsActivity_spinnerLoadingLineup_text">
@@ -79,10 +82,15 @@
     <string name="lineupDetailsActivity_lineupIconDesc">Lineup image</string>
     <string name="lineupDetailsActivity_likesTab_text">Likes</string>
     <string name="lineupDetailsActivity_commentsTab_text">Comments</string>
+
+
     <!--Lineups List View-->
     <string name="lineupsListViewItem_imageDesc">Lineup image</string>
     <string name="lineupsListView_loadMoreBtnText">Load More</string>
+    <string name="lineupsListView_likesContent_text">Likes</string>
+    <string name="lineupsListView_commentsContent_text">Comments</string>
     <!--Like Fragment-->
+    <string name="likesFragment_title">Likes</string>
     <string name="btnAddLike_text">Add Like</string>
     <string name="btnRemoveLike_text">Remove Like</string>
     <string name="likesFragment_spinnerLoadingText">Loading likes…</string>
@@ -92,6 +100,10 @@
     <string name="likesFragment_likeRemovingFailed_text">
         Error occurred while removing the like
     </string>
+    <!--Comment Fragment-->
+    <string name="commentsLayout_title">Comments</string>
+    <string name="commentsLayout_btnAddComment_text">Add Comment</string>
+    <string name="commentsLayout_spinnerText">Loading comments…</string>
     <!--LineupPlayers Activity-->
     <string name="lineupPlayersActivity_title">Lineup Players</string>
     <string name="lineupPlayersActivity_spinnerLoadPlayers_text">Loading lineup players…</string>

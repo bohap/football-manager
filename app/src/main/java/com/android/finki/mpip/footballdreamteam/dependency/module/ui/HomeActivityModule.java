@@ -35,23 +35,26 @@ public class HomeActivityModule {
      * Provides instance of HomeActivity presenter.
      *
      * @param preferences application shared preferences
+     * @param teamApi instance of TeamApi
+     * @param positionApi instance of PositionApi
+     * @param playerApi instance of PlayerApi
      * @param teamDBService instance of TeamDbService
      * @param positionDBService instance of PositionDBService
      * @param playerDBService instance of PlayerDBService
-     * @param sharedPreferences instance of shared preferences
      * @return instance of HomeActivity presenter
      */
     @Provides
     @ActivityScope
     HomeActivityPresenter provideHomeActivityPresenter(SharedPreferences preferences,
-                            TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
-                            LineupApi lineupApi, TeamDBService teamDBService,
-                            PositionDBService positionDBService, PlayerDBService playerDBService,
-                            SharedPreferences sharedPreferences) {
+                                                       TeamApi teamApi, PositionApi positionApi,
+                                                       PlayerApi playerApi,
+                                                       TeamDBService teamDBService,
+                                                       PositionDBService positionDBService,
+                                                       PlayerDBService playerDBService) {
         StoreTeamsTask storeTeamsTask = new StoreTeamsTask(teamDBService);
         StorePositionsTask storePositionsTask = new StorePositionsTask(positionDBService);
         StorePlayersTask storePlayersTask = new StorePlayersTask(playerDBService);
-        return new HomeActivityPresenter(activity, preferences, teamApi, positionApi, playerApi,
-                lineupApi, storeTeamsTask,storePositionsTask, storePlayersTask, sharedPreferences);
+        return new HomeActivityPresenter(activity, preferences, teamApi,
+                positionApi, playerApi, storeTeamsTask,storePositionsTask, storePlayersTask);
     }
 }

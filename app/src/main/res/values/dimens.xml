@@ -17,9 +17,10 @@
     <dimen name="large_horizontalPadding">50dp</dimen>
     <dimen name="large_verticalPadding">50dp</dimen>
     <!--TextSize-->
-    <dimen name="textSize">20sp</dimen>
-    <dimen name="smallTextSize">15sp</dimen>
     <dimen name="tinyTextSize">10sp</dimen>
+    <dimen name="smallTextSize">15sp</dimen>
+    <dimen name="textSize">20sp</dimen>
+    <dimen name="mediumTextSize">20sp</dimen>
     <dimen name="largeTextSize">30sp</dimen>
     <dimen name="iconsTextSize">30sp</dimen>
     <dimen name="smallIconTextSize">25sp</dimen>
@@ -37,6 +38,8 @@
     <!--Sidebar-->
     <dimen name="sidebar_listWidth">250dp</dimen>
     <dimen name="sidebar_listDivider_height">1dp</dimen>
+
+
     <!--Tabs-->
     <dimen name="tabIndicator_height">5dp</dimen>
 </resources>

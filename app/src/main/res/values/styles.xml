@@ -9,6 +9,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
     </style>
+    <!--TODO-->
     <!--Tab Layout-->
     <style name="TabLayout" parent="Widget.Design.TabLayout">
         <item name="android:layout_width">match_parent</item>
@@ -201,6 +202,28 @@
     <style name="Button.Small.Danger.NoCornersRadius.Icon">
         <item name="android:textSize">@dimen/smallIconTextSize</item>
     </style>
+    <!--Button Success Style-->
+    <style name="Button.Success">
+        <item name="android:background">@drawable/btn_success</item>
+        <item name="android:textColor">@color/successBackgroundTextColor</item>
+    </style>
+    <style name="Button.Block.Success">
+        <item name="android:background">@drawable/btn_success</item>
+        <item name="android:textColor">@color/successBackgroundTextColor</item>
+    </style>
+    <style name="Button.Small.Success">
+        <item name="android:background">@drawable/btn_success</item>
+        <item name="android:textColor">@color/successBackgroundTextColor</item>
+    </style>
+    <style name="Button.Success.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Block.Success.Icon">
+        <item name="android:textSize">@dimen/iconsTextSize</item>
+    </style>
+    <style name="Button.Small.Success.Icon">
+        <item name="android:textSize">@dimen/smallIconTextSize</item>
+    </style>
 
     <!--EditText-->
     <style name="EditText">
@@ -219,6 +242,12 @@
         <item name="android:textSize">@dimen/textSize</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="TextView.Small">
+        <item name="android:textSize">@dimen/smallTextSize</item>
+    </style>
+    <style name="TextView.Medium">
+        <item name="android:textSize">@dimen/mediumTextSize</item>
     </style>
     <style name="TextView.Block">
         <item name="android:layout_width">match_parent</item>

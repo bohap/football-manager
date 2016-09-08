@@ -11,7 +11,6 @@
     <string name="users_column_email">email</string>
     <string name="users_column_created_at">created_at</string>
     <string name="users_column_updated_at">updated_at</string>
-    <string name="users_column_jwt_token">jwt_token</string>
     <!--Teams table-->
     <string name="teams_table_name">teams</string>
     <string name="teams_column_id">id</string>

@@ -18,26 +18,10 @@
             <include
                 android:visibility="gone"
                 layout="@layout/request_failed_partial" />
-            <RelativeLayout
-                android:id="@+id/homeLayout_mainContent"
+            <FrameLayout
+                android:id="@+id/content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
-                <TextView
-                    android:id="@+id/homeLayout_listView_headerText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/textSize"
-                    android:gravity="center"
-                    android:background="@color/colorPrimary"
-                    android:textColor="@android:color/white"
-                    android:text="@string/homeActivity_lineupsList_headerText"/>
-                <ListView
-                    android:id="@+id/homeLayout_lineupsListView"
-                    android:layout_width="match_parent"
-                    android:layout_below="@+id/homeLayout_listView_headerText"
-                    android:layout_height="match_parent" />
-            </RelativeLayout>
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <android.support.design.widget.NavigationView

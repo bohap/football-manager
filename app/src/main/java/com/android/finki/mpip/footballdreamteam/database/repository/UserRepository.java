@@ -22,7 +22,6 @@ public class UserRepository extends BaseRepository<User, Integer> {
     private String COLUMN_EMAIL;
     private String COLUMN_CREATED_AT;
     private String COLUMN_UPDATED_AT;
-    private String COLUMN_JWT_TOKEN;
 
     public UserRepository(Context context, MainSQLiteOpenHelper dbHelper) {
         this.dbHelper = dbHelper;
@@ -32,9 +31,8 @@ public class UserRepository extends BaseRepository<User, Integer> {
         this.COLUMN_EMAIL = context.getString(R.string.users_column_email);
         this.COLUMN_CREATED_AT = context.getString(R.string.users_column_created_at);
         this.COLUMN_UPDATED_AT = context.getString(R.string.users_column_updated_at);
-        this.COLUMN_JWT_TOKEN = context.getString(R.string.users_column_jwt_token);
         this.COLUMNS = new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL,
-                COLUMN_CREATED_AT, COLUMN_UPDATED_AT, COLUMN_JWT_TOKEN};
+                COLUMN_CREATED_AT, COLUMN_UPDATED_AT};
     }
 
     /**
@@ -53,7 +51,6 @@ public class UserRepository extends BaseRepository<User, Integer> {
                 .getString(cursor.getColumnIndex(COLUMN_CREATED_AT))));
         user.setUpdatedAt(DateUtils.parse(cursor
                 .getString(cursor.getColumnIndex(COLUMN_UPDATED_AT))));
-        user.setJwtToken(cursor.getString(cursor.getColumnIndex(COLUMN_JWT_TOKEN)));
         return user;
     }
 
@@ -70,7 +67,6 @@ public class UserRepository extends BaseRepository<User, Integer> {
         params.put(COLUMN_EMAIL, user.getEmail());
         params.put(COLUMN_CREATED_AT, DateUtils.format(user.getCreatedAt()));
         params.put(COLUMN_UPDATED_AT, DateUtils.format(user.getUpdatedAt()));
-        params.put(COLUMN_JWT_TOKEN, user.getJwtToken());
         return params;
     }
 

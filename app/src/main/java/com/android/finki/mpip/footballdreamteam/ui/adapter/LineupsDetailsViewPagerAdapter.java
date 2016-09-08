@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class LineupsDetailsViewPagerAdapter extends FragmentPagerAdapter {
         }
         this.lineup = lineup;
         fragments.add(LikeFragment.newInstance(lineup));
-        fragments.add(CommentFragment.newInstance(lineup.getId()));
+        fragments.add(CommentsFragment.newInstance(lineup.getId()));
     }
 
     /**

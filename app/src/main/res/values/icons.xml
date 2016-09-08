@@ -8,4 +8,8 @@
     <string name="fa_user">&#xf007;</string>
     <string name="fa_clock_o">&#xf017;</string>
     <string name="fa_exclamation_circle">&#xf06a;</string>
+    <string name="fa_pencil_square_o">&#xf044;</string>
+    <string name="fa_check">&#xf00c;</string>
+    <string name="fa_times">&#xf00d;</string>
+    <string name="fa_comments">&#xf086;</string>
 </resources>

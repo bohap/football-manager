@@ -126,4 +126,9 @@ public class Comment extends BaseModel<Integer> implements Serializable {
     public void setLineup(Lineup lineup) {
         this.lineup = lineup;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Comment && this.id == ((Comment) o).getId();
+    }
 }

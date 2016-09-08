@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,8 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,9 +22,11 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeActivit
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.ListLineupsAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.ListLineupsFragment;
+import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeActivityPresenter;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,12 +34,12 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 
 /**
  * Created by Borce on 06.08.2016.
  */
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements ListLineupsAdapter.Listener,
+        ActivityTitleSetterListener {
 
     @Inject
     HomeActivityPresenter presenter;
@@ -46,10 +48,7 @@ public class HomeActivity extends BaseActivity {
     String title;
 
     @BindString(R.string.homeActivity_spinnerInitialDataLoading_text)
-    String spinnerInitialDataText;
-
-    @BindString(R.string.homeActivity_spinnerLineupsLoading_text)
-    String spinnerLineupText;
+    String spinnerText;
 
     @BindString(R.string.sidebarOpen_title)
     String sidebarOpenTitle;
@@ -80,15 +79,8 @@ public class HomeActivity extends BaseActivity {
     @BindView(R.id.error_loading)
     RelativeLayout errorLoadingLayout;
 
-    @BindView(R.id.homeLayout_lineupsListView)
-    ListView lineupsListView;
-
-    @BindView(R.id.homeLayout_mainContent)
-    RelativeLayout lineupsListContent;
-
-    private ListLineupsAdapter lineupsAdapter;
-
-    private LineupsListViewFooterHolder lineupsFooterHolder;
+    @BindView(R.id.content)
+    FrameLayout content;
 
     /**
      * Called when the activity is ready to be created.
@@ -103,87 +95,11 @@ public class HomeActivity extends BaseActivity {
         ButterKnife.bind(this);
         ((MainApplication) this.getApplication()).getUserComponent()
                 .plus(new HomeActivityModule(this)).inject(this);
-        /* Set the toolbar */
+
         this.setSupportActionBar(toolbar);
-        if (this.getSupportActionBar() != null) {
-            this.getSupportActionBar().setTitle(title);
-            this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            this.getSupportActionBar().setHomeButtonEnabled(true);
-        }
-
+        this.setTitle(title);
         this.setupSidebar();
-        this.setupLineupsListView();
         presenter.loadData();
-    }
-
-    /**
-     * Called after activity start-up is complete, after onStart.
-     *
-     * @param savedInstanceState saved state for when the activity is recreated
-     */
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
-    }
-
-    /**
-     * Called wehn the options menu is ready to be creted or recreated.
-     *
-     * @param menu menu that will be created
-     * @return whatever the menu should be created or not
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    /**
-     * Handle click on the options menu item.
-     *
-     * @param item menu item that has been selected
-     * @return whatever the select should be ignored or not
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mainMenu_createLineup:
-                this.startCreteLineupActivity();
-                return true;
-            case R.id.mainMenu_refresh:
-                presenter.refresh();
-                return true;
-            case R.id.mainMenu_logout:
-                this.logout();
-                break;
-        }
-        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Handle click on the sidebar menu item.
-     *
-     * @param item menu item that has been clicked
-     */
-    private void onSidebarItemSelected(MenuItem item) {
-        this.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Start the CreteLineupActivity.
-     */
-    private void startCreteLineupActivity() {
-        this.startActivity(new Intent(this, CreateLineupActivity.class));
-    }
-
-    /**
-     * Called before the activity is destroyed.
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ((MainApplication) this.getApplication()).releaseUserComponent();
     }
 
     /**
@@ -233,24 +149,114 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
-     * Setup the list view for the lineups.
+     * Set the activity title.
+     *
+     * @param title activity title
      */
-    private void setupLineupsListView() {
-        View footer = this.getLayoutInflater().inflate(R.layout.lineups_footer, null);
-        lineupsFooterHolder = new LineupsListViewFooterHolder(footer);
-        lineupsListView.addFooterView(footer);
-        lineupsAdapter = new ListLineupsAdapter(this);
-        lineupsListView.setAdapter(lineupsAdapter);
+    @Override
+    public void setTitle(String title) {
+        if (this.getSupportActionBar() != null) {
+            this.getSupportActionBar().setTitle(title);
+        }
+    }
+
+    /**
+     * Called after activity start-up is complete, after onStart.
+     *
+     * @param savedInstanceState saved state for when the activity is recreated
+     */
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    /**
+     * Called when the options menu is ready to be creted or recreated.
+     *
+     * @param menu menu that will be created
+     * @return whatever the menu should be created or not
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (presenter.isMainViewVisible()) {
+            this.getMenuInflater().inflate(R.menu.main_menu, menu);
+            if (this.getSupportActionBar() != null) {
+                this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+            drawerToggle.setDrawerIndicatorEnabled(true);
+            return true;
+        } else {
+            drawerToggle.setDrawerIndicatorEnabled(false);
+            return false;
+        }
+    }
+
+    /**
+     * Handle click on the options menu item.
+     *
+     * @param item menu item that has been selected
+     * @return whatever the select should be ignored or not
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mainMenu_createLineup:
+                this.startCreteLineupActivity();
+                return true;
+            case R.id.mainMenu_refresh:
+                Fragment fragment = this.getSupportFragmentManager()
+                        .findFragmentById(R.id.content);
+                if (fragment instanceof ListLineupsFragment) {
+                    ((ListLineupsFragment) fragment).refresh();
+                    return true;
+                }
+                return false;
+            case R.id.mainMenu_logout:
+                this.logout();
+                return true;
+            case android.R.id.home:
+                if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    this.onBackPressed();
+                    return true;
+                }
+        }
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Handle click on the sidebar menu item.
+     *
+     * @param item menu item that has been clicked
+     */
+    private void onSidebarItemSelected(MenuItem item) {
+        this.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Start the CreteLineupActivity.
+     */
+    private void startCreteLineupActivity() {
+        this.startActivity(new Intent(this, CreateLineupActivity.class));
+    }
+
+    /**
+     * Called before the activity is destroyed.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((MainApplication) this.getApplication()).releaseUserComponent();
     }
 
     /**
      * Show the spinner for when the initial data is loading.
      */
     public void showInitialDataLoading() {
-        txtSpinner.setText(spinnerInitialDataText);
+        txtSpinner.setText(spinnerText);
         super.toggleVisibility(spinner, true);
         super.toggleVisibility(errorLoadingLayout, false);
-        super.toggleVisibility(lineupsListContent, false);
+        super.toggleVisibility(content, false);
     }
 
     /**
@@ -263,35 +269,12 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
-     * Show the spinner for when the lineups data is loading.
-     */
-    public void showLineupsLoading() {
-        txtSpinner.setText(spinnerLineupText);
-        super.toggleVisibility(spinner, true);
-        super.toggleVisibility(errorLoadingLayout, false);
-        super.toggleVisibility(lineupsListContent, false);
-    }
-
-    /**
      * Show the error layout when a error occurred while loading the data.
      */
     public void showErrorLoading() {
         super.toggleVisibility(errorLoadingLayout, true);
         super.toggleVisibility(spinner, false);
-        super.toggleVisibility(lineupsListContent, false);
-    }
-
-    /**
-     * Called when loading hte lineups is successful.
-     *
-     * @param lineups list of Lineups
-     */
-    public void successLoadingLineups(List<Lineup> lineups) {
-        super.toggleVisibility(lineupsListContent, true);
-        super.toggleVisibility(lineupsFooterHolder.lineupsListViewSpinner, false);
-        super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
-        lineupsAdapter.update(lineups);
+        super.toggleVisibility(content, false);
     }
 
     /**
@@ -304,16 +287,16 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
-     * Handle click on the lineups list.
-     *
-     * @param position lineup position in the list
+     * Called when loading the initial data is successful.
      */
-    @OnItemClick(R.id.homeLayout_lineupsListView)
-    void onLineupSelected(int position) {
-        Lineup lineup = lineupsAdapter.getItem(position);
-        Intent intent = new Intent(this, LineupDetailsActivity.class);
-        intent.putExtra(LineupDetailsActivity.LINEUP_ID_BUNDLE_KEY, lineup.getId());
-        this.startActivity(intent);
+    public void showSuccessLoading() {
+        super.toggleVisibility(content, true);
+        super.toggleVisibility(spinner, false);
+        super.toggleVisibility(errorLoadingLayout, false);
+        this.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, new ListLineupsFragment()).commit();
+        presenter.setMainViewVisible(true);
+        this.invalidateOptionsMenu();
     }
 
     /**
@@ -326,29 +309,59 @@ public class HomeActivity extends BaseActivity {
     }
 
     /**
-     * Class holder for the lineups list view footer.
+     * Show the activity for displaying lineup players.
+     *
+     * @param lineup lineup for which the players will be showed
      */
-    class LineupsListViewFooterHolder {
+    @Override
+    public void showLineupPlayers(Lineup lineup) {
+        Intent intent = new Intent(this, LineupPlayersActivity.class);
+        intent.putExtra(LineupPlayersActivity.LINEUP_BUNDLE_KEY, lineup);
+        this.startActivity(intent);
+    }
 
-        /**
-         * Is marked as nullable because the view is injected from the ButterKnife after is has been
-         * added to the list view.
-         */
-        @Nullable
-        @BindView(R.id.lineupsListVIew_spinnerLoadMore)
-        ProgressBar lineupsListViewSpinner;
+    /**
+     * Show the fragment for displaying lineup likes.
+     *
+     * @param lineup lineup for which the likes will be displayed
+     */
+    @Override
+    public void showLineupLikes(Lineup lineup) {
+        LikeFragment fragment = LikeFragment.newInstance(lineup);
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(ListLineupsFragment.TAG);
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+        presenter.setMainViewVisible(false);
+        this.invalidateOptionsMenu();
+    }
 
-        LineupsListViewFooterHolder(View view) {
-            ButterKnife.bind(this, view);
+    /**
+     * Show the fragment for displaying lineup comments.
+     *
+     * @param lineup lineup for which the comments will be displayed
+     */
+    @Override
+    public void showLineupComments(Lineup lineup) {
+        CommentsFragment fragment = CommentsFragment.newInstance(lineup.getId());
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(ListLineupsFragment.TAG);
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+        presenter.setMainViewVisible(false);
+        this.invalidateOptionsMenu();
+    }
+
+    /**
+     * Called when the back button is pressed.
+     */
+    @Override
+    public void onBackPressed() {
+        if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            this.setTitle(title);
+            presenter.setMainViewVisible(true);
+            this.invalidateOptionsMenu();
         }
-
-        /**
-         * Load more lineups when the button load more is clicked.
-         */
-        @OnClick(R.id.lineupsListView_btnLoadMore)
-        void loadMore() {
-            HomeActivity.super.toggleVisibility(lineupsListViewSpinner, true);
-            HomeActivity.this.presenter.loadMoreLineups();
-        }
+        super.onBackPressed();
     }
 }

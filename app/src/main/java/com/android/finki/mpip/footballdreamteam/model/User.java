@@ -39,8 +39,6 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
     @SerializedName("comments_count")
     private int commentsCount;
 
-    private String jwtToken;
-
     private List<Lineup> lineups;
 
     private List<Lineup> likes;
@@ -51,25 +49,23 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
     }
 
     public User(int id, String name, String email, Date createdAt, Date updatedAt,
-                String jwtToken, int lineupsCount, int likesCount, int commentsCount) {
+                int lineupsCount, int likesCount, int commentsCount) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.jwtToken = jwtToken;
         this.lineupsCount = lineupsCount;
         this.likesCount = likesCount;
         this.commentsCount = commentsCount;
     }
 
-    public User(int id, String name, String email, Date createdAt,
-                Date updatedAt, String jwtToken) {
-        this(id, name, email, createdAt, updatedAt, jwtToken, 0, 0, 0);
+    public User(int id, String name, String email, Date createdAt, Date updatedAt) {
+        this(id, name, email, createdAt, updatedAt, 0, 0, 0);
     }
 
     public User(int id, String name) {
-        this(id, name, null, null, null, null);
+        this(id, name, null, null, null);
     }
 
     @Override
@@ -136,14 +132,6 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
 
     public void setLineupsCount(int lineupsCount) {
         this.lineupsCount = lineupsCount;
-    }
-
-    public String getJwtToken() {
-        return jwtToken;
-    }
-
-    public void setJwtToken(String jwtToken) {
-        this.jwtToken = jwtToken;
     }
 
     public List<Lineup> getLineups() {

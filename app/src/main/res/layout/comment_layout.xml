@@ -2,5 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <include
+        layout="@layout/spinner" />
+    <include
+        layout="@layout/request_failed_partial" />
+    <RelativeLayout
+        android:id="@+id/commentsLayout_mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/commentsLayout_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/commentsLayout_btnAddComment" />
+        <RelativeLayout
+            android:id="@+id/commentsLayout_btnAddComment"
+            style="@style/Button.Block.Primary.NoCornersRadius"
+            android:layout_alignParentBottom="true">
+            <TextView
+                android:id="@+id/commentsLayout_btnAddComment_text"
+                style="@style/TextView.Button.Primary"
+                android:text="@string/commentsLayout_btnAddComment_text" />
+            <ProgressBar
+                android:id="@+id/spinnerLikeRemoving"
+                style="@style/ButtonSpinner"
+                android:layout_toRightOf="@id/commentsLayout_btnAddComment_text"
+                android:layout_toEndOf="@id/commentsLayout_btnAddComment_text"
+                android:layout_marginLeft="@dimen/base_horizontalMargin"
+                android:layout_marginStart="@dimen/base_horizontalMargin"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </RelativeLayout>
 </LinearLayout>

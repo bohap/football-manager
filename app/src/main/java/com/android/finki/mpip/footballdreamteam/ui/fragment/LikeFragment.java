@@ -18,6 +18,7 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LikeFragmen
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.LikesAdapter;
+import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeFragmentPresenter;
 
 import org.slf4j.Logger;
@@ -42,6 +43,9 @@ public class LikeFragment extends Fragment {
     public static final String LINEUP_KEY = "lineup_id";
 
     private LikeFragmentPresenter presenter;
+
+    @BindString(R.string.likesFragment_title)
+    String title;
 
     @BindView(R.id.spinner)
     RelativeLayout spinner;
@@ -140,6 +144,9 @@ public class LikeFragment extends Fragment {
         View view = inflater.inflate(R.layout.like_layout, container, false);
         unbinder = ButterKnife.bind(this, view);
         presenter.onViewCreated();
+        if (this.getActivity() instanceof ActivityTitleSetterListener) {
+            ((ActivityTitleSetterListener) this.getActivity()).setTitle(title);
+        }
         return view;
     }
 
@@ -156,19 +163,23 @@ public class LikeFragment extends Fragment {
      * Called when the likes has started loading from the server.
      */
     public void showLoading() {
-        txtSpinner.setText(spinnerText);
-        spinner.setVisibility(View.VISIBLE);
-        errorLoadingLayout.setVisibility(View.GONE);
-        mainContent.setVisibility(View.GONE);
+        if (this.isVisible()) {
+            txtSpinner.setText(spinnerText);
+            spinner.setVisibility(View.VISIBLE);
+            errorLoadingLayout.setVisibility(View.GONE);
+            mainContent.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Called when a error occurred while loading the likes data.
      */
     public void showLoadingFailed() {
-        errorLoadingLayout.setVisibility(View.VISIBLE);
-        spinner.setVisibility(View.GONE);
-        mainContent.setVisibility(View.GONE);
+        if (this.isVisible()) {
+            errorLoadingLayout.setVisibility(View.VISIBLE);
+            spinner.setVisibility(View.GONE);
+            mainContent.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -185,27 +196,33 @@ public class LikeFragment extends Fragment {
      * @param likes List of Lineup likes
      */
     public void showLoadingSuccess(List<UserLike> likes) {
-        mainContent.setVisibility(View.VISIBLE);
-        errorLoadingLayout.setVisibility(View.GONE);
-        spinner.setVisibility(View.GONE);
-        adapter = new LikesAdapter(this.getActivity(), likes);
-        likesListView.setAdapter(adapter);
+        if (this.isVisible()) {
+            mainContent.setVisibility(View.VISIBLE);
+            errorLoadingLayout.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            adapter = new LikesAdapter(this.getActivity(), likes);
+            likesListView.setAdapter(adapter);
+        }
     }
 
     /**
      * Show the addLike like button.
      */
     public void showAddLikeButton() {
-        btnAddLike.setVisibility(View.VISIBLE);
-        btnRemoveLike.setVisibility(View.GONE);
+        if (this.isVisible()) {
+            btnAddLike.setVisibility(View.VISIBLE);
+            btnRemoveLike.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Show the removeLike like button.
      */
     public void showRemoveLikeButton() {
-        btnRemoveLike.setVisibility(View.VISIBLE);
-        btnAddLike.setVisibility(View.GONE);
+        if (this.isVisible()) {
+            btnRemoveLike.setVisibility(View.VISIBLE);
+            btnAddLike.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -227,18 +244,21 @@ public class LikeFragment extends Fragment {
      * Called when adding the like is successful.
      */
     public void showLikeAddingSuccess(UserLike userLike) {
-        spinnerLikeAdding.setVisibility(View.GONE);
-
-        this.showRemoveLikeButton();
-        adapter.addLike(userLike);
+        if (this.isVisible()) {
+            spinnerLikeAdding.setVisibility(View.GONE);
+            this.showRemoveLikeButton();
+            adapter.addLike(userLike);
+        }
     }
 
     /**
      * Called when adding the like failed
      */
     public void showLikeAddingFailed() {
-        spinnerLikeAdding.setVisibility(View.GONE);
-        Toast.makeText(this.getActivity(), likeAddingFailedText, Toast.LENGTH_LONG).show();
+        if (this.isVisible()) {
+            spinnerLikeAdding.setVisibility(View.GONE);
+            Toast.makeText(this.getActivity(), likeAddingFailedText, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -260,16 +280,20 @@ public class LikeFragment extends Fragment {
      * Called when removing the like is successful.
      */
     public void showLikeRemovingSuccess(UserLike userLike) {
-        spinnerLikeRemoving.setVisibility(View.GONE);
-        this.showAddLikeButton();
-        adapter.removeLike(userLike);
+        if (this.isVisible()) {
+            spinnerLikeRemoving.setVisibility(View.GONE);
+            this.showAddLikeButton();
+            adapter.removeLike(userLike);
+        }
     }
 
     /**
      * Called when removing the like failed.
      */
     public void showLikeRemovingFailed() {
-        spinnerLikeRemoving.setVisibility(View.GONE);
-        Toast.makeText(this.getActivity(), likeRemovingFailedText, Toast.LENGTH_LONG).show();
+        if (this.isVisible()) {
+            spinnerLikeRemoving.setVisibility(View.GONE);
+            Toast.makeText(this.getActivity(), likeRemovingFailedText, Toast.LENGTH_LONG).show();
+        }
     }
 }
