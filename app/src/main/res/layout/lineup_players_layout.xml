@@ -12,7 +12,7 @@
         <include
             layout="@layout/spinner" />
         <include
-            layout="@layout/request_failed_partial" />
+            layout="@layout/error" />
         <LinearLayout
             android:id="@+id/lineupPlayersActivity_updateFailed"
             style="@style/MainContent"

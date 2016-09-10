@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class ListPositionPlayersViewPresenter {
 
-    private static Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
+    private static Logger logger = LoggerFactory.getLogger(ListPositionPlayersViewPresenter.class);
     private ListPositionPlayersView view;
     private PlayerDBService playerDBService;
     private List<Player> players;
@@ -36,27 +36,47 @@ public class ListPositionPlayersViewPresenter {
      *
      * @param args view arguments
      */
-    public void onFragmentCreated(Bundle args) {
+    public void onViewCreated(Bundle args) {
+        logger.info("onViewCreated");
         if (args == null) {
-            String message = "bundle can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("bundle can't be null");
         }
         Serializable serializable = args
                 .getSerializable(ListPositionPlayersView.PLACE_KEY);
         if (serializable == null || ! (serializable instanceof PositionUtils.POSITION_PLACE)) {
-            String message = "position place must be set";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position place must be set");
         }
         int[] playersToExclude = args.getIntArray(ListPositionPlayersView.EXCLUDE_LAYERS_KEY);
         if (playersToExclude == null) {
-            String message = "players to exclude must be set";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("players to exclude must be set");
         }
         this.place = (PositionUtils.POSITION_PLACE)serializable;
         this.getPlayers(playersToExclude);
+    }
+
+    /**
+     * Called when the view layout is created.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
+        if (place == null) {
+            throw new IllegalArgumentException("place is not set");
+        }
+        view.setAdapter(this.players);
+        switch (place) {
+            case KEEPERS:
+                view.setPositionPlace("Keepers");
+                break;
+            case DEFENDERS:
+                view.setPositionPlace("Defenders");
+                break;
+            case MIDFIELDERS:
+                view.setPositionPlace("Midfielders");
+                break;
+            case ATTACKERS:
+                view.setPositionPlace("Attackers");
+                break;
+        }
     }
 
     /**
@@ -64,7 +84,7 @@ public class ListPositionPlayersViewPresenter {
      *
      * @param playersToExclude players ids that should be excluded from the response
      */
-    public void getPlayers(int[] playersToExclude) {
+    private void getPlayers(int[] playersToExclude) {
         playerDBService.open();
         switch (place) {
             case KEEPERS:
@@ -85,31 +105,5 @@ public class ListPositionPlayersViewPresenter {
                 throw new IllegalArgumentException(message);
         }
         playerDBService.close();
-    }
-
-    /**
-     * Called when the view is created to set the list view adapter.
-     */
-    public void onViewCreated() {
-        if (place == null) {
-            String message = "place os still not set";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        view.setAdapter(this.players);
-        switch (place) {
-            case KEEPERS:
-                view.setPositionPlace("Keepers");
-                break;
-            case DEFENDERS:
-                view.setPositionPlace("Defenders");
-                break;
-            case MIDFIELDERS:
-                view.setPositionPlace("Midfielders");
-                break;
-            case ATTACKERS:
-                view.setPositionPlace("Attackers");
-                break;
-        }
     }
 }

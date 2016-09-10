@@ -1,11 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.rest.interceptor;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
-import com.android.finki.mpip.footballdreamteam.exception.UserException;
-import com.android.finki.mpip.footballdreamteam.model.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +35,7 @@ public class JWTTokenInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         String token = preferences.getString(key, null);
+        logger.info(String.format("add JWT token to the request, token  %s", token));
         Request request = chain.request();
         if (token != null) {
             request = request.newBuilder()

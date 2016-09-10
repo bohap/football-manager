@@ -60,9 +60,8 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
      */
     public static PlayerDetailsDialog newInstance(int playerId, boolean editable) {
         if (playerId < 0) {
-            String message = String.format("invalid player id, %d", playerId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("invalid player id, %d", playerId));
         }
         PlayerDetailsDialog dialog = new PlayerDetailsDialog();
         Bundle args = new Bundle();
@@ -89,11 +88,12 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new PlayerDetailsViewModule(this)).inject(this);
         this.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
-        presenter.onDialogCreated(this.getArguments());
+        presenter.onViewCreated(this.getArguments());
     }
 
     /**
@@ -108,10 +108,11 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        logger.info("onCreateView");
         View view = inflater.inflate(R.layout.player_details_layout, container, false);
         this.getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         ButterKnife.bind(this, view);
-        presenter.onViewCreated();
+        presenter.onViewLayoutCreated();
         return view;
     }
 
@@ -127,9 +128,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
     @Override
     public void bindPlayer(String name, String team, String age,
                            String position, boolean editable) {
-        if (!this.isVisible()) {
-            return;
-        }
+        logger.info("bindPlayer");
         txtName.setText(name);
         txtTeam.setText(team);
         txtAge.setText(age);
@@ -146,6 +145,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
      */
     @OnClick(R.id.playerDetailsLayout_btnRemove)
     void removePlayer() {
+        logger.info("btn 'Remove Player' clicked");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).removePlayer();
         }

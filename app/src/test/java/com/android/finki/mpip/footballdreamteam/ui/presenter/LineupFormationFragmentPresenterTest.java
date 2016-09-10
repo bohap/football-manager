@@ -86,7 +86,7 @@ public class LineupFormationFragmentPresenterTest {
     @Rule
     public TestName testName = new TestName();
 
-    private LineupFormationFragmentPresenter presenter;
+    private LineupFormationViewPresenter presenter;
 
     private int[] positionsResourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
@@ -135,7 +135,7 @@ public class LineupFormationFragmentPresenterTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.initMocks();
-        presenter = new LineupFormationFragmentPresenter(fragment, positionDBService,
+        presenter = new LineupFormationViewPresenter(fragment, positionDBService,
                 lineupUtils, playerUtils, positionUtils, validator);
     }
 
@@ -186,42 +186,42 @@ public class LineupFormationFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onFragmentCreated called with null param.
+     * Test the behavior on onViewCreated called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedOnNullParam() {
-        presenter.onFragmentCreated(null);
+        presenter.onViewCreated(null);
     }
 
     /**
-     * Test the behavior on onDialogCreated when neither bundle lineup players or formation
+     * Test the behavior on onViewCreated when neither bundle lineup players or formation
      * key is set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedWithUnExistingBundleKey() {
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on onFragmentCreated when formation key in the bundle is set bu the
+     * Test the behavior on onViewCreated when formation key in the bundle is set bu the
      * List of player for the fromation is not.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedWith() {
         when(args.getSerializable(LineupFormationFragment.FORMATION_KEY))
                 .thenReturn(LineupUtils.FORMATION.F_4_4_2);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on onDialogCreated when bundle lineup players key is set
+     * Test the behavior on onViewCreated when bundle lineup players key is set
      * with invalid players size.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testSetPlayersWithInvalidPlayersSize() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(Arrays.asList(new Player(), new Player()), false));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
@@ -234,7 +234,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
         try {
-            presenter.onFragmentCreated(args);
+            presenter.onViewCreated(args);
             fail();
         } catch (IllegalArgumentException exp) {
             verify(positionDBService).open();
@@ -244,7 +244,7 @@ public class LineupFormationFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated when bundle lineup players key is set
+     * Test the behavior on onViewCreated when bundle lineup players key is set
      * with un existing position id.
      */
     @Test
@@ -254,7 +254,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
         try {
-            presenter.onFragmentCreated(args);
+            presenter.onViewCreated(args);
             fail();
         } catch (IllegalArgumentException exp) {
             verify(positionDBService).open();
@@ -264,13 +264,13 @@ public class LineupFormationFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onFragmentCreated when bundle lineup players key is set.
+     * Test the behavior on onViewCreated when bundle lineup players key is set.
      */
     @Test
     public void testSetPlayers() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(positionDBService).open();
         verify(positionDBService).close();
         verify(lineupUtils).mapPlayers(lineupPlayersCaptor.capture());
@@ -302,7 +302,7 @@ public class LineupFormationFragmentPresenterTest {
                 .thenReturn(new LineupPlayers(notElevenPlayers));
         notElevenPlayers.get(position).setLineupPlayer(null);
         try {
-            presenter.onFragmentCreated(args);
+            presenter.onViewCreated(args);
             fail();
         } catch (IllegalArgumentException exp) {
             verify(positionDBService).open();
@@ -325,7 +325,7 @@ public class LineupFormationFragmentPresenterTest {
         notElevenPlayers.get(position).getLineupPlayer()
                 .setPositionId(unExistingPosition.getId());
         try {
-            presenter.onFragmentCreated(args);
+            presenter.onViewCreated(args);
             fail();
         } catch (IllegalArgumentException exp) {
             verify(positionDBService).open();
@@ -343,7 +343,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.FORMATION_KEY)).thenReturn(formation);
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(positionDBService).open();
         verify(positionDBService, times(notElevenPlayers.size())).get(anyInt());
         verify(positionDBService).close();
@@ -360,7 +360,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.FORMATION_KEY)).thenReturn(formation);
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(positionDBService).open();
         verify(positionDBService, times(notElevenPlayers.size() - 1)).get(anyInt());
         verify(positionDBService).close();
@@ -377,7 +377,7 @@ public class LineupFormationFragmentPresenterTest {
                 .thenReturn(LineupUtils.FORMATION.F_4_2_3_1);
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(fragment).lineupInvalid();
     }
 
@@ -391,7 +391,7 @@ public class LineupFormationFragmentPresenterTest {
                 .thenReturn(LineupUtils.FORMATION.F_4_2_3_1);
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(fragment).lineupValid();
     }
 
@@ -410,7 +410,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testGetPlayerAtOnUnMappedPosition() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.getPlayerAt(unUsedPositionsResourcesIds[0]);
     }
 
@@ -421,7 +421,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testGetPlayerAtOnPositionWithNotEmptyPlayer() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         int positionResourceId = positionsResourcesIds[5];
         Player player = mappedPlayers.get(positionResourceId);
         when(playerUtils.getLastName(player.getName())).thenReturn(player.getName());
@@ -440,7 +440,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
         doThrow(IllegalArgumentException.class).when(playerUtils).getLastName(null);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         String result = presenter.getPlayerAt(positionResourceId);
         assertEquals("", result);
     }
@@ -460,7 +460,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testOnPlayerClickWithUnMappedPosition() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(unUsedPositionsResourcesIds[0]);
     }
 
@@ -472,7 +472,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testOnPlayerClickWithInvalidPlayerId() {
         when(args.getSerializable(LineupFormationFragment.FORMATION_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
 
         int positionResourceId = positionsResourcesIds[3];
         Player player = mappedPlayers.get(positionResourceId);
@@ -488,10 +488,10 @@ public class LineupFormationFragmentPresenterTest {
     public void testOnPlayerClickOnUnEmptyPlayerInTheMap() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         int positionResourceId = positionsResourcesIds[6];
         Player player = mappedPlayers.get(positionResourceId);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionResourceId);
         verify(fragment).showPlayerDetailsDialog(player.getId(), false);
     }
@@ -510,7 +510,7 @@ public class LineupFormationFragmentPresenterTest {
         when(args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(notElevenPlayers));
         int i = 0;
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         for (Map.Entry<Integer, Player> entry : mappedEmptyPlayers.entrySet()) {
             Player player = entry.getValue();
             if (player.getId() > 0) {
@@ -546,7 +546,7 @@ public class LineupFormationFragmentPresenterTest {
                 .thenReturn(positionId);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(false);
 
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionResourceId);
         presenter.updateLineupPosition(player);
 
@@ -580,7 +580,7 @@ public class LineupFormationFragmentPresenterTest {
                 .thenReturn(positionId);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
 
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionResourceId);
         presenter.updateLineupPosition(player);
 
@@ -603,7 +603,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testSelectedPositionIsReseatedOnUpdateLineupPlayers() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionsResourcesIds[8]);
         presenter.updateLineupPosition(new Player());
         presenter.updateLineupPosition(new Player());
@@ -626,7 +626,7 @@ public class LineupFormationFragmentPresenterTest {
         int positionResourceId = positionsResourcesIds[6];
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionResourceId);
         presenter.removeSelectedPlayer();
 
@@ -645,7 +645,7 @@ public class LineupFormationFragmentPresenterTest {
     public void testSelectedResourcePositionIsReseatedOnRemoveSelectedPlayer() {
         when(args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY))
                 .thenReturn(new LineupPlayers(players));
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onPlayerClick(positionsResourcesIds[4]);
         presenter.removeSelectedPlayer();
         presenter.removeSelectedPlayer();

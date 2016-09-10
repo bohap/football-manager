@@ -17,7 +17,7 @@
                 layout="@layout/spinner" />
             <include
                 android:visibility="gone"
-                layout="@layout/request_failed_partial" />
+                layout="@layout/error" />
             <FrameLayout
                 android:id="@+id/content"
                 android:layout_width="match_parent"

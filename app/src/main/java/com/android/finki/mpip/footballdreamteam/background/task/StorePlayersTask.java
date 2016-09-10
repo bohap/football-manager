@@ -40,6 +40,7 @@ public class StorePlayersTask extends AsyncTask<Player, Void, Boolean> {
      */
     @Override
     protected Boolean doInBackground(Player... players) {
+        logger.info("doInBackground");
         dbService.open();
         for (Player player : players) {
             try {
@@ -48,6 +49,7 @@ public class StorePlayersTask extends AsyncTask<Player, Void, Boolean> {
                 }
             } catch (PlayerException exp) {
                 logger.error("error occurred while saving the players");
+                exp.printStackTrace();
                 dbService.close();
                 return false;
             }
@@ -63,6 +65,7 @@ public class StorePlayersTask extends AsyncTask<Player, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean success) {
+        logger.info("onPostExecute");
         if (listener != null) {
             if (success) {
                 listener.onPlayersSavingSuccess();
@@ -72,6 +75,18 @@ public class StorePlayersTask extends AsyncTask<Player, Void, Boolean> {
         }
     }
 
+    /**
+     * Called when the task in canceled.
+     */
+    @Override
+    protected void onCancelled() {
+        logger.info("onCanceled");
+        super.onCancelled();
+    }
+
+    /**
+     * Listener user fro communication with the classes calling the task.
+     */
     public interface Listener {
 
         void onPlayersSavingSuccess();

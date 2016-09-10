@@ -1,7 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,22 +24,52 @@ import java.util.List;
  * Created by Borce on 23.08.2016.
  */
 public abstract class LineupPlayersBaseActivity extends BaseActivity implements
-                                                                        ConfirmDialog.Listener {
-
-    private String confirmDialogTitle;
-    private String confirmDialogMessage;
+        ConfirmDialog.Listener {
 
     private static final Logger logger = LoggerFactory.getLogger(LineupPlayersBaseActivity.class);
+    private String confirmDialogTitle;
+    private String confirmDialogMessage;
 
     protected abstract boolean isChanged();
 
     protected abstract void toggleBtnChangeFormation(boolean visible);
 
+    /**
+     * Called when the activity is ready to be created.
+     *
+     * @param savedInstanceState saved instance state when the activity is recreated
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        logger.info("onCreate");
+        super.onCreate(savedInstanceState);
         this.confirmDialogTitle = this.getString(R.string.lineupActivity_confirmDialog_title);
         this.confirmDialogMessage = this.getString(R.string.lineupActivity_confirmDialog_message);
+    }
+
+    /**
+     * Handle click the the back button.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public void onBackPressed() {
+        logger.info("onBackPressed");
+        boolean playerSelectCanceled = false;
+        FragmentManager manager = this.getSupportFragmentManager();
+        Fragment currentFragment = manager.findFragmentById(R.id.content);
+        if (currentFragment instanceof ListPositionPlayersFragment) {
+            playerSelectCanceled = true;
+        } else if (manager.getBackStackEntryCount() == 0 && this.isChanged()) {
+            this.showConfirmDialog();
+            return;
+        }
+        super.onBackPressed();
+        if (playerSelectCanceled) {
+            this.checkLineupFormationFragmentVisibility();
+            ((LineupFormationFragment) this.getSupportFragmentManager()
+                    .findFragmentById(R.id.content)).onPlayerSelectCanceled();
+            this.toggleBtnChangeFormation(true);
+        }
     }
 
     /**
@@ -153,29 +182,6 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
     }
 
     /**
-     * Handle click the the back button.
-     */
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void onBackPressed() {
-        boolean playerSelectCanceled = false;
-        FragmentManager manager = this.getSupportFragmentManager();
-        Fragment currentFragment = manager.findFragmentById(R.id.content);
-        if (currentFragment != null && currentFragment instanceof ListPositionPlayersFragment) {
-            playerSelectCanceled = true;
-        } else if (manager.getBackStackEntryCount() == 0 && this.isChanged()) {
-            this.showConfirmDialog();
-        }
-        super.onBackPressed();
-        if (playerSelectCanceled) {
-            this.checkLineupFormationFragmentVisibility();
-            ((LineupFormationFragment) this.getSupportFragmentManager()
-                    .findFragmentById(R.id.content)).onPlayerSelectedCanceled();
-            this.toggleBtnChangeFormation(true);
-        }
-    }
-
-    /**
      * Show the confirm dialog for when the user wants to exit but the changes is not yet saved.
      */
     private void showConfirmDialog() {
@@ -188,7 +194,8 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
      * Called when the ConfirmDialog is closed click the yes button.
      */
     @Override
-    public void onDialogConfirm() {
+    public void onDialogConfirmed() {
+        logger.info("onDialogConfirmed");
         super.onBackPressed();
     }
 }

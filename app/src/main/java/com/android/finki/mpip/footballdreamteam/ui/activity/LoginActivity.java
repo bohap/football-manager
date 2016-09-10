@@ -17,6 +17,9 @@ import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.component.LoginView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginViewPresenter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +34,7 @@ import butterknife.OnClick;
  */
 public class LoginActivity extends BaseActivity implements LoginView {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoginActivity.class);
     private LoginViewPresenter presenter;
 
     @BindView(R.id.toolbar)
@@ -77,6 +81,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.login_layout);
         ButterKnife.bind(this);
@@ -87,6 +92,18 @@ public class LoginActivity extends BaseActivity implements LoginView {
         if (this.getSupportActionBar() != null) {
             this.getSupportActionBar().setTitle(title);
         }
+        presenter.onViewLayoutCreated();
+    }
+
+    /**
+     * Called before the activity is destroyed.
+     */
+    @Override
+    protected void onDestroy() {
+        logger.info("onDestroy");
+        super.onDestroy();
+        presenter.onViewLayoutDestroyed();
+        presenter.onViewDestroyed();
     }
 
     /**
@@ -94,6 +111,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @OnClick(R.id.login_btnLogin)
     void login() {
+        logger.info("btn 'Login' clicked");
         String username = txtEmail.getText().toString();
         String password = txtPassword.getText().toString();
         presenter.login(username, password);
@@ -104,6 +122,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @OnClick(R.id.loginLayout_btnRegister)
     void register() {
+        logger.info("btn 'Register' clicked");
         this.startActivity(new Intent(this, RegisterActivity.class));
         super.finish();
     }
@@ -127,6 +146,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showEmailError(EMAIL_ERROR error) {
+        logger.info(String.format("showEmailError, error %s", error));
         this.toggleEditTextBackground(txtEmail, true);
         if (error == EMAIL_ERROR.REQUIRED) {
             this.toggleVisibility(emailErrorRequired, true);
@@ -142,6 +162,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showEmailOk() {
+        logger.info("showEmailOk");
         this.toggleEditTextBackground(txtEmail, false);
         this.toggleVisibility(emailErrorRequired, false);
         this.toggleVisibility(emailErrorInvalid, false);
@@ -152,6 +173,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showPasswordError() {
+        logger.info("showPasswordError");
         this.toggleEditTextBackground(txtPassword, true);
         this.toggleVisibility(passwordErrorRequired, true);
     }
@@ -161,6 +183,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showPasswordOk() {
+        logger.info("showPasswordOk");
         this.toggleEditTextBackground(txtPassword, false);
         this.toggleVisibility(passwordErrorRequired, false);
     }
@@ -170,6 +193,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showLogging() {
+        logger.info("showLogging");
         this.toggleVisibility(spinner, true);
     }
 
@@ -178,6 +202,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showLoginSuccessful() {
+        logger.info("showLoginSuccessful");
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
@@ -190,6 +215,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @SuppressWarnings("deprecation")
     @Override
     public void showLoginFailed(List<String> errors) {
+        logger.info("showLoginFailed with messages");
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, true);
         errorsContainer.removeAllViews();
@@ -210,6 +236,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void showLoginFailed() {
+        logger.info("showLoginFailed with no messages");
         super.toggleVisibility(spinner, false);
     }
 
@@ -220,6 +247,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      */
     @Override
     public void createUserComponent(User user) {
+        logger.info("createUserComponent");
         ((MainApplication) this.getApplication()).createUserComponent(user);
     }
 }

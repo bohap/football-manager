@@ -14,7 +14,7 @@ import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
@@ -38,11 +38,8 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
 
     private static Logger logger = LoggerFactory.getLogger(LineupFormationFragment.class);
     public static final String TAG = "LineupFormationFragment";
-    public static final String LINEUP_PLAYERS_KEY = "LINEUP_PLAYERS";
-    public static final String FORMATION_KEY = "LINEUP_FORMATION";
-    public static final String LIST_PLAYERS_KEY = "LINEUP_LIST_PLAYERS";
 
-    private LineupFormationFragmentPresenter presenter;
+    private LineupFormationViewPresenter presenter;
 
     @BindView(R.id.keeper)
     TextView keeper;
@@ -109,15 +106,12 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     public static LineupFormationFragment newInstance(LineupPlayers lineupPlayers) {
         if (lineupPlayers == null) {
-            String message = "lineup players can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup players can't be null");
         }
         if (lineupPlayers.getPlayers().size() != 11) {
-            String message = String.format("invalid player size, required 11, but got %s",
-                    lineupPlayers.getPlayers().size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("invalid player size, required 11, but got %s",
+                            lineupPlayers.getPlayers().size()));
         }
         LineupFormationFragment fragment = new LineupFormationFragment();
         Bundle args = new Bundle();
@@ -169,7 +163,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @param presenter fragment presenter
      */
     @Inject
-    public void setPresenter(LineupFormationFragmentPresenter presenter) {
+    public void setPresenter(LineupFormationViewPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -180,10 +174,11 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new LineupFormationViewModule(this)).inject(this);
-        presenter.onFragmentCreated(this.getArguments());
+        presenter.onViewCreated(this.getArguments());
     }
 
     /**
@@ -198,6 +193,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        logger.info("onCreateView");
         View view;
         LineupUtils.FORMATION formation = presenter.getFormation();
         int layoutId = -1;
@@ -216,7 +212,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
 
         view = inflater.inflate(layoutId, container, false);
         unbinder = ButterKnife.bind(this, view);
-        presenter.onViewCreated();
+        presenter.onViewLayoutCreated();
         return view;
     }
 
@@ -225,8 +221,10 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void onDestroyView() {
+        logger.info("onDestroyView");
         super.onDestroyView();
         unbinder.unbind();
+        presenter.onViewLayoutDestroyed();
     }
 
     /**
@@ -234,10 +232,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void bindPlayers() {
-        /**
-         * We are not loading nothing from the server for this fragment so this method will be
-         * called right after onCreateView.
-         */
+        logger.info("bindPlayers");
         keeper.setText(presenter.getPlayerAt(R.id.keeper));
         keeper.setOnClickListener(this);
         leftCentreBack.setText(presenter.getPlayerAt(R.id.leftCentreBack));
@@ -297,6 +292,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void onClick(View view) {
+        logger.info("player clicked");
         presenter.onPlayerClick(view.getId());
     }
 
@@ -309,6 +305,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     @Override
     public void showListPositionPlayersView(PositionUtils.POSITION_PLACE place,
                                             int[] playersToExclude) {
+        logger.info("showListPositionsPlayersView");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity())
                     .showListPositionPlayersFragment(place, playersToExclude);
@@ -323,6 +320,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void showPlayerDetailsView(int id, boolean editable) {
+        logger.info("showPlayerDetailsView");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).showPlayerDetailsDialog(id, editable);
         }
@@ -334,6 +332,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @param player new player on the the position
      */
     public void updateLineupPosition(Player player) {
+        logger.info("updatePlayerPosition");
         presenter.updateLineupPosition(player);
     }
 
@@ -341,13 +340,15 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * Remove the player on the selected lineup position.
      */
     public void removeSelectedPlayer() {
+        logger.info("remove selected player");
         presenter.removeSelectedPlayer();
     }
 
     /**
      * Called when selecting a player from the ListPositionPlayer is canceled.
      */
-    public void onPlayerSelectedCanceled() {
+    public void onPlayerSelectCanceled() {
+        logger.info("onPlayerSelectCanceled");
         presenter.onPlayerSelectCanceled();
     }
 
@@ -356,6 +357,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void showValidLineup() {
+        logger.info("showValidLineup");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).showValidLineup();
         }
@@ -366,6 +368,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      */
     @Override
     public void showInvalidLineup() {
+        logger.info("showInvalidLineup");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).showInvalidLineup();
         }
@@ -377,6 +380,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @return lineup formation
      */
     public LineupUtils.FORMATION getFormation() {
+        logger.info("getFormation");
         return presenter.getFormation();
     }
 
@@ -386,6 +390,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @return List of player in the lineup.
      */
     public List<LineupPlayer> getLineupPlayers() {
+        logger.info("getLineupPlayers");
         return presenter.getLineupPlayers();
     }
 
@@ -395,6 +400,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @return List of players
      */
     public List<Player> getPlayersOrdered() {
+        logger.info("getPlayerOrdered");
         return presenter.getPlayersOrdered();
     }
 

@@ -28,6 +28,9 @@ import com.android.finki.mpip.footballdreamteam.ui.fragment.ListLineupsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 import butterknife.BindString;
@@ -39,16 +42,15 @@ import butterknife.OnClick;
  * Created by Borce on 06.08.2016.
  */
 public class HomeActivity extends BaseActivity implements HomeView,
-        ListLineupsFragment.Listener,
-        ActivityTitleSetterListener {
+                                                          ListLineupsFragment.Listener,
+                                                          ActivityTitleSetterListener {
+
+    private Logger logger = LoggerFactory.getLogger(HomeActivity.class);
 
     private HomeViewPresenter presenter;
 
     @BindString(R.string.homeActivity_title)
     String title;
-
-    @BindString(R.string.homeActivity_spinnerInitialDataLoading_text)
-    String spinnerText;
 
     @BindString(R.string.sidebarOpen_title)
     String sidebarOpenTitle;
@@ -73,10 +75,49 @@ public class HomeActivity extends BaseActivity implements HomeView,
     @BindView(R.id.spinner)
     RelativeLayout spinner;
 
+    @BindView(R.id.txtError)
+    TextView txtError;
+
+    @BindString(R.string.homeLayout_spinnerTeamsLoading_text)
+    String teamsLoadingSpinnerText;
+
+    @BindString(R.string.homeLayout_teamsLoadingFailed_text)
+    String teamsLoadingFailedText;
+
+    @BindString(R.string.homeLayout_spinnerTeamsStoring_text)
+    String teamsStoringSpinnerText;
+
+    @BindString(R.string.homeLayout_teamsStoringFailed_text)
+    String teamsStoringFailedText;
+
+    @BindString(R.string.homeLayout_spinnerPositionsLoading_text)
+    String positionsLoadingSpinnerText;
+
+    @BindString(R.string.homeLayout_positionsLoadingFailed_text)
+    String positionsLoadingFailedText;
+
+    @BindString(R.string.homeLayout_spinnerPositionsStoring_text)
+    String positionsStoringSpinnerText;
+
+    @BindString(R.string.homeLayout_positionsStoringFailed_text)
+    String positionsStoringFailedText;
+
+    @BindString(R.string.homeLayout_spinnerPlayersLoading_text)
+    String playersLoadingSpinnerText;
+
+    @BindString(R.string.homeLayout_playersLoadingFailed_text)
+    String playersLoadingFailedText;
+
+    @BindString(R.string.homeLayout_spinnerPlayersStoring_text)
+    String playersStoringSpinnerText;
+
+    @BindString(R.string.homeLayout_playersStoringFailed_text)
+    String playersStoringFailedText;
+
     @BindView(R.id.spinner_text)
     TextView txtSpinner;
 
-    @BindView(R.id.error_loading)
+    @BindView(R.id.error)
     RelativeLayout errorLoadingLayout;
 
     @BindView(R.id.content)
@@ -99,17 +140,18 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.home_layout);
 
         ButterKnife.bind(this);
         ((MainApplication) this.getApplication()).getUserComponent()
                 .plus(new HomeViewModule(this)).inject(this);
-
         this.setSupportActionBar(toolbar);
         this.setTitle(title);
         this.setupSidebar();
-        presenter.loadData();
+        presenter.onViewCreated();
+        presenter.onViewLayoutCreated();
     }
 
     /**
@@ -165,6 +207,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onPostCreate");
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
     }
@@ -177,6 +220,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        logger.info("onCreateOptionsMenu");
         if (presenter.isMainViewVisible()) {
             this.getMenuInflater().inflate(R.menu.main_menu, menu);
             if (this.getSupportActionBar() != null) {
@@ -198,6 +242,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        logger.info("onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.mainMenu_createLineup:
                 this.startCreteLineupActivity();
@@ -243,8 +288,13 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     protected void onDestroy() {
+        logger.info("onDestroy");
         super.onDestroy();
-        ((MainApplication) this.getApplication()).releaseUserComponent();
+        presenter.onViewLayoutDestroyed();
+        presenter.onViewDestroyed();
+        if (this.isFinishing()) {
+            ((MainApplication) this.getApplication()).releaseUserComponent();
+        }
     }
 
     /**
@@ -252,6 +302,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void onBackPressed() {
+        logger.info("onBackPressed");
         if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
             this.setTitle(title);
             presenter.setMainViewVisible(true);
@@ -277,7 +328,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showInitialDataLoading() {
-        txtSpinner.setText(spinnerText);
+        logger.info("showInitialDataLoading");
         super.toggleVisibility(spinner, true);
         super.toggleVisibility(errorLoadingLayout, false);
         super.toggleVisibility(content, false);
@@ -288,6 +339,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showInitialDataInfoDialog() {
+        logger.info("showInitialDataInfoDialog");
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         InfoDialog dialog = InfoDialog.newInstance(infoDialogTitle, infoDialogMessage);
         dialog.show(transaction, InfoDialog.TAG);
@@ -298,6 +350,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showInitialDataLoadingSuccess() {
+        logger.info("showInitialDataLoadingSuccess");
         super.toggleVisibility(content, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorLoadingLayout, false);
@@ -308,21 +361,123 @@ public class HomeActivity extends BaseActivity implements HomeView,
     }
 
     /**
-     * Show the error layout when a error occurred while loading the data.
+     * Show the request failed layout content.
      */
-    @Override
-    public void showErrorLoadingInitialData() {
+    private void showInitialDataLoadingFailed() {
         super.toggleVisibility(errorLoadingLayout, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(content, false);
     }
 
     /**
+     * Called when a request has been send to load the teams
+     */
+    @Override
+    public void showTeamsLoading() {
+        txtSpinner.setText(teamsLoadingSpinnerText);
+    }
+
+    /**
+     * Called when loading the teams failed.
+     */
+    @Override
+    public void showTeamsLoadingFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(teamsLoadingFailedText);
+    }
+
+    /**
+     * Called when the teams has started storing in the database.
+     */
+    @Override
+    public void showTeamsStoring() {
+        txtSpinner.setText(teamsStoringSpinnerText);
+    }
+
+    /**
+     * Called when storing the teams failed.
+     */
+    @Override
+    public void showTeamsStoringFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(teamsStoringFailedText);
+    }
+
+    /**
+     * Called when a request has been send to load the positions.
+     */
+    @Override
+    public void showPositionsLoading() {
+        txtSpinner.setText(positionsLoadingSpinnerText);
+    }
+
+    /**
+     * Called when loading the positions failed.
+     */
+    @Override
+    public void showPositionsLoadingFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(positionsLoadingFailedText);
+    }
+
+    /**
+     * Called when the positions has started storing in the database.
+     */
+    @Override
+    public void showPositionsStoring() {
+        txtSpinner.setText(positionsStoringSpinnerText);
+    }
+
+    /**
+     * Called when storing the positions failed.
+     */
+    @Override
+    public void showPositionsStoringFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(positionsStoringFailedText);
+    }
+
+    /**
+     * Called when the a request has been send to load the players.
+     */
+    @Override
+    public void showPlayersLoading() {
+        txtSpinner.setText(playersLoadingSpinnerText);
+    }
+
+    /**
+     * Called when loading the players failed.
+     */
+    @Override
+    public void showPlayersLoadingFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(playersLoadingFailedText);
+    }
+
+    /**
+     * Called when the players has started storing in the database.
+     */
+    @Override
+    public void showPlayersStoring() {
+        txtSpinner.setText(playersStoringSpinnerText);
+    }
+
+    /**
+     * Called when storing the players failed.
+     */
+    @Override
+    public void showPlayersStoringFailed() {
+        this.showInitialDataLoadingFailed();
+        txtError.setText(playersStoringFailedText);
+    }
+
+    /**
      * Bind the button click to call the presenter method to reload the
      * data when a error happened.
      */
-    @OnClick(R.id.error_loading_btn_tryAgain)
+    @OnClick(R.id.error_btnTryAgain)
     void reload() {
+        logger.info("btn 'Try Again' clicked");
         presenter.loadData();
     }
 
@@ -330,6 +485,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      * Called when the user has selected the options to be logged out.
      */
     private void logout() {
+        logger.info("logout options item selected");
         presenter.logout();
         this.startActivity(new Intent(this, LoginActivity.class));
         finish();
@@ -342,6 +498,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showLineupPlayersView(Lineup lineup) {
+        logger.info("showLineupPlayersView");
         Intent intent = new Intent(this, LineupPlayersActivity.class);
         intent.putExtra(LineupPlayersActivity.LINEUP_BUNDLE_KEY, lineup);
         this.startActivity(intent);
@@ -354,11 +511,12 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showLineupLikesView(Lineup lineup) {
+        logger.info("showLineupLikesView");
         LikeFragment fragment = LikeFragment.newInstance(lineup);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
         presenter.setMainViewVisible(false);
         this.invalidateOptionsMenu();
     }
@@ -370,11 +528,12 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     @Override
     public void showLineupCommentsView(Lineup lineup) {
+        logger.info("showLineupCommentsView");
         CommentsFragment fragment = CommentsFragment.newInstance(lineup.getId());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
         presenter.setMainViewVisible(false);
         this.invalidateOptionsMenu();
     }

@@ -9,7 +9,29 @@ public interface HomeView extends BaseView {
 
     void showInitialDataInfoDialog();
 
-    void showInitialDataLoadingSuccess();
+    void showTeamsLoading();
 
-    void showErrorLoadingInitialData();
+    void showTeamsLoadingFailed();
+
+    void showTeamsStoring();
+
+    void showTeamsStoringFailed();
+
+    void showPositionsLoading();
+
+    void showPositionsLoadingFailed();
+
+    void showPositionsStoring();
+
+    void showPositionsStoringFailed();
+
+    void showPlayersLoading();
+
+    void showPlayersLoadingFailed();
+
+    void showPlayersStoring();
+
+    void showPlayersStoringFailed();
+
+    void showInitialDataLoadingSuccess();
 }

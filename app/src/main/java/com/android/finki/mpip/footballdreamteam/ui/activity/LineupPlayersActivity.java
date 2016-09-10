@@ -26,6 +26,9 @@ import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,15 +42,14 @@ import butterknife.OnClick;
  * Created by Borce on 15.08.2016.
  */
 public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
-                                                            LineupPlayersView,
-                                                            ListPositionPlayersFragment.Listener,
-                                                            LineupFormationFragment.Listener,
+        LineupPlayersView,
+        ListPositionPlayersFragment.Listener,
+        LineupFormationFragment.Listener,
         PlayerDetailsDialog.Listener {
 
+    private Logger logger = LoggerFactory.getLogger(LineupPlayersActivity.class);
     public static final String LINEUP_BUNDLE_KEY = "lineup";
-
-    @Inject
-    LineupPlayersViewPresenter presenter;
+    private LineupPlayersViewPresenter presenter;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -70,8 +72,14 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     @BindString(R.string.lineupPlayersActivity_spinnerUpdatingLineup_text)
     String spinnerUpdatingLineupText;
 
-    @BindView(R.id.error_loading)
-    RelativeLayout errorLoadingLayout;
+    @BindView(R.id.error)
+    RelativeLayout error;
+
+    @BindView(R.id.txtError)
+    TextView txtError;
+
+    @BindString(R.string.lineupPlayersActivity_loadingLineupFailed_text)
+    String loadingLineupFailedText;
 
     @BindView(R.id.lineupPlayersActivity_updateFailed)
     LinearLayout lineupUpdateErrorLayout;
@@ -83,12 +91,23 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     ButtonAwesome btnChangeFormation;
 
     /**
+     * Set the presenter for the activity.
+     *
+     * @param presenter activity presenter
+     */
+    @Inject
+    public void setPresenter(LineupPlayersViewPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    /**
      * Called when the activity is ready to be created.
      *
      * @param savedInstanceState saved instance state when the activity is recreated.
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.lineup_players_layout);
         ButterKnife.bind(this);
@@ -100,7 +119,8 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
             this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         this.registerForContextMenu(btnChangeFormation);
-        presenter.loadPlayers(this.getIntent().getExtras());
+        presenter.onViewCreated(this.getIntent().getExtras());
+        presenter.onViewLayoutCreated();
     }
 
     /**
@@ -111,6 +131,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        logger.info("onCreateOptionsMenu");
         this.getMenuInflater().inflate(R.menu.save_lineup_menu, menu);
         MenuItem item = menu.findItem(R.id.lineupMenu_save);
         Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
@@ -131,6 +152,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        logger.info("onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.lineupMenu_save:
                 super.checkLineupFormationFragmentVisibility();
@@ -154,6 +176,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
+        logger.info("onCreteContextMenu");
         menu.setHeaderTitle(contextMenuTitle);
         this.getMenuInflater().inflate(R.menu.formations_menu, menu);
     }
@@ -166,6 +189,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        logger.info("onContextItemSelected");
         switch (item.getItemId()) {
             case R.id.formation_4_4_2:
                 presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
@@ -182,6 +206,16 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Called before the activity is destroyed.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onViewLayoutDestroyed();
+        presenter.onViewDestroyed();
     }
 
     /**
@@ -205,18 +239,11 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     }
 
     /**
-     * Hide the "Change Formation" button.
-     */
-    @Override
-    public void showBtnChangeFormation() {
-        super.toggleVisibility(btnChangeFormation, true);
-    }
-
-    /**
      * Handle click on the button to change formation.
      */
     @OnClick(R.id.lineupPlayersLayout_btnChangeFormation)
     void onBtnChangeFormationClicked() {
+        logger.info("btn 'Change Formation' clicked");
         btnChangeFormation.showContextMenu();
     }
 
@@ -225,9 +252,10 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showLoading() {
+        logger.info("showLoading");
         txtSpinner.setText(spinnerLoadingLineupText);
         super.toggleVisibility(spinner, true);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(mainContent, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
     }
@@ -239,11 +267,15 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showLoadingSuccess(List<Player> players) {
+        logger.info("showLoadingSuccess");
         super.toggleVisibility(mainContent, true);
         super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
         super.showLineupFormationFragment(players, presenter.canEditLineup());
+        if (presenter.canEditLineup()) {
+            super.toggleVisibility(btnChangeFormation, true);
+        }
     }
 
     /**
@@ -251,7 +283,9 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showLoadingFailed() {
-        super.toggleVisibility(errorLoadingLayout, true);
+        logger.info("showLoadingFailed");
+        txtError.setText(loadingLineupFailedText);
+        super.toggleVisibility(error, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(mainContent, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
@@ -262,9 +296,10 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showUpdating() {
+        logger.info("showUpdating");
         txtSpinner.setText(spinnerUpdatingLineupText);
         super.toggleVisibility(spinner, true);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(mainContent, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
     }
@@ -274,9 +309,10 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showUpdatingSuccess() {
+        logger.info("showUpdatingSuccess");
         super.toggleVisibility(mainContent, true);
         super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
         this.invalidateOptionsMenu();
     }
@@ -285,9 +321,10 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      * Called when updating lineup data failed.
      */
     public void showUpdatingFailed() {
+        logger.info("showUpdatingFailed");
         super.toggleVisibility(lineupUpdateErrorLayout, true);
         super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(mainContent, false);
         this.invalidateOptionsMenu();
     }
@@ -336,6 +373,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void changeFormation(LineupUtils.FORMATION formation, List<Player> players) {
+        logger.info("changeFormation");
         super.checkLineupFormationFragmentVisibility();
         super.showLineupFormationFragment(formation, players);
         presenter.setChanged(true);
@@ -351,6 +389,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     @Override
     public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                                 int[] playersToExclude) {
+        logger.info("showListPositionPlayersFragment");
         super.showListPositionPlayersFragment(place, playersToExclude);
     }
 
@@ -362,6 +401,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showPlayerDetailsDialog(int id, boolean editable) {
+        logger.info("showPlayersDetailsDialog");
         super.showPlayerDetailsDialog(id, editable);
     }
 
@@ -370,6 +410,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showValidLineup() {
+        logger.info("showValidLineup");
         super.checkLineupFormationFragmentVisibility();
         presenter.setLineupValid(true);
         this.invalidateOptionsMenu();
@@ -380,6 +421,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void showInvalidLineup() {
+        logger.info("showInvalidLineup");
         super.checkLineupFormationFragmentVisibility();
         presenter.setLineupValid(false);
         this.invalidateOptionsMenu();
@@ -392,6 +434,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void onPlayerSelected(Player player) {
+        logger.info("onPlayerSelected");
         super.removeListPositionPlayersFragment();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).updateLineupPosition(player);
@@ -404,6 +447,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     public void removePlayer() {
+        logger.info("removePlayer");
         super.checkLineupFormationFragmentVisibility();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).removeSelectedPlayer();
@@ -414,9 +458,10 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     /**
      * Handle click on the button "Try Again"
      */
-    @OnClick(R.id.error_loading_btn_tryAgain)
+    @OnClick(R.id.error_btnTryAgain)
     void reload() {
-        presenter.loadPlayers(this.getIntent().getExtras());
+        logger.info("btn 'Try Again' clicked");
+        presenter.loadPlayers();
     }
 
     /**
@@ -424,6 +469,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @OnClick(R.id.lineupPlayersActivity_btnTryUpdateAgain)
     void tryUpdateAgain() {
+        logger.info("btn 'Try Update Again' clicked");
         presenter.update();
     }
 }

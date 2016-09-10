@@ -32,7 +32,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
                                                                 StorePlayersTask.Listener {
 
     private Logger logger = LoggerFactory.getLogger(HomeViewPresenter.class);
-
     private HomeView view;
     private SharedPreferences preferences;
     private TeamApi teamApi;
@@ -41,13 +40,16 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     private StoreTeamsTask storeTeamsTask;
     private StorePositionsTask storePositionsTask;
     private StorePlayersTask storePlayersTask;
-
     private String TEAMS_LOADED_KEY;
     private String POSITIONS_LOADED_KEY;
     private String PLAYERS_LOADED_KEY;
     private String AUTH_USER_ID_KEY;
     private String JWT_TOKEN;
-
+    private Call<List<Team>> teamCall;
+    private Call<List<Position>> positionCall;
+    private Call<List<Player>> playerCall;
+    private boolean requestSending = false;
+    private boolean viewLayoutCreated = false;
     private boolean isInfoDialogShowed = false;
     private boolean mainViewVisible = false;
 
@@ -76,6 +78,63 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     }
 
     /**
+     * Called when the view is created.
+     */
+    public void onViewCreated() {
+        logger.info("onViewCreated");
+        this.loadData();
+    }
+
+    /**
+     * Called when the view is visible to the user.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCrated");
+        this.viewLayoutCreated = true;
+        if (requestSending) {
+            view.showInitialDataLoading();
+            if (!isInfoDialogShowed) {
+                isInfoDialogShowed = true;
+                view.showInitialDataInfoDialog();
+            }
+        }
+    }
+
+    /**
+     * Called when the view is not anymore visible.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called before the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (teamCall != null) {
+            teamCall.cancel();
+        }
+        if (positionCall != null) {
+            positionCall.cancel();
+        }
+        if (playerCall != null) {
+            playerCall.cancel();
+        }
+        storePlayersTask.cancel(true);
+        storePositionsTask.cancel(true);
+        storePlayersTask.cancel(true);
+    }
+
+    /**
+     * Load the teams, positions and players data from the server.
+     */
+    public void loadData() {
+        this.loadTeams();
+    }
+
+    /**
      * Set the visibility of the main view.
      *
      * @param mainViewVisible new main view visibility
@@ -100,15 +159,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private void requestFailed(Throwable t) {
         t.printStackTrace();
-        view.showErrorLoadingInitialData();
         super.onRequestFailed(view, t);
-    }
-
-    /**
-     * Called when the activity is created.
-     */
-    public void loadData() {
-        this.loadTeams();
     }
 
     /**
@@ -116,28 +167,30 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private void loadTeams() {
         if (!this.isTeamsLoaded()) {
-            logger.info("sending index teams request");
-            view.showInitialDataLoading();
-            if (!isInfoDialogShowed) {
-                isInfoDialogShowed = true;
-                view.showInitialDataInfoDialog();
+            if (!requestSending) {
+                logger.info("sending index teams request");
+                requestSending = true;
+                if (viewLayoutCreated) {
+                    view.showInitialDataLoading();
+                    view.showTeamsLoading();
+                    if (!isInfoDialogShowed) {
+                        isInfoDialogShowed = true;
+                        view.showInitialDataInfoDialog();
+                    }
+                }
+                teamCall = teamApi.index(null, null, null);
+                teamCall.enqueue(new Callback<List<Team>>() {
+                    @Override
+                    public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
+                        onTeamsLoadingSuccess(response);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Team>> call, Throwable t) {
+                        onTeamsLoadingFailed(call, t);
+                    }
+                });
             }
-            Call<List<Team>> call = teamApi.index(null, null, null);
-            call.enqueue(new Callback<List<Team>>() {
-
-                @Override
-                public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
-                    logger.info("teams loading success");
-                    List<Team> teams = response.body();
-                    storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
-                }
-
-                @Override
-                public void onFailure(Call<List<Team>> call, Throwable t) {
-                    logger.info("teams loading failed");
-                    requestFailed(t);
-                }
-            });
         } else {
             this.loadPositions();
         }
@@ -150,6 +203,42 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private boolean isTeamsLoaded() {
         return preferences.getBoolean(TEAMS_LOADED_KEY, false);
+    }
+
+    /**
+     * Called when loading the teams is successful.
+     *
+     * @param response server response
+     */
+    private void onTeamsLoadingSuccess(Response<List<Team>> response) {
+        logger.info("teams loading success");
+        requestSending = false;
+        teamCall = null;
+        List<Team> teams = response.body();
+        storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
+        if (viewLayoutCreated) {
+            view.showTeamsStoring();
+        }
+    }
+
+    /**
+     * Called when loading the teams failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void onTeamsLoadingFailed(Call<List<Team>> call, Throwable t) {
+        logger.info("teams loading failed");
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("teams loading request canceled");
+        } else {
+            if (viewLayoutCreated) {
+                view.showTeamsLoadingFailed();
+                requestFailed(t);
+            }
+        }
+        teamCall = null;
     }
 
     /**
@@ -166,7 +255,9 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onTeamsSavingFailed() {
-        view.showInternalServerError();
+        if (viewLayoutCreated) {
+            view.showTeamsStoringFailed();
+        }
     }
 
     /**
@@ -174,28 +265,31 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private void loadPositions() {
         if (!this.isPositionsLoaded()) {
-            logger.info("sending index positions request");
-            view.showInitialDataLoading();
-            if (!isInfoDialogShowed) {
-                isInfoDialogShowed = true;
-                view.showInitialDataInfoDialog();
-            }
-            Call<List<Position>> call = positionApi.index(null, null, null);
-            call.enqueue(new Callback<List<Position>>() {
-                @Override
-                public void onResponse(Call<List<Position>> call,
-                                       Response<List<Position>> response) {
-                    logger.info("positions loading success");
-                    List<Position> positions = response.body();
-                    storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
+            if (!requestSending) {
+                logger.info("sending index positions request");
+                requestSending = true;
+                if (viewLayoutCreated) {
+                    view.showInitialDataLoading();
+                    view.showPositionsLoading();
+                    if (!isInfoDialogShowed) {
+                        isInfoDialogShowed = true;
+                        view.showInitialDataInfoDialog();
+                    }
                 }
+                positionCall = positionApi.index(null, null, null);
+                positionCall.enqueue(new Callback<List<Position>>() {
+                    @Override
+                    public void onResponse(Call<List<Position>> call,
+                                           Response<List<Position>> response) {
+                        onPositionsLoadingSuccess(response);
+                    }
 
-                @Override
-                public void onFailure(Call<List<Position>> call, Throwable t) {
-                    logger.info("positions loading failed");
-                    requestFailed(t);
-                }
-            });
+                    @Override
+                    public void onFailure(Call<List<Position>> call, Throwable t) {
+                        onPositionsLoadingFailed(call, t);
+                    }
+                });
+            }
         } else {
             this.loadPlayers();
         }
@@ -208,6 +302,42 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private boolean isPositionsLoaded() {
         return preferences.getBoolean(POSITIONS_LOADED_KEY, false);
+    }
+
+    /**
+     * Called when loading the positions is successful.
+     *
+     * @param response server response
+     */
+    private void onPositionsLoadingSuccess(Response<List<Position>> response) {
+        logger.info("positions loading success");
+        requestSending = false;
+        positionCall = null;
+        List<Position> positions = response.body();
+        storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
+        if (viewLayoutCreated) {
+            view.showPositionsStoring();
+        }
+    }
+
+    /**
+     * Called when loading the positions failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void onPositionsLoadingFailed(Call<List<Position>> call, Throwable t) {
+        logger.info("positions loading failed");
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("positions loading request canceled");
+        } else {
+            if (viewLayoutCreated) {
+                view.showPositionsLoadingFailed();
+                requestFailed(t);
+            }
+        }
+        positionCall = null;
     }
 
     /**
@@ -224,7 +354,9 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPositionsSavingFailed() {
-        view.showErrorLoadingInitialData();
+        if (viewLayoutCreated) {
+            view.showPositionsStoringFailed();
+        }
     }
 
     /**
@@ -232,27 +364,31 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     private void loadPlayers() {
         if (!this.isPlayersLoaded()) {
-            logger.info("sending index players request");
-            view.showInitialDataLoading();
-            if (!isInfoDialogShowed) {
-                isInfoDialogShowed = true;
-                view.showInitialDataInfoDialog();
-            }
-            Call<List<Player>> call = playerApi.index(false, null, null);
-            call.enqueue(new Callback<List<Player>>() {
-                @Override
-                public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
-                    logger.info("players loading success");
-                    List<Player> players = response.body();
-                    storePlayersTask.execute(players.toArray(new Player[players.size()]));
+            if (!requestSending) {
+                logger.info("sending index players request");
+                requestSending = true;
+                if (viewLayoutCreated) {
+                    view.showInitialDataLoading();
+                    view.showPlayersLoading();
+                    if (!isInfoDialogShowed) {
+                        isInfoDialogShowed = true;
+                        view.showInitialDataInfoDialog();
+                    }
                 }
+                playerCall = playerApi.index(false, null, null);
+                playerCall.enqueue(new Callback<List<Player>>() {
+                    @Override
+                    public void onResponse(Call<List<Player>> call,
+                                           Response<List<Player>> response) {
+                        onPlayersLoadingSuccess(response);
+                    }
 
-                @Override
-                public void onFailure(Call<List<Player>> call, Throwable t) {
-                    logger.info("players loading failed");
-                    requestFailed(t);
-                }
-            });
+                    @Override
+                    public void onFailure(Call<List<Player>> call, Throwable t) {
+                        onPlayersLoadingFailed(call, t);
+                    }
+                });
+            }
         } else {
             view.showInitialDataLoadingSuccess();
         }
@@ -268,12 +404,50 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     }
 
     /**
+     * Called when loading the players is successful.
+     *
+     * @param response server response
+     */
+    private void onPlayersLoadingSuccess(Response<List<Player>> response) {
+        logger.info("players loading success");
+        requestSending = false;
+        playerCall = null;
+        List<Player> players = response.body();
+        storePlayersTask.execute(players.toArray(new Player[players.size()]));
+        if (viewLayoutCreated) {
+            view.showPlayersStoring();
+        }
+    }
+
+    /**
+     * Called when loading the players failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void onPlayersLoadingFailed(Call<List<Player>> call, Throwable t) {
+        logger.info("players loading failed");
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("players loading request canceled");
+        } else {
+            if (viewLayoutCreated) {
+                view.showPlayersLoadingFailed();
+                requestFailed(t);
+            }
+        }
+        playerCall = null;
+    }
+
+    /**
      * Called when saving the players in the database is successful.
      */
     @Override
     public void onPlayersSavingSuccess() {
         preferences.edit().putBoolean(PLAYERS_LOADED_KEY, true).apply();
-        view.showInitialDataLoadingSuccess();
+        if (viewLayoutCreated) {
+            view.showInitialDataLoadingSuccess();
+        }
     }
 
     /**
@@ -281,9 +455,10 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPlayersSavingFailed() {
-        view.showErrorLoadingInitialData();
+        if (viewLayoutCreated) {
+            view.showPlayersStoringFailed();
+        }
     }
-
 
     /**
      * Remove the auth user data from the database.

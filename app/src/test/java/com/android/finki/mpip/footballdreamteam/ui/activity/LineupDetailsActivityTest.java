@@ -99,7 +99,7 @@ public class LineupDetailsActivityTest {
 
         spinner = (RelativeLayout) activity.findViewById(R.id.spinner);
         assertNotNull(spinner);
-        errorContent = (RelativeLayout) activity.findViewById(R.id.error_loading);
+        errorContent = (RelativeLayout) activity.findViewById(R.id.error);
         assertNotNull(errorContent);
         mainContent = (LinearLayout) activity.findViewById(R.id.lineupDetailsLayout_mainContent);
         assertNotNull(mainContent);
@@ -237,7 +237,7 @@ public class LineupDetailsActivityTest {
      */
     @Test
     public void testBtnTryAgainClick() {
-        Button btn = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
+        Button btn = (Button) activity.findViewById(R.id.error_btnTryAgain);
         assertNotNull(btn);
         btn.performClick();
         /**

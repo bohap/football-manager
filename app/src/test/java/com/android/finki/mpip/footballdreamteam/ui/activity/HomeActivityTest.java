@@ -82,7 +82,7 @@ public class HomeActivityTest {
         controller = Robolectric.buildActivity(HomeActivity.class);
         activity = controller.create().start().resume().visible().get();
 
-        errorLoadingLayout = (RelativeLayout) activity.findViewById(R.id.error_loading);
+        errorLoadingLayout = (RelativeLayout) activity.findViewById(R.id.error);
         assertNotNull(errorLoadingLayout);
         spinner = (RelativeLayout) activity.findViewById(R.id.spinner);
         assertNotNull(spinner);
@@ -216,7 +216,7 @@ public class HomeActivityTest {
      */
     @Test
     public void testBtnTryAgainClick() {
-        Button button = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
+        Button button = (Button) activity.findViewById(R.id.error_btnTryAgain);
         assertNotNull(button);
         button.performClick();
         /*

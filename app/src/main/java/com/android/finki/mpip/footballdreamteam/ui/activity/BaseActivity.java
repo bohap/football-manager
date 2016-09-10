@@ -13,6 +13,9 @@ import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.ui.component.BaseView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 /**
@@ -20,6 +23,7 @@ import javax.inject.Inject;
  */
 public class BaseActivity extends AppCompatActivity implements BaseView {
 
+    private Logger logger = LoggerFactory.getLogger(BaseActivity.class);
     private SharedPreferences preferences;
     private String internalServerErrorDialogTitle;
     private String internalServerErrorDialogMessage;
@@ -47,6 +51,7 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getApplication()).getAppComponent().plus().inject(this);
 
@@ -58,27 +63,6 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
         noInternetConnectionDialogMessage = this.getString(R.string.noInternetConnection_message);
         this.AUTH_USER_KEY = this.getString(R.string.preference_auth_user_id_key);
         this.JWT_TOKEN = this.getString(R.string.preference_jwt_token_key);
-    }
-
-    /**
-     * Show a Toast message when a app unknown error happened.
-     */
-    public void showAppErrorMessage() {
-//        Toast.makeText(this, appErrorMessage, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Show a Toast message when a connection timeout error happened.
-     */
-    public void showConnectionTimeoutMessage() {
-//        Toast.makeText(this, connectionTimeoutMessage, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Show a Toast message when a server error happened.
-     */
-    public void showServerErrorMessage() {
-//        Toast.makeText(this, serverErrorMessage, Toast.LENGTH_SHORT).show();
     }
 
     /**

@@ -82,7 +82,7 @@ public class SplashActivityPresenterTest {
     }
 
     /**
-     * Test that the onDialogCreated will call showLoginActivity method on view
+     * Test that the onViewCreated will call showLoginActivity method on view
      * when the user is not authenticated.
      */
     @Test
@@ -98,7 +98,7 @@ public class SplashActivityPresenterTest {
     }
 
     /**
-     * Test that onDialogCreated will call showHomeActivity method on view when the user
+     * Test that onViewCreated will call showHomeActivity method on view when the user
      * is authenticated.
      */
     @Test

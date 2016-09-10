@@ -48,20 +48,20 @@ public class PlayerDetailsDialogPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated called with not set player id bundle key.
+     * Test the behavior on onViewCreated called with not set player id bundle key.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnDialogCreatedOnNotSetPlayerId() {
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on onDialogCreated called with invalid player id bundle key.
+     * Test the behavior on onViewCreated called with invalid player id bundle key.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnDialogCreatedWithInvalidPlayerId() {
         when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1)).thenReturn(0);
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
@@ -71,7 +71,7 @@ public class PlayerDetailsDialogPresenterTest {
     public void testGetPlayerOnUnExistingPlayerId() {
         when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
                 .thenReturn(player.getId());
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
         verify(dbService).open();
         verify(dbService).close();
         verify(dbService).get(player.getId());
@@ -86,7 +86,7 @@ public class PlayerDetailsDialogPresenterTest {
                 .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setTeam(null);
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
         verify(dbService).open();
         verify(dbService).close();
         verify(dbService).get(player.getId());
@@ -101,7 +101,7 @@ public class PlayerDetailsDialogPresenterTest {
                 .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setPosition(null);
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
         verify(dbService).open();
         verify(dbService).close();
         verify(dbService).get(player.getId());
@@ -115,7 +115,7 @@ public class PlayerDetailsDialogPresenterTest {
         when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
                 .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
         verify(dbService).open();
         verify(dbService).close();
         verify(dbService).get(player.getId());
@@ -135,7 +135,7 @@ public class PlayerDetailsDialogPresenterTest {
         when(args.getBoolean(PlayerDetailsDialog.getBundleEditableKey(), false))
                 .thenReturn(true);
         when(dbService.get(player.getId())).thenReturn(player);
-        presenter.onDialogCreated(args);
+        presenter.onViewCreated(args);
         presenter.onViewCreated();
         verify(dialog).bindPlayer(name, team, age, position, true);
     }

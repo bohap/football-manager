@@ -24,19 +24,21 @@ import retrofit2.Response;
 /**
  * Created by Borce on 15.08.2016.
  */
-public class LikeViewPresenter extends BasePresenter implements Callback<List<UserLike>> {
+public class LikeViewPresenter extends BasePresenter {
 
     private static Logger logger = LoggerFactory.getLogger(LikeViewPresenter.class);
-
     private LikeView view;
     private LineupApi api;
     private User user;
-
     private Lineup lineup;
-    private boolean viewCreated = false;
-    private boolean requestSending = false;
+    private Call<List<UserLike>> likesCall;
+    private Call<ServerResponse> addLikeCall;
+    private Call<Void> removeLikeCall;
+    private boolean viewLayoutCreated = false;
+    private boolean loadLikesRequestSending = false;
+    private boolean addLikeRequestSending = false;
+    private boolean removeLikeRequestSending = false;
     private boolean likeAdded = false;
-
 
     public LikeViewPresenter(LikeView view, LineupApi api, User user) {
         this.view = view;
@@ -45,11 +47,12 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
     }
 
     /**
-     * Load the lineup likes.
+     * Called when the view is created.
      *
      * @param args view arguments
      */
-    public void loadLikes(Bundle args) {
+    public void onViewCreated(Bundle args) {
+        logger.info("onViewCreated");
         if (args == null) {
             String message = "bundle can't be null";
             logger.error(message);
@@ -62,7 +65,42 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
             throw new IllegalArgumentException(message);
         }
         this.lineup = (Lineup) serializable;
-        this.loadData();
+        this.loadLikes();
+    }
+
+    /**
+     * Called when the view is visible to the user.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
+        this.viewLayoutCreated = true;
+        if (this.loadLikesRequestSending) {
+            view.showLoading();
+        }
+    }
+
+    /**
+     * Called when the view is not anymore visible to the user.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (likesCall != null) {
+            likesCall.cancel();
+        }
+        if (addLikeCall != null) {
+            addLikeCall.cancel();
+        }
+        if (removeLikeCall != null) {
+            removeLikeCall.cancel();
+        }
     }
 
     /**
@@ -70,55 +108,49 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
      */
     public void loadLikes() {
         if (this.lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup is not set");
         }
-        this.loadData();
-    }
+        if (!loadLikesRequestSending) {
+            logger.info("sending likes request");
+            loadLikesRequestSending = true;
+            likesCall = api.likes(lineup.getId(), true, null, null);
+            if (viewLayoutCreated) {
+                view.showLoading();
+            }
+            likesCall.enqueue(new Callback<List<UserLike>>() {
+                @Override
+                public void onResponse(Call<List<UserLike>> call, Response<List<UserLike>> response) {
+                    likesLoadingSuccess(response);
+                }
 
-    /**
-     * Send a request to load the data from the server.
-     */
-    private void loadData() {
-        logger.info("sending likes request");
-        requestSending = true;
-        Call<List<UserLike>> call = api.likes(lineup.getId(), true, null, null);
-        call.enqueue(this);
-        if (viewCreated) {
-            view.showLoading();
-        }
-    }
-
-    /**
-     * Called when the view layout is fully created.
-     */
-    public void onViewCreated() {
-        viewCreated = true;
-        if (requestSending) {
-            view.showLoading();
+                @Override
+                public void onFailure(Call<List<UserLike>> call, Throwable t) {
+                    likesLoadingFailed(call, t);
+                }
+            });
         }
     }
 
     /**
      * Called when loading the likes is successful.
      *
-     * @param call     retrofit call
      * @param response server response
      */
-    @Override
-    public void onResponse(Call<List<UserLike>> call, Response<List<UserLike>> response) {
+    public void likesLoadingSuccess(Response<List<UserLike>> response) {
         logger.info("likes request success");
-        requestSending = false;
-        List<UserLike> likes = response.body();
-        view.showLoadingSuccess(likes);
-        final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
-        if (likes.contains(userLike)) {
-            view.showRemoveLikeButton();
-            likeAdded = true;
-        } else {
-            view.showAddLikeButton();
-            likeAdded = false;
+        likesCall = null;
+        loadLikesRequestSending = false;
+        if (viewLayoutCreated) {
+            List<UserLike> likes = response.body();
+            view.showLoadingSuccess(likes);
+            final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
+            if (likes.contains(userLike)) {
+                view.showRemoveLikeButton();
+                likeAdded = true;
+            } else {
+                view.showAddLikeButton();
+                likeAdded = false;
+            }
         }
     }
 
@@ -128,13 +160,19 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    @Override
-    public void onFailure(Call<List<UserLike>> call, Throwable t) {
+    public void likesLoadingFailed(Call<List<UserLike>> call, Throwable t) {
         logger.info("likes request failed");
-        requestSending = false;
-        t.printStackTrace();
-        view.showLoadingFailed();
-        super.onRequestFailed(view, t);
+        loadLikesRequestSending = false;
+        if (call.isCanceled()) {
+            logger.info("likes request canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showLoadingFailed();
+                super.onRequestFailed(view, t);
+            }
+        }
+        likesCall = null;
     }
 
     /**
@@ -147,25 +185,60 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
         if (likeAdded) {
             throw new IllegalArgumentException("like already added");
         }
-        logger.info("sending add like request");
-        view.showLikeAdding();
-        api.addLike(lineup.getId()).enqueue(new Callback<ServerResponse>() {
-            @Override
-            public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
-                logger.info("add like request success");
-                likeAdded = true;
-                view.showLikeAddingSuccess(new UserLike(user.getId(), user.getName(),
-                        new LineupLike(user, lineup, new Date())));
+        if (!addLikeRequestSending) {
+            logger.info("sending add like request");
+            addLikeRequestSending = true;
+            if (viewLayoutCreated) {
+                view.showLikeAdding();
             }
+            addLikeCall = api.addLike(lineup.getId());
+            addLikeCall.enqueue(new Callback<ServerResponse>() {
+                @Override
+                public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                    addLikeSuccess();
+                }
 
-            @Override
-            public void onFailure(Call<ServerResponse> call, Throwable t) {
-                logger.info("add like request failed");
-                t.printStackTrace();
+                @Override
+                public void onFailure(Call<ServerResponse> call, Throwable t) {
+                    addLikeFailed(call, t);
+                }
+            });
+        }
+    }
+
+    /**
+     * Called when adding the like is successful.
+     */
+    private void addLikeSuccess() {
+        logger.info("add like request success");
+        addLikeRequestSending = false;
+        likeAdded = true;
+        addLikeCall = null;
+        if (viewLayoutCreated) {
+            view.showLikeAddingSuccess(new UserLike(user.getId(), user.getName(),
+                    new LineupLike(user, lineup, new Date())));
+        }
+    }
+
+    /**
+     * Called when adding the like failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void addLikeFailed(Call<ServerResponse> call, Throwable t) {
+        logger.info("add like request failed");
+        addLikeRequestSending = false;
+        if (call.isCanceled()) {
+            logger.info("add like request canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
                 view.showLikeAddingFailed();
                 onRequestFailed(view, t);
             }
-        });
+        }
+        addLikeCall = null;
     }
 
     /**
@@ -178,24 +251,58 @@ public class LikeViewPresenter extends BasePresenter implements Callback<List<Us
         if (!this.likeAdded) {
             throw new IllegalArgumentException("lineup not liked");
         }
-        logger.info("sending remove like request");
-        view.showLikeRemoving();
-        api.deleteLike(lineup.getId()).enqueue(new Callback<Void>() {
-
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                logger.info("remove like request success");
-                likeAdded = false;
-                view.showLikeRemovingSuccess(new UserLike(user.getId(), user.getName(), null));
+        if (!removeLikeRequestSending) {
+            logger.info("sending remove like request");
+            removeLikeRequestSending = true;
+            if (viewLayoutCreated) {
+                view.showLikeRemoving();
             }
+            removeLikeCall = api.deleteLike(lineup.getId());
+            removeLikeCall.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    removeLikeSuccess();
+                }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                logger.info("remove like request failed");
-                t.printStackTrace();
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    removeLikeFailed(call, t);
+                }
+            });
+        }
+    }
+
+    /**
+     * Called when removing the like is successful.
+     */
+    private void removeLikeSuccess() {
+        logger.info("remove like request success");
+        removeLikeRequestSending = false;
+        likeAdded = false;
+        removeLikeCall = null;
+        if (viewLayoutCreated) {
+            view.showLikeRemovingSuccess(new UserLike(user.getId(), user.getName(), null));
+        }
+    }
+
+    /**
+     * Called when removing the liek failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void removeLikeFailed(Call<Void> call, Throwable t) {
+        logger.info("remove like request failed");
+        removeLikeRequestSending = false;
+        if (call.isCanceled()) {
+            logger.info("remove like request canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
                 view.showLikeRemovingFailed();
                 onRequestFailed(view, t);
             }
-        });
+        }
+        removeLikeCall = null;
     }
 }

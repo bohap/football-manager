@@ -14,6 +14,9 @@ import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 import butterknife.BindString;
@@ -24,6 +27,7 @@ import butterknife.ButterKnife;
  */
 public class SplashActivity extends AppCompatActivity implements SplashView, InfoDialog.Listener {
 
+    private static final Logger logger = LoggerFactory.getLogger(SplashActivity.class);
     private SplashViewPresenter presenter;
 
     @BindString(R.string.firstTimeStarted_message)
@@ -49,11 +53,12 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         ((MainApplication)this.getApplication()).getAppComponent()
                 .plus(new SplashViewModule(this)).inject(this);
-        presenter.onActivityCreated();
+        presenter.onViewLayoutCreated();
     }
 
     /**
@@ -61,6 +66,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     public void showInfoDialog() {
+        logger.info("showInfoDialog");
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         InfoDialog dialog = InfoDialog.newInstance(infoDialogTitle, infoDialogText);
         dialog.show(transaction, InfoDialog.TAG);
@@ -71,6 +77,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     public void onDialogDone() {
+        logger.info("onInfoDialogDone");
         presenter.checkIfUserIsAuthenticated();
     }
 
@@ -79,6 +86,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     public void showLoginView() {
+        logger.info("showLoginVIew");
         this.startActivity(new Intent(this, LoginActivity.class));
         super.finish();
     }
@@ -88,6 +96,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     public void showHomeView() {
+        logger.info("showHomeView");
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
@@ -99,6 +108,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
      */
     @Override
     public void createUserComponent(User user) {
+        logger.info("creteUserComponent");
         ((MainApplication)this.getApplication()).createUserComponent(user);
     }
 }

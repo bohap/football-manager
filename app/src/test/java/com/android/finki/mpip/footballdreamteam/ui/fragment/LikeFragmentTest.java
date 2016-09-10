@@ -124,7 +124,7 @@ public class LikeFragmentTest {
         assertNotNull(spinner);
         txtSpinner = (TextView) view.findViewById(R.id.spinner_text);
         assertNotNull(txtSpinner);
-        failedRequestLayout = (RelativeLayout) view.findViewById(R.id.error_loading);
+        failedRequestLayout = (RelativeLayout) view.findViewById(R.id.error);
         assertNotNull(failedRequestLayout);
         mainContent = (RelativeLayout) view.findViewById(R.id.likeLayout_mainContent);
         assertNotNull(mainContent);
@@ -173,7 +173,7 @@ public class LikeFragmentTest {
         fragment = LikeFragment.newInstance(lineup);
         SupportFragmentTestUtil.startFragment(fragment);
         assertNotNull(fragment.getView());
-        Button btn = (Button) fragment.getView().findViewById(R.id.error_loading_btn_tryAgain);
+        Button btn = (Button) fragment.getView().findViewById(R.id.error_btnTryAgain);
         btn.performClick();
         verify(presenter).loadLikes();
     }

@@ -1,7 +1,6 @@
 package com.android.finki.mpip.footballdreamteam;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.DaggerAppComponent;
@@ -12,11 +11,15 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.NetModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserModule;
 import com.android.finki.mpip.footballdreamteam.model.User;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by Borce on 25.07.2016.
  */
 public class MainApplication extends Application {
 
+    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
     private AppComponent appComponent;
     private UserComponent userComponent;
 
@@ -47,7 +50,7 @@ public class MainApplication extends Application {
     /**
      * Get a new instance of the AuthModule.
      *
-     * @return  instance of the AuthModule
+     * @return instance of the AuthModule
      */
     private AuthModule getAuthModule() {
         return new AuthModule();
@@ -89,6 +92,7 @@ public class MainApplication extends Application {
      * @param user authenticated user
      */
     public void createUserComponent(User user) {
+        logger.info(String.format("Creating UserComponent for user with id %d.", user.getId()));
         userComponent = appComponent.plus(getUserModule(user));
     }
 
@@ -105,6 +109,7 @@ public class MainApplication extends Application {
      * Release the instance of UserComponent.
      */
     public void releaseUserComponent() {
+        logger.info("releasing user component");
         userComponent = null;
     }
 }

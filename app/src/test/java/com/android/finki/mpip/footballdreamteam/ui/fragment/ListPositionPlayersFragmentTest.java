@@ -108,7 +108,7 @@ public class ListPositionPlayersFragmentTest {
         assertSame(place, args.getSerializable(ListPositionPlayersFragment.getPlaceKey()));
         assertSame(playersToExclude, args
                 .getSerializable(ListPositionPlayersFragment.getExcludeLayersKey()));
-        verify(presenter).onFragmentCreated(args);
+        verify(presenter).onViewCreated(args);
         assertNotNull(fragment.getView());
         verify(presenter).onViewCreated();
     }

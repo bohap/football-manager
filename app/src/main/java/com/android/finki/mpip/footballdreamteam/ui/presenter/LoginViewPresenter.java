@@ -37,10 +37,11 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     private SharedPreferences preferences;
     private final UserDBService userDBService;
     private final AuthApi authApi;
-
+    private Call<AuthenticateUserResponse> call;
     private String AUTH_USER_ID_KEY;
     private String JWT_TOKEN_KEY;
-    private boolean isSending = false;
+    private boolean requestSending = false;
+    private boolean viewLayoutCreated = false;
 
     public LoginViewPresenter(LoginView view, SharedPreferences preferences, Context context,
                               UserDBService userDBService, AuthApi authApi) {
@@ -51,6 +52,32 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
 
         this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
         this.JWT_TOKEN_KEY = context.getString(R.string.preference_jwt_token_key);
+    }
+
+    /**
+     * Called when the view is visible to the user.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
+        this.viewLayoutCreated = true;
+    }
+
+    /**
+     * Called when the view is not anymore visible.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is being destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (this.call != null) {
+            this.call.cancel();
+        }
     }
 
     /**
@@ -96,12 +123,15 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     public void login(String email, String password) {
         boolean valid = this.isEmailValid(email);
         valid = this.isPasswordValid(password) && valid;
-        if (valid && !isSending) {
-            isSending = true;
+        if (valid && !requestSending) {
+            requestSending = true;
             logger.info("sending login request");
-            view.showLogging();
+            if (viewLayoutCreated) {
+                view.showLogging();
+            }
             AuthenticateUserRequest request = new AuthenticateUserRequest(email, password);
-            authApi.login(request).enqueue(this);
+            call = authApi.login(request);
+            call.enqueue(this);
         }
     }
 
@@ -114,8 +144,9 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     @Override
     public void onResponse(Call<AuthenticateUserResponse> call,
                            Response<AuthenticateUserResponse> response) {
-        isSending = false;
-        logger.info("Login request succeeded");
+        logger.info("login request success");
+        requestSending = false;
+        this.call = null;
         this.loginSuccess(response);
     }
 
@@ -128,18 +159,25 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     @Override
     public void onFailure(Call<AuthenticateUserResponse> call, Throwable t) {
         logger.error("login request error");
-        t.printStackTrace();
-        isSending = false;
-        if (t instanceof NotAuthenticatedException) {
-            this.authenticationFailed(((NotAuthenticatedException) t).getResponse());
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("login request canceled");
         } else {
-            view.showLoginFailed();
-            super.onRequestFailed(view, t);
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                if (t instanceof NotAuthenticatedException) {
+                    this.authenticationFailed(((NotAuthenticatedException) t).getResponse());
+                } else {
+                    view.showLoginFailed();
+                    super.onRequestFailed(view, t);
+                }
+            }
         }
+        this.call = null;
     }
 
     /**
-     * Called when the login is successful.
+     * Save the server response int he local database.
      *
      * @param response server response
      */
@@ -155,6 +193,7 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
                 userDBService.update(user);
             }
         } catch (RuntimeException exp) {
+            logger.info("user saving/updating failed");
             exp.printStackTrace();
             view.showLoginFailed();
             view.showInternalServerError();
@@ -162,14 +201,18 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             return;
         }
         userDBService.close();
-        preferences.edit().putInt(AUTH_USER_ID_KEY, user.getId()).apply();
-        preferences.edit().putString(JWT_TOKEN_KEY, body.getJwtToken()).apply();
-        view.createUserComponent(user);
-        view.showLoginSuccessful();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(AUTH_USER_ID_KEY, user.getId());
+        editor.putString(JWT_TOKEN_KEY, body.getJwtToken());
+        editor.apply();
+        if (viewLayoutCreated) {
+            view.createUserComponent(user);
+            view.showLoginSuccessful();
+        }
     }
 
     /**
-     * Called when the user authentication failed.
+     * Try to extract the messages from the server response.
      *
      * @param response server response
      */

@@ -11,8 +11,6 @@ import java.util.List;
  */
 public interface LineupPlayersView extends BaseView {
 
-    void showBtnChangeFormation();
-
     void showLoading();
 
     void showLoadingSuccess(List<Player> players);

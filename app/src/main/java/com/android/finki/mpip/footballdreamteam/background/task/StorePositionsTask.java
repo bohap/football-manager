@@ -39,6 +39,7 @@ public class StorePositionsTask extends AsyncTask<Position, Void, Boolean> {
      */
     @Override
     protected Boolean doInBackground(Position... positions) {
+        logger.info("doInBackground");
         dbService.open();
         for (Position position : positions) {
             try {
@@ -62,6 +63,7 @@ public class StorePositionsTask extends AsyncTask<Position, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean success) {
+        logger.info("onPostExecute");
         if (listener != null) {
             if (success) {
                 listener.onPositionsSavingSuccess();
@@ -72,7 +74,16 @@ public class StorePositionsTask extends AsyncTask<Position, Void, Boolean> {
     }
 
     /**
-     * Listener for the task.
+     * Called when the task is canceled.
+     */
+    @Override
+    protected void onCancelled() {
+        logger.info("onCanceled");
+        super.onCancelled();
+    }
+
+    /**
+     * Listener user fro communication with the classes calling the task.
      */
     public interface Listener {
 

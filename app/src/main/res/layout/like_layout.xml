@@ -9,7 +9,7 @@
         layout="@layout/spinner" />
     <include
         android:visibility="gone"
-        layout="@layout/request_failed_partial" />
+        layout="@layout/error" />
     <RelativeLayout
         android:id="@+id/likeLayout_mainContent"
         android:layout_width="match_parent"

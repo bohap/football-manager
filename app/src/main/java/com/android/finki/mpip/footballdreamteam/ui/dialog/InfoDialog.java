@@ -8,11 +8,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by Borce on 25.07.2016.
  */
 public class InfoDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(InfoDialog.class);
     public static final String TAG = "INFO_DIALOG";
     private static String titleKey = "title";
     private String title;
@@ -41,6 +45,7 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setStyle(DialogFragment.STYLE_NORMAL, 0);
         this.title = this.getArguments().getString(titleKey);
@@ -56,6 +61,7 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        logger.info("onCreateDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setTitle(this.title)
                 .setMessage(this.message)
@@ -72,6 +78,7 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
      */
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
+        logger.info(String.format("onClick, which %d",which));
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).onDialogDone();
         }

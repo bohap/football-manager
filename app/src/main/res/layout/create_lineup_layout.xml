@@ -11,7 +11,7 @@
             layout="@layout/spinner"
             android:visibility="gone" />
         <include
-            layout="@layout/request_failed_partial"
+            layout="@layout/error"
             android:visibility="gone" />
         <RelativeLayout
             android:id="@+id/createLineupLayout_mainContent"

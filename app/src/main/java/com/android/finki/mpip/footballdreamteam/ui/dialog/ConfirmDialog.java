@@ -8,11 +8,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by Borce on 21.08.2016.
  */
 public class ConfirmDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConfirmDialog.class);
     public static final String TAG = "CONFIRM_DIALOG";
     private static final String TITLE_KEY = "title";
     private static final String MESSAGE_KEY = "message";
@@ -42,6 +46,7 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.title = this.getArguments().getString(TITLE_KEY, "");
         this.message = this.getArguments().getString(MESSAGE_KEY, "");
@@ -56,6 +61,7 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        logger.info("onCreatedDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setTitle(title)
                 .setMessage(message)
@@ -73,8 +79,9 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
      */
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
+        logger.info(String.format("onClick, which = %d", which));
         if (which == AlertDialog.BUTTON_POSITIVE && this.getActivity() instanceof Listener) {
-            ((Listener) this.getActivity()).onDialogConfirm();
+            ((Listener) this.getActivity()).onDialogConfirmed();
         }
     }
 
@@ -83,7 +90,6 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
      * dialog is closed.
      */
     public interface Listener {
-
-        void onDialogConfirm();
+        void onDialogConfirmed();
     }
 }

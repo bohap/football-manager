@@ -37,7 +37,7 @@ public class CreateLineupActivityTest {
 //    private LineupFormationViewComponent lineupFormationFragmentComponent;
 //
 //    @Mock
-//    private LineupFormationFragmentPresenter lineupFormationFragmentPresenter;
+//    private LineupFormationViewPresenter lineupFormationFragmentPresenter;
 //
 //    @Mock
 //    private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;

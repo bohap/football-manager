@@ -57,7 +57,7 @@ public class CommentsFragment extends Fragment implements CommentsView, Comments
     @BindString(R.string.commentsLayout_spinnerText)
     String spinnerText;
 
-    @BindView(R.id.error_loading)
+    @BindView(R.id.error)
     RelativeLayout failedRequestLayout;
 
     @BindView(R.id.commentsLayout_mainContent)
@@ -181,7 +181,7 @@ public class CommentsFragment extends Fragment implements CommentsView, Comments
     /**
      * Handle click on the button "Try Again".
      */
-    @OnClick(R.id.error_loading_btn_tryAgain)
+    @OnClick(R.id.error_btnTryAgain)
     void reload() {
         presenter.loadComments();
     }

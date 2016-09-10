@@ -40,34 +40,34 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated called with null param.
+     * Test the behavior on onViewCreated called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedWithNull() {
-        presenter.onFragmentCreated(null);
+        presenter.onViewCreated(null);
     }
 
     /**
-     * Test the behavior on onDialogCreated when position place bundle key is not set.
+     * Test the behavior on onViewCreated when position place bundle key is not set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedWithNotSetPlaceBundleKey() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey())).thenReturn(null);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on onDialogCreated when exclude players bundle key is not set.
+     * Test the behavior on onViewCreated when exclude players bundle key is not set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmnetCreatedWithNotSetExcludePlayersKey() {
         when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
                 .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on onDialogCreated called with position place KEEPERS.
+     * Test the behavior on onViewCreated called with position place KEEPERS.
      */
     @Test
     public void testOnFragmentCreatedWithKeepersPositionPlace() {
@@ -75,7 +75,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
         verify(playerDBService).getGoalkeepers(playersToExclude);
@@ -85,7 +85,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated called with position place DEFENDERS.
+     * Test the behavior on onViewCreated called with position place DEFENDERS.
      */
     @Test
     public void testOnFragmentCreatedWithDefendersPositionPlace() {
@@ -93,7 +93,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
         verify(playerDBService).getDefenders(playersToExclude);
@@ -103,7 +103,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated called with position place MIDFIELDERS.
+     * Test the behavior on onViewCreated called with position place MIDFIELDERS.
      */
     @Test
     public void testOnFragmentCreatedWithMidfieldersPositionPlace() {
@@ -111,7 +111,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
         verify(playerDBService).getMidfielders(playersToExclude);
@@ -121,7 +121,7 @@ public class ListPositionPlayersFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior on onDialogCreated called with position place ATTACKERS.
+     * Test the behavior on onViewCreated called with position place ATTACKERS.
      */
     @Test
     public void testOnFragmentCreatedWithAttackersPositionPlace() {
@@ -129,7 +129,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
         verify(playerDBService).getAttackers(playersToExclude);
@@ -155,7 +155,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Keepers");
@@ -170,7 +170,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Defenders");
@@ -185,7 +185,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Midfielders");
@@ -200,7 +200,7 @@ public class ListPositionPlayersFragmentPresenterTest {
                 .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
         when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
                 .thenReturn(playersToExclude);
-        presenter.onFragmentCreated(args);
+        presenter.onViewCreated(args);
         presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Attackers");

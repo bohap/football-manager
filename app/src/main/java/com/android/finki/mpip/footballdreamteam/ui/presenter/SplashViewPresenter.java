@@ -20,7 +20,6 @@ public class SplashViewPresenter {
     private SplashView view;
     private SharedPreferences preferences;
     private UserDBService userDBService;
-
     private String firstTimeKey;
     private String authUserIdKey;
 
@@ -35,9 +34,9 @@ public class SplashViewPresenter {
     }
 
     /**
-     * Do the logic when the activity is fully created.
+     * Called when the view is visible to the user.
      */
-    public void onActivityCreated() {
+    public void onViewLayoutCreated() {
         if (isFirstTime()) {
             view.showInfoDialog();
         } else {
@@ -53,7 +52,6 @@ public class SplashViewPresenter {
         if (userId == -1) {
             view.showLoginView();
         } else {
-            logger.info(String.format("Creating UserComponent for user with id %d.", userId));
             userDBService.open();
             User user = userDBService.get(userId);
             userDBService.close();

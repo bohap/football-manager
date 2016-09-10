@@ -32,9 +32,11 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
     private LineupPlayerDBService lineupPlayerDBService;
     private LineupUtils.FORMATION formation = LineupUtils.FORMATION.F_4_4_2;
     private List<LineupPlayer> players;
-
+    private Call<LineupResponse> call;
+    private boolean viewLayoutCreated = false;
     private boolean formationValid = false;
     private boolean changed = false;
+    private boolean requestSending = false;
 
     public CreateLineupViewPresenter(CreatedLineupView view, LineupApi api,
                                      LineupDBService lineupDBService,
@@ -45,18 +47,64 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
         this.lineupPlayerDBService = lineupPlayerDBService;
     }
 
+    /**
+     * Called when the view layout is created.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
+        this.viewLayoutCreated = true;
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (call != null) {
+            call.cancel();
+        }
+    }
+
+    /**
+     * Update the lineup changed situation.
+     *
+     * @param changed whatever the lineup is changed or not
+     */
     public void setChanged(boolean changed) {
         this.changed = changed;
     }
 
+    /**
+     * Checks if the lineup has been changed.
+     *
+     * @return whatever the lineup has been changed
+     */
     public boolean isChanged() {
         return changed;
     }
 
-    public void setFormationValid(boolean formationValid) {
-        this.formationValid = formationValid;
+    /**
+     * CAlled when the lineup formation has been changed.
+     *
+     * @param valid whatever the formation is valid or not
+     */
+    public void setFormationValid(boolean valid) {
+        this.formationValid = valid;
     }
 
+    /**
+     * Checks if the formation is valid.
+     *
+     * @return whatever the formation is valid
+     */
     public boolean isFormationValid() {
         return formationValid;
     }
@@ -76,7 +124,7 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
      * @param formation new lineup formation
      */
     public void updateFormation(LineupUtils.FORMATION formation) {
-        if (!this.formation.equals(formation)) {
+        if (!this.formation.equals(formation) && viewLayoutCreated) {
             this.formation = formation;
             view.changeFormation(formation, view.getPlayersOrdered());
         }
@@ -87,9 +135,14 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
      *
      */
     public void store() {
-        view.showStoring();
-        this.players = view.getLineupPlayers();
-        api.store(this.createLineupRequest(players)).enqueue(this);
+        if (viewLayoutCreated && !requestSending) {
+            logger.info("store lineup request");
+            requestSending = true;
+            view.showStoring();
+            this.players = view.getLineupPlayers();
+            call = api.store(this.createLineupRequest(players));
+            call.enqueue(this);
+        }
     }
 
     /**
@@ -128,11 +181,14 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
      */
     @Override
     public void onResponse(Call<LineupResponse> call, Response<LineupResponse> response) {
+        logger.info("store lineup request success");
+        requestSending = false;
+        this.call = null;
+
         Lineup lineup = response.body().getLineup();
         if (lineup == null) {
             throw new IllegalArgumentException("lineup is be null");
         }
-        view.showStoringSuccessful(lineup);
         lineupDBService.open();
         boolean lineupSavingError = false;
         if (!lineupDBService.exists(lineup.getId())) {
@@ -158,6 +214,9 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
                 lineupPlayerDBService.close();
             }
         }
+        if (viewLayoutCreated) {
+            view.showStoringSuccessful(lineup);
+        }
     }
 
     /**
@@ -168,7 +227,17 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
      */
     @Override
     public void onFailure(Call<LineupResponse> call, Throwable t) {
-        view.showStoringFailed();
-        super.onRequestFailed(view, t);
+        logger.info("store lienup request failed");
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("store lineup request canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showStoringFailed();
+                super.onRequestFailed(view, t);
+            }
+        }
+        this.call = null;
     }
 }

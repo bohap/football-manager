@@ -17,6 +17,9 @@ import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayers
 import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,6 +33,7 @@ import butterknife.OnItemClick;
  */
 public class ListPositionPlayersFragment extends BaseFragment implements ListPositionPlayersView {
 
+    private Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
     private ListPositionPlayersViewPresenter presenter;
     private PositionUtils utils;
 
@@ -90,10 +94,11 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new ListPositionPlayersViewModule(this)).inject(this);
-        presenter.onFragmentCreated(this.getArguments());
+        presenter.onViewCreated(this.getArguments());
     }
 
     /**
@@ -108,9 +113,10 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        logger.info("onCreateView");
         View view = inflater.inflate(R.layout.position_players_layout, container, false);
         ButterKnife.bind(this, view);
-        presenter.onViewCreated();
+        presenter.onViewLayoutCreated();
         return view;
     }
 
@@ -121,10 +127,9 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      */
     @Override
     public void setAdapter(List<Player> players) {
-        if (this.isVisible()) {
-            adapter = new ListPositionPlayersAdapter(this.getActivity(), players, utils);
-            listView.setAdapter(adapter);
-        }
+        logger.info("setAdapter");
+        adapter = new ListPositionPlayersAdapter(this.getActivity(), players, utils);
+        listView.setAdapter(adapter);
     }
 
     /**
@@ -134,6 +139,7 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      */
     @Override
     public void setPositionPlace(String place) {
+        logger.info("setPositionsPlace");
         txtPositionPlace.setText(place);
     }
 
@@ -144,6 +150,7 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      */
     @OnItemClick(R.id.positionPlayersLayout_listView)
     void onPlayerSelected(int position) {
+        logger.info(String.format("onPlayerSelected, positions %d", position));
         Player player = adapter.getItem(position);
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).onPlayerSelected(player);

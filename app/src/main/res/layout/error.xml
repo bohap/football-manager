@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/error_loading"
+    android:id="@+id/error"
     style="@style/MainContent"
     android:orientation="vertical">
     <com.android.finki.mpip.footballdreamteam.ui.view.TextAwesome
         style="@style/TextView.Icon"
         android:layout_width="match_parent"
-        android:layout_above="@+id/requestFailed_text"
+        android:layout_above="@+id/txtError"
         android:textColor="@color/backgroundColorDanger"
         android:gravity="center"
         android:text="@string/fa_exclamation_circle"
         android:textSize="70sp" />
     <TextView
+        android:id="@+id/txtError"
         style="@style/TextView.Block"
         android:textStyle="bold"
-        android:id="@+id/requestFailed_text"
-        android:layout_centerVertical="true"
-        android:text="@string/errorLoadingLayout_mainText"/>
+        android:layout_centerVertical="true" />
     <Button
-        android:id="@+id/error_loading_btn_tryAgain"
+        android:id="@+id/error_btnTryAgain"
         style="@style/Button.Primary"
         android:layout_marginTop="@dimen/base_verticalMargin"
-        android:layout_below="@id/requestFailed_text"
+        android:layout_below="@id/txtError"
         android:layout_centerHorizontal="true"
         android:text="@string/errorLoadingLayout_btnText"/>
 </RelativeLayout>

@@ -33,15 +33,29 @@ public class PlayerDetailsViewPresenter {
      *
      * @param args view arguments
      */
-    public void onDialogCreated(Bundle args) {
+    public void onViewCreated(Bundle args) {
+        logger.info("onViewCreated");
         int playerId = args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1);
         if (playerId < 1) {
-            String message = "player id not provided";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player id not provided");
         }
         this.editable = args.getBoolean(PlayerDetailsView.BUNDLE_EDITABLE_KEY, false);
         this.getPlayer(playerId);
+    }
+
+    /**
+     * Called when the view layout is created.
+     */
+    public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
+        if (player == null) {
+            throw new IllegalArgumentException("player not set");
+        }
+        String name = player.getName();
+        String team = player.getTeam().getName();
+        String age = String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth()));
+        String position = player.getPosition().getName();
+        view.bindPlayer(name, team, age, position, editable);
     }
 
     /**
@@ -68,14 +82,5 @@ public class PlayerDetailsViewPresenter {
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
-    }
-
-    /**
-     * Called when the view view is created.
-     */
-    public void onViewCreated() {
-        view.bindPlayer(player.getName(), player.getTeam().getName(),
-                String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth())),
-                player.getPosition().getName(), editable);
     }
 }

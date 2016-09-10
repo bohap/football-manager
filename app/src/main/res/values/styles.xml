@@ -9,13 +9,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
     </style>
-    <!--Tab Layout-->
-    <style name="TabLayout" parent="Widget.Design.TabLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="tabIndicatorColor">@color/colorPrimary</item>
-        <item name="tabIndicatorHeight">@dimen/tabIndicator_height</item>
-    </style>
     <!--Block View-->
     <style name="Block">
         <item name="android:layout_width">match_parent</item>
@@ -229,7 +222,7 @@
         <item name="android:textSize">@dimen/textSize</item>
         <item name="android:background">@drawable/edit_text</item>
         <item name="android:textColor">@color/editText_text_color</item>
-        <item name="android:textColorHint">@color/editText_text_color</item>
+        <item name="android:textColorHint">@color/editText_textHint_color</item>
         <item name="android:paddingLeft">@dimen/medium_verticalPadding</item>
         <item name="android:paddingRight">@dimen/medium_horizontalPadding</item>
         <item name="android:paddingTop">@dimen/medium_horizontalPadding</item>
@@ -324,6 +317,8 @@
     <style name="LineupPlayer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/tiny_VerticalPadding</item>
+        <item name="android:paddingBottom">@dimen/tiny_VerticalPadding</item>
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textColor">@color/primaryBackgroundTextColor</item>
         <item name="android:textSize">@dimen/tinyTextSize</item>
@@ -353,6 +348,7 @@
     <style name="PositionPlayerText.Header">
         <item name="android:textColor">@color/primaryBackgroundTextColor</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/tinyTextSize</item>
     </style>
 
     <!--PlayerDetails Dialog-->

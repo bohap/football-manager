@@ -13,7 +13,7 @@ import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
@@ -65,7 +65,7 @@ public class LineupFormationFragmentTest {
     private LineupFormationViewComponent component;
 
     @Mock
-    private LineupFormationFragmentPresenter presenter;
+    private LineupFormationViewPresenter presenter;
 
     private LineupFormationFragment fragment;
     private List<Player> players = Arrays.asList(new Player(),
@@ -191,7 +191,7 @@ public class LineupFormationFragmentTest {
         Bundle args = fragment.getArguments();
         assertNotNull(args);
         assertSame(lineupPlayers, args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY));
-        verify(presenter).onFragmentCreated(args);
+        verify(presenter).onViewCreated(args);
     }
 
     /**
@@ -225,7 +225,7 @@ public class LineupFormationFragmentTest {
         Serializable ser = args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY);
         assertTrue(ser instanceof LineupPlayers);
         assertSame(players, ((LineupPlayers) ser).getPlayers());
-        verify(presenter).onFragmentCreated(args);
+        verify(presenter).onViewCreated(args);
     }
 
     /**

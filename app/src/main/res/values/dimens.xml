@@ -8,10 +8,12 @@
     <dimen name="large_horizontalMargin">50dp</dimen>
     <dimen name="large_verticalMargin">50dp</dimen>
     <!--Padding-->
-    <dimen name="base_horizontalPadding">20dp</dimen>
-    <dimen name="base_verticalPadding">15dp</dimen>
+    <dimen name="tiny_horizontalPadding">1dp</dimen>
+    <dimen name="tiny_VerticalPadding">1dp</dimen>
     <dimen name="small_horizontalPadding">5dp</dimen>
     <dimen name="small_verticalPadding">8dp</dimen>
+    <dimen name="base_horizontalPadding">20dp</dimen>
+    <dimen name="base_verticalPadding">15dp</dimen>
     <dimen name="medium_verticalPadding">10dp</dimen>
     <dimen name="medium_horizontalPadding">12dp</dimen>
     <dimen name="large_horizontalPadding">50dp</dimen>
@@ -38,8 +40,4 @@
     <!--Sidebar-->
     <dimen name="sidebar_listWidth">250dp</dimen>
     <dimen name="sidebar_listDivider_height">1dp</dimen>
-
-
-    <!--Tabs-->
-    <dimen name="tabIndicator_height">5dp</dimen>
 </resources>

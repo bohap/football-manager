@@ -42,6 +42,7 @@
     <!--EditText-->
     <color name="editText_background">#eeeeee</color>
     <color name="editText_text_color">@android:color/black</color>
+    <color name="editText_textHint_color">@android:color/darker_gray</color>
     <color name="editText_stroke">#bdbdbd</color>
     <color name="editText_pressedState_background">#e0e0e0</color>
     <color name="editText_errorStrokeColor">#a94442</color>

@@ -26,9 +26,9 @@ import java.util.Map;
 /**
  * Created by Borce on 13.08.2016.
  */
-public class LineupFormationFragmentPresenter {
+public class LineupFormationViewPresenter {
 
-    private static Logger logger = LoggerFactory.getLogger(LineupFormationFragmentPresenter.class);
+    private static Logger logger = LoggerFactory.getLogger(LineupFormationViewPresenter.class);
 
     private LineupFormationView view;
     private PositionDBService positionDBService;
@@ -41,12 +41,13 @@ public class LineupFormationFragmentPresenter {
     private LineupUtils.FORMATION formation;
     private boolean editable = false;
     private int selectedPositionResourceId = -1;
+    private boolean viewLayoutCreated = false;
 
-    public LineupFormationFragmentPresenter(LineupFormationView view,
-                                            PositionDBService positionDBService,
-                                            LineupUtils lineupUtils, PlayerUtils playerUtils,
-                                            PositionUtils positionUtils,
-                                            LineupPlayerValidator validator) {
+    public LineupFormationViewPresenter(LineupFormationView view,
+                                        PositionDBService positionDBService,
+                                        LineupUtils lineupUtils, PlayerUtils playerUtils,
+                                        PositionUtils positionUtils,
+                                        LineupPlayerValidator validator) {
         this.view = view;
         this.positionDBService = positionDBService;
         this.lineupUtils = lineupUtils;
@@ -60,7 +61,7 @@ public class LineupFormationFragmentPresenter {
      *
      * @param args view arguments
      */
-    public void onFragmentCreated(Bundle args) {
+    public void onViewCreated(Bundle args) {
         if (args == null) {
             throw new IllegalArgumentException("bundle argument can't be null");
         }
@@ -85,6 +86,21 @@ public class LineupFormationFragmentPresenter {
             }
             this.setFormation(formation, players);
         }
+    }
+
+    /**
+     * Called when the view layout is created.
+     */
+    public void onViewLayoutCreated() {
+        this.viewLayoutCreated = true;
+        view.bindPlayers();
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        this.viewLayoutCreated = false;
     }
 
     /**
@@ -158,10 +174,12 @@ public class LineupFormationFragmentPresenter {
                 players, positionDBService.mapPositions());
         positionDBService.close();
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
-        if (validator.validate(lineupPlayers)) {
-            view.showInvalidLineup();
-        } else {
-            view.showInvalidLineup();
+        if (viewLayoutCreated) {
+            if (validator.validate(lineupPlayers)) {
+                view.showInvalidLineup();
+            } else {
+                view.showInvalidLineup();
+            }
         }
     }
 
@@ -172,13 +190,6 @@ public class LineupFormationFragmentPresenter {
      */
     public LineupUtils.FORMATION getFormation() {
         return this.formation;
-    }
-
-    /**
-     * Called when the view view has been created.
-     */
-    public void onViewCreated() {
-        view.bindPlayers();
     }
 
     /**
@@ -217,7 +228,9 @@ public class LineupFormationFragmentPresenter {
         }
         int playerId = player.getId();
         if (playerId > 0) {
-            view.showPlayerDetailsView(playerId, editable);
+            if (viewLayoutCreated) {
+                view.showPlayerDetailsView(playerId, editable);
+            }
         } else if (playerId == 0) {
             PositionUtils.POSITION_PLACE place = positionUtils.getPositionPlace(positionResourceId);
             List<Integer> playersToExclude = new ArrayList<>();
@@ -227,7 +240,9 @@ public class LineupFormationFragmentPresenter {
                     playersToExclude.add(mapPlayer.getId());
                 }
             }
-            view.showListPositionPlayersView(place, ArrayUtils.toInt(playersToExclude));
+            if (viewLayoutCreated) {
+                view.showListPositionPlayersView(place, ArrayUtils.toInt(playersToExclude));
+            }
         } else {
             throw new IllegalArgumentException(String.format("invalid player id, %d", playerId));
         }
@@ -243,7 +258,6 @@ public class LineupFormationFragmentPresenter {
         if (selectedPositionResourceId == -1) {
             throw new IllegalArgumentException("position not selected");
         }
-
         positionDBService.open();
         Map<PositionUtils.POSITION, Integer> mappedPositions = positionDBService.mapPositions();
         positionDBService.close();
@@ -251,13 +265,15 @@ public class LineupFormationFragmentPresenter {
         player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
         mappedPlayers.put(selectedPositionResourceId, player);
 
-        view.bindPlayers();
         selectedPositionResourceId = -1;
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
-        if (validator.validate(lineupPlayers)) {
-            view.showValidLineup();
-        } else {
-            view.showInvalidLineup();
+        if (viewLayoutCreated) {
+            view.bindPlayers();
+            if (validator.validate(lineupPlayers)) {
+                view.showValidLineup();
+            } else {
+                view.showInvalidLineup();
+            }
         }
     }
 
@@ -270,8 +286,10 @@ public class LineupFormationFragmentPresenter {
         }
         mappedPlayers.put(selectedPositionResourceId, new Player());
         selectedPositionResourceId = -1;
-        view.bindPlayers();
-        view.showInvalidLineup();
+        if (viewLayoutCreated) {
+            view.bindPlayers();
+            view.showInvalidLineup();
+        }
     }
 
     /**
@@ -282,7 +300,9 @@ public class LineupFormationFragmentPresenter {
             throw new IllegalArgumentException("position not selected");
         }
         selectedPositionResourceId = -1;
-        view.showInvalidLineup();
+        if (viewLayoutCreated) {
+            view.showInvalidLineup();
+        }
     }
 
     /**

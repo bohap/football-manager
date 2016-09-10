@@ -71,12 +71,11 @@ public class NetModule {
      * @return OkHttpClient builder
      */
     @Provides
-    @Singleton
     OkHttpClient.Builder providesOkHttpClientBuild(HttpLoggingInterceptor loggingInterceptor,
                                                    ErrorInterceptor errorInterceptor) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectionPool(new ConnectionPool(0, 5 * 60 * 1000, TimeUnit.MILLISECONDS));
-        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.connectTimeout(60, TimeUnit.SECONDS);
         builder.writeTimeout(30, TimeUnit.SECONDS);
         builder.addInterceptor(errorInterceptor);
         builder.addInterceptor(loggingInterceptor);

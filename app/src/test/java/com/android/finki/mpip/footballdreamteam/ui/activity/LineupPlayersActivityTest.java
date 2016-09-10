@@ -21,7 +21,7 @@ import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
-import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationFragmentPresenter;
+import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
@@ -77,7 +77,7 @@ public class LineupPlayersActivityTest {
     private LineupFormationViewComponent lineupFormationFragmentComponent;
 
     @Mock
-    private LineupFormationFragmentPresenter lineupFormationFragmentPresenter;
+    private LineupFormationViewPresenter lineupFormationFragmentPresenter;
 
     @Mock
     private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
@@ -120,7 +120,7 @@ public class LineupPlayersActivityTest {
         assertNotNull(spinner);
         txtSpinner = (TextView) activity.findViewById(R.id.spinner_text);
         assertNotNull(txtSpinner);
-        errorLayout = (RelativeLayout) activity.findViewById(R.id.error_loading);
+        errorLayout = (RelativeLayout) activity.findViewById(R.id.error);
         assertNotNull(errorLayout);
         mainContent = (RelativeLayout) activity
                 .findViewById(R.id.lineupPlayersPlayers_mainContent);
@@ -308,7 +308,7 @@ public class LineupPlayersActivityTest {
      */
     @Test
     public void testBtnTryAgainClick() {
-        Button btn = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
+        Button btn = (Button) activity.findViewById(R.id.error_btnTryAgain);
         assertNotNull(btn);
         btn.performClick();
         verify(presenter, times(2)).loadPlayers(activity.getIntent().getExtras());

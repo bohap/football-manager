@@ -1,6 +1,5 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,7 +8,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +27,9 @@ import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,6 +46,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         LineupFormationFragment.Listener, ListPositionPlayersFragment.Listener,
         PlayerDetailsDialog.Listener {
 
+    private Logger logger = LoggerFactory.getLogger(CreateLineupActivity.class);
     private CreateLineupViewPresenter presenter;
 
     @BindView(R.id.toolbar)
@@ -62,10 +64,10 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @BindString(R.string.createLineupView_spinnerCreateLineup_text)
     String spinnerText;
 
-    @BindView(R.id.error_loading)
-    RelativeLayout requestFailedLayout;
+    @BindView(R.id.error)
+    RelativeLayout error;
 
-    @BindView(R.id.requestFailed_text)
+    @BindView(R.id.txtError)
     TextView txtRequestFailed;
 
     @BindString(R.string.createLineupView_requestFailedText)
@@ -120,6 +122,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.create_lineup_layout);
         ButterKnife.bind(this);
@@ -130,6 +133,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
             this.getSupportActionBar().setTitle(title);
             this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        presenter.onViewLayoutCreated();
         this.registerForContextMenu(btnChangeFormation);
         super.showLineupFormationFragment(presenter.getFormation());
     }
@@ -142,6 +146,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        logger.info("onCreateOptionsMenu");
         this.getMenuInflater().inflate(R.menu.save_lineup_menu, menu);
         Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
         MenuItem item = menu.findItem(R.id.lineupMenu_save);
@@ -161,6 +166,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        logger.info("onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.lineupMenu_save:
                 presenter.store();
@@ -183,6 +189,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
+        logger.info("onCreateContextMenu");
         menu.setHeaderTitle(contextMenuTitle);
         this.getMenuInflater().inflate(R.menu.formations_menu, menu);
     }
@@ -195,6 +202,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        logger.info("onContextItemSelected");
         super.checkLineupFormationFragmentVisibility();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).getPlayersOrdered();
@@ -218,10 +226,22 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     }
 
     /**
+     * Called before the activity is destroyed.
+     */
+    @Override
+    protected void onDestroy() {
+        logger.info("onDestroy");
+        super.onDestroy();
+        presenter.onViewLayoutDestroyed();
+        presenter.onViewDestroyed();
+    }
+
+    /**
      * Handle click on the button to change formation.
      */
     @OnClick(R.id.createLineupLayout_btnChangeFormation)
     void onBtnChangeFormationClick() {
+        logger.info("btn 'Change Formation' clicked");
         btnChangeFormation.showContextMenu();
     }
 
@@ -234,6 +254,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @Override
     public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
                                                 int[] playersToExclude) {
+        logger.info("showListPositionPlayersFragment");
         super.showListPositionPlayersFragment(place, playersToExclude);
     }
 
@@ -245,6 +266,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showPlayerDetailsDialog(int id, boolean editable) {
+        logger.info("showPlayerDetailsDialog");
         super.showPlayerDetailsDialog(id, editable);
     }
 
@@ -253,6 +275,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showValidLineup() {
+        logger.info("showValidLineup");
         presenter.setFormationValid(true);
         invalidateOptionsMenu();
     }
@@ -262,6 +285,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showInvalidLineup() {
+        logger.info("showInvalidLineup");
         presenter.setFormationValid(false);
         invalidateOptionsMenu();
     }
@@ -271,6 +295,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void removePlayer() {
+        logger.info("removePlayer");
         super.checkLineupFormationFragmentVisibility();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).removeSelectedPlayer();
@@ -284,6 +309,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void onPlayerSelected(Player player) {
+        logger.info("onPlayerSelected");
         super.removeListPositionPlayersFragment();
         ((LineupFormationFragment) this.getSupportFragmentManager()
                 .findFragmentById(R.id.content)).updateLineupPosition(player);
@@ -322,6 +348,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void changeFormation(LineupUtils.FORMATION formation, List<Player> players) {
+        logger.info("change formation");
         super.checkLineupFormationFragmentVisibility();
         super.showLineupFormationFragment(formation, players);
     }
@@ -331,9 +358,10 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showStoring() {
+        logger.info("showStoring");
         txtSpinner.setText(spinnerText);
         super.toggleVisibility(spinner, true);
-        super.toggleVisibility(requestFailedLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(mainContentLayout, false);
     }
 
@@ -342,8 +370,9 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showStoringFailed() {
+        logger.info("showStoringFailed");
         txtRequestFailed.setText(requestFailedText);
-        super.toggleVisibility(requestFailedLayout, true);
+        super.toggleVisibility(error, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(mainContentLayout, false);
     }
@@ -351,8 +380,9 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     /**
      * Handle click on the button "Try Again". v
      */
-    @OnClick(R.id.error_loading_btn_tryAgain)
+    @OnClick(R.id.error_btnTryAgain)
     void onBtnTryAgainClick() {
+        logger.info("btn 'Try Again' clicked");
         presenter.store();
     }
 
@@ -363,6 +393,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      */
     @Override
     public void showStoringSuccessful(Lineup lineup) {
+        logger.info("showStoringSuccessful");
         Toast.makeText(this, lineupCreateSuccessfullyText, Toast.LENGTH_LONG).show();
         super.finish();
     }

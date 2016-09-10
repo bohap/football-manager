@@ -5,7 +5,7 @@
     <include
         layout="@layout/spinner" />
     <include
-        layout="@layout/request_failed_partial" />
+        layout="@layout/error" />
     <RelativeLayout
         android:id="@+id/commentsLayout_mainContent"
         android:layout_width="match_parent"

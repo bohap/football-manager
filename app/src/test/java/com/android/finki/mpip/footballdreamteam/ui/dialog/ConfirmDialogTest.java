@@ -100,7 +100,7 @@ public class ConfirmDialogTest {
         static final String ON_DIALOG_CONFIRM_TOAST = "On Dialog Confirm";
 
         @Override
-        public void onDialogConfirm() {
+        public void onDialogConfirmed() {
             Toast.makeText(this, ON_DIALOG_CONFIRM_TOAST, Toast.LENGTH_SHORT).show();
         }
     }

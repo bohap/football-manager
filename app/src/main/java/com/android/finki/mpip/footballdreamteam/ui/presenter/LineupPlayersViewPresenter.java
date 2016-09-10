@@ -31,7 +31,7 @@ import retrofit2.Response;
 /**
  * Created by Borce on 16.08.2016.
  */
-public class LineupPlayersViewPresenter extends BasePresenter implements Callback<List<Player>> {
+public class LineupPlayersViewPresenter extends BasePresenter {
 
     private static Logger logger = LoggerFactory.getLogger(LineupPlayersViewPresenter.class);
     private LineupPlayersView view;
@@ -41,7 +41,11 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
     private LineupDBService lineupDBService;
     private LineupPlayerDBService lineupPlayerDBService;
     private LineupPlayerValidator validator;
-
+    private Call<List<Player>> lineupPlayersCall;
+    private Call<LineupResponse> updateLineupCall;
+    private boolean loadRequestSending = false;
+    private boolean updateRequestSending = false;
+    private boolean viewLayoutCreated = false;
     private boolean lineupValid = false;
     private boolean changed = false;
     private boolean lineupUpdateFailed = false;
@@ -60,6 +64,65 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
     }
 
     /**
+     * Called when the view is created.
+     *
+     * @param args view arguments
+     */
+    public void onViewCreated(Bundle args) {
+        this.extractLineup(args);
+        this.loadPlayers();
+    }
+
+    /**
+     * Called when the view layout is crated.
+     */
+    public void onViewLayoutCreated() {
+        this.viewLayoutCreated = true;
+        if (loadRequestSending) {
+            view.showLoading();
+        }
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        if (lineupPlayersCall != null) {
+            lineupPlayersCall.cancel();
+        }
+        if (updateLineupCall != null) {
+            updateLineupCall.cancel();
+        }
+    }
+
+    /**
+     * Extract the lineup data from the view intent.
+     *
+     * @param args view params
+     */
+    void extractLineup(Bundle args) {
+        if (args == null) {
+            throw new IllegalArgumentException("view arguments can't be null");
+        }
+        Serializable serializable = args.getSerializable(LineupPlayersActivity.LINEUP_BUNDLE_KEY);
+        if (serializable == null || !(serializable instanceof Lineup)) {
+            throw new IllegalArgumentException("lineup must be provided for the presenter");
+        }
+        this.lineup = (Lineup) serializable;
+        if (this.lineup.getId() < 1) {
+            throw new IllegalArgumentException(String
+                    .format("invalid lineup id, %d", lineup.getId()));
+        }
+    }
+
+    /**
      * Check if the authenticated user can edit the lineup.
      *
      * @return whatever the user can edit the lineup
@@ -73,7 +136,9 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
     }
 
     /**
-     * Called when the lineup players has been changed.
+     * Update the lineup changed situation.
+     *
+     * @param changed whatever the lineup is changed or not
      */
     public void setChanged(boolean changed) {
         this.changed = changed;
@@ -112,48 +177,43 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
 
     /**
      * Load the lineup players from the server.
-     *
-     * @param args view param
      */
-    public void loadPlayers(Bundle args) {
-        this.extractLineup(args);
-        logger.info("sending load players request");
-        api.players(lineup.getId(), null, null).enqueue(this);
-        view.showLoading();
-    }
+    public void loadPlayers() {
+        if (this.lineup == null) {
+            throw new IllegalArgumentException("lineup not set");
+        }
+        if (!loadRequestSending) {
+            logger.info("sending load players request");
+            loadRequestSending = true;
+            if (viewLayoutCreated) {
+                view.showLoading();
+            }
+            lineupPlayersCall = api.players(lineup.getId(), null, null);
+            lineupPlayersCall.enqueue(new Callback<List<Player>>() {
+                @Override
+                public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
+                    onPlayerLoadingSuccess(response);
+                }
 
-    /**
-     * Extract the lineup data from the view intent.
-     *
-     * @param args view params
-     */
-    void extractLineup(Bundle args) {
-        if (args == null) {
-            throw new IllegalArgumentException("view arguments can't be null");
-        }
-        Serializable serializable = args.getSerializable(LineupPlayersActivity.LINEUP_BUNDLE_KEY);
-        if (serializable == null || !(serializable instanceof Lineup)) {
-            throw new IllegalArgumentException("lineup must be provided for the presenter");
-        }
-        this.lineup = (Lineup) serializable;
-        if (this.lineup.getId() < 1) {
-            throw new IllegalArgumentException(String
-                    .format("invalid lineup id, %d", lineup.getId()));
+                @Override
+                public void onFailure(Call<List<Player>> call, Throwable t) {
+                    onPlayersLoadingFailed(call, t);
+                }
+            });
         }
     }
 
     /**
      * Called when loading the players data is successful.
      *
-     * @param call     retrofit call
      * @param response server response
      */
-    @Override
-    public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
+    public void onPlayerLoadingSuccess(Response<List<Player>> response) {
         logger.info("load players request success");
-        view.showLoadingSuccess(response.body());
-        if (this.canEditLineup()) {
-            view.showBtnChangeFormation();
+        loadRequestSending = false;
+        lineupPlayersCall = null;
+        if (viewLayoutCreated) {
+            view.showLoadingSuccess(response.body());
         }
     }
 
@@ -163,50 +223,56 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    @Override
-    public void onFailure(Call<List<Player>> call, Throwable t) {
+    public void onPlayersLoadingFailed(Call<List<Player>> call, Throwable t) {
         logger.info("load players request failed");
-        t.printStackTrace();
-        view.showLoadingFailed();
-        super.onRequestFailed(view, t);
+        loadRequestSending = false;
+        if (call.isCanceled()) {
+            logger.info("load players request canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showLoadingFailed();
+                super.onRequestFailed(view, t);
+            }
+        }
+        lineupPlayersCall = null;
     }
 
     /**
      * Send a request to update the lineup players.
-     *
      */
     public void update() {
         if (this.lineup == null) {
             throw new IllegalArgumentException("lineup data is not yet sey");
         }
+        if (!this.changed) {
+            throw new IllegalArgumentException("update called but data was not changed");
+        }
         final List<LineupPlayer> lineupPlayers = view.getLineupPlayers();
         if (!validator.validate(lineupPlayers)) {
             throw new IllegalArgumentException("lineup players are not valid");
         }
-        if (!this.changed) {
-            throw new IllegalArgumentException("update called but data was not changed");
+        if (!updateRequestSending) {
+            logger.info("sending lineup update request");
+            updateRequestSending = true;
+            if (viewLayoutCreated) {
+                view.showUpdating();
+            }
+            updateLineupCall = api
+                    .update(lineup.getId(), this.createdLineupRequest(lineupPlayers));
+            updateLineupCall.enqueue(new Callback<LineupResponse>() {
+                @Override
+                public void onResponse(Call<LineupResponse> call,
+                                       Response<LineupResponse> response) {
+                    onUpdateSuccess(lineupPlayers);
+                }
+
+                @Override
+                public void onFailure(Call<LineupResponse> call, Throwable t) {
+                    onUpdateFailed(call, t);
+                }
+            });
         }
-        view.showUpdating();
-        logger.info("sending lineup update request");
-        api.update(lineup.getId(), this.createdLineupRequest(lineupPlayers))
-                .enqueue(new Callback<LineupResponse>() {
-
-                    @Override
-                    public void onResponse(Call<LineupResponse> call,
-                                           Response<LineupResponse> response) {
-                        logger.info("lineup update request success");
-                        lineupUpdateFailed = false;
-                        changed = false;
-                        updateSuccess(lineupPlayers);
-                    }
-
-                    @Override
-                    public void onFailure(Call<LineupResponse> call, Throwable t) {
-                        logger.info("lineup update request failed");
-                        lineupUpdateFailed = true;
-                        updateFailed(t);
-                    }
-                });
     }
 
     /**
@@ -229,8 +295,16 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
 
     /**
      * Called when updating the lineup is successful.
+     *
+     * @param lineupPlayers players in the lineup
      */
-    private void updateSuccess(List<LineupPlayer> lineupPlayers) {
+    private void onUpdateSuccess(List<LineupPlayer> lineupPlayers) {
+        logger.info("lineup update request success");
+        updateRequestSending = false;
+        changed = false;
+        lineupUpdateFailed = false;
+        updateLineupCall = null;
+
         boolean lineupExistsInDatabase = false;
         boolean lineupSavingError = false;
         lineupDBService.open();
@@ -272,19 +346,31 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
                 lineupPlayerDBService.close();
             }
         }
-        view.showUpdatingSuccess();
+        if (viewLayoutCreated) {
+            view.showUpdatingSuccess();
+        }
     }
 
     /**
      * Called when updating the lineup failed.
      *
-     * @param t exception that has been thrown
+     * @param call retrofit call
+     * @param t    exception that has been thrown
      */
-    private void updateFailed(Throwable t) {
+    private void onUpdateFailed(Call<LineupResponse> call, Throwable t) {
         logger.info("lineup update request failed");
-        t.printStackTrace();
-        view.showUpdatingFailed();
-        super.onRequestFailed(view, t);
+        lineupUpdateFailed = true;
+        updateRequestSending = false;
+        if (call.isCanceled()) {
+            logger.info("lineup update call canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showUpdatingFailed();
+                super.onRequestFailed(view, t);
+            }
+        }
+        updateLineupCall = null;
     }
 
     /**
@@ -293,13 +379,14 @@ public class LineupPlayersViewPresenter extends BasePresenter implements Callbac
      * @param formation new formation
      */
     public void updateFormation(LineupUtils.FORMATION formation) {
+        logger.info("updateFormation");
         if (this.formation == null) {
             this.formation = view.getFormation();
         }
         if (this.formation == null) {
             throw new IllegalArgumentException("formation can't be null");
         }
-        if (!this.formation.equals(formation)) {
+        if (!this.formation.equals(formation) && viewLayoutCreated) {
             view.changeFormation(formation, view.getPlayersOrdered());
             this.formation = formation;
         }
