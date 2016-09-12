@@ -22,10 +22,10 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeViewMod
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.BaseFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListLineupsFragment;
-import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ import butterknife.OnClick;
  */
 public class HomeActivity extends BaseActivity implements HomeView,
                                                           ListLineupsFragment.Listener,
-                                                          ActivityTitleSetterListener {
+        BaseFragment.Listener {
 
     private Logger logger = LoggerFactory.getLogger(HomeActivity.class);
 
@@ -148,7 +148,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         ((MainApplication) this.getApplication()).getUserComponent()
                 .plus(new HomeViewModule(this)).inject(this);
         this.setSupportActionBar(toolbar);
-        this.setTitle(title);
+        this.changeTitle(title);
         this.setupSidebar();
         presenter.onViewCreated();
         presenter.onViewLayoutCreated();
@@ -221,7 +221,8 @@ public class HomeActivity extends BaseActivity implements HomeView,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         logger.info("onCreateOptionsMenu");
-        if (presenter.isMainViewVisible()) {
+        Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
+        if (fragment instanceof ListLineupsFragment) {
             this.getMenuInflater().inflate(R.menu.main_menu, menu);
             if (this.getSupportActionBar() != null) {
                 this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -303,21 +304,28 @@ public class HomeActivity extends BaseActivity implements HomeView,
     @Override
     public void onBackPressed() {
         logger.info("onBackPressed");
-        if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            this.setTitle(title);
-            presenter.setMainViewVisible(true);
+        super.onBackPressed();
+        if (this.getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            this.changeTitle(title);
             this.invalidateOptionsMenu();
         }
-        super.onBackPressed();
     }
 
     /**
-     * Set the activity title.
-     *
-     * @param title activity title
+     * Called when some of the sub fragments is active.
      */
     @Override
-    public void setTitle(String title) {
+    public void onFragmentActive() {
+        this.invalidateOptionsMenu();
+    }
+
+    /**
+     * Change the action bar title.
+     *
+     * @param title new action bar title
+     */
+    @Override
+    public void changeTitle(String title) {
         if (this.getSupportActionBar() != null) {
             this.getSupportActionBar().setTitle(title);
         }
@@ -356,8 +364,6 @@ public class HomeActivity extends BaseActivity implements HomeView,
         super.toggleVisibility(errorLoadingLayout, false);
         this.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content, new ListLineupsFragment()).commit();
-        presenter.setMainViewVisible(true);
-        this.invalidateOptionsMenu();
     }
 
     /**
@@ -517,8 +523,6 @@ public class HomeActivity extends BaseActivity implements HomeView,
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
-        presenter.setMainViewVisible(false);
-        this.invalidateOptionsMenu();
     }
 
     /**
@@ -534,7 +538,5 @@ public class HomeActivity extends BaseActivity implements HomeView,
         transaction.addToBackStack(ListLineupsFragment.TAG);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
-        presenter.setMainViewVisible(false);
-        this.invalidateOptionsMenu();
     }
 }

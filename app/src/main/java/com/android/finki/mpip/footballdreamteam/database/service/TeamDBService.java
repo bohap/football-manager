@@ -170,7 +170,7 @@ public class TeamDBService {
     public Team update(Team team) {
         this.validateData(team);
         if (! this.exists(team)) {
-            String message = String.format("can't update team, team with " +
+            String message = String.format("can't onUpdateSuccess team, team with " +
                     "id %d already exists", team.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

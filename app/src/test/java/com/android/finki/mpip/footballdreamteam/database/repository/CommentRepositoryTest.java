@@ -202,7 +202,7 @@ public class CommentRepositoryTest {
     }
 
     /**
-     * Test that update method will update the comment data.
+     * Test that onUpdateSuccess method will onUpdateSuccess the comment data.
      */
     @Test
     public void testUpdate() {
@@ -217,7 +217,7 @@ public class CommentRepositoryTest {
     }
 
     /**
-     * Test that update method will return false when updating hte record in the database failed.
+     * Test that onUpdateSuccess method will return false when updating hte record in the database failed.
      */
     @Test
     public void testFailedUpdate() {

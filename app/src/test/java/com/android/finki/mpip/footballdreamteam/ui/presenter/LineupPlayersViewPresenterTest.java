@@ -240,16 +240,16 @@ public class LineupPlayersViewPresenterTest {
     }
 
     /**
-     * Test the behavior on update called before thr lineup data is set.
+     * Test the behavior on onUpdateSuccess called before thr lineup data is set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnSetLineup() {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.update(null);
+//        presenter.onUpdateSuccess(null);
     }
 
     /**
-     * Test the behavior on update called with invalid List of lineup players.
+     * Test the behavior on onUpdateSuccess called with invalid List of lineup players.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnInvalidLineupPlayers() {
@@ -257,11 +257,11 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(false);
         presenter.loadPlayers(args);
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
     }
 
     /**
-     * Test the behavior when update is called and the data is not yet changed.
+     * Test the behavior when onUpdateSuccess is called and the data is not yet changed.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnChangedData() {
@@ -269,11 +269,11 @@ public class LineupPlayersViewPresenterTest {
                 .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
     }
 
     /**
-     * Test that update works correctly.
+     * Test that onUpdateSuccess works correctly.
      */
     @Test
     public void testUpdate() {
@@ -282,7 +282,7 @@ public class LineupPlayersViewPresenterTest {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         verify(view).showUpdating();
     }
@@ -300,7 +300,7 @@ public class LineupPlayersViewPresenterTest {
         doThrow(LineupException.class).when(lineupDBService).store(any(Lineup.class));
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -314,7 +314,7 @@ public class LineupPlayersViewPresenterTest {
     }
 
     /**
-     * Test the behavior when update is successful, the lineup is not saved in the database and
+     * Test the behavior when onUpdateSuccess is successful, the lineup is not saved in the database and
      * saving the players failed.
      */
     @Test
@@ -327,7 +327,7 @@ public class LineupPlayersViewPresenterTest {
                 .storePlayers(anyListOf(LineupPlayer.class));
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -341,7 +341,7 @@ public class LineupPlayersViewPresenterTest {
     }
 
     /**
-     * Test the behavior when update is successful, the lineup is saved in the
+     * Test the behavior when onUpdateSuccess is successful, the lineup is saved in the
      * database and updating the lineup failed.
      */
     @Test
@@ -353,7 +353,7 @@ public class LineupPlayersViewPresenterTest {
         doThrow(LineupException.class).when(lineupDBService).update(any(Lineup.class));
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -368,7 +368,7 @@ public class LineupPlayersViewPresenterTest {
     }
 
     /**
-     * Test the behavior when the update is successful, the lineup is saved in the database
+     * Test the behavior when the onUpdateSuccess is successful, the lineup is saved in the database
      * and updating the players failed.
      */
     @Test
@@ -381,7 +381,7 @@ public class LineupPlayersViewPresenterTest {
                 .updatePlayers(anyInt(), anyListOf(LineupPlayer.class));
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -404,7 +404,7 @@ public class LineupPlayersViewPresenterTest {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new SocketTimeoutException());
         verify(view).showUpdatingFailed();
@@ -421,7 +421,7 @@ public class LineupPlayersViewPresenterTest {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         presenter.loadPlayers(args);
 //        presenter.setChanged();
-//        presenter.update(lineupPlayers);
+//        presenter.onUpdateSuccess(lineupPlayers);
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new Throwable());
         verify(view).showUpdatingFailed();

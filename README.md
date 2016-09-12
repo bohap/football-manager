@@ -1,6 +1,6 @@
 # Football Dream Team
 
-Android applicaiton that enables making football dream team. User that want to use the applciation need to create a account which is free of charge. User can build their own lineups, and also like and comment on other users lienups.
+Android application that enables making football dream team. User that want to use the application need to create a account which is free of charge. User can build their own lineups, and also like and comment on other users lienups.
 
 ### Extra technologies used:
 ---
@@ -15,11 +15,13 @@ Android applicaiton that enables making football dream team. User that want to u
 - [x] Loading teams, positions and players data and saving it into local SQLite database on first launch
 - [x] Listing latest lineups
 - [x] Displaying linup likes
-- [ ] Displaying lineup comments
+- [x] Adding and removing likes to the lineups
+- [x] Displaying lineup comments
+- [x] Adding, updating and removing comments to the lineup
 - [x] Displaying lineup players
 - [x] Updaing lineup players
 - [x] Creating new lineup
-- [ ] Deleting existing lineup
+- [x] Deleting existing lineup
 - [ ] Background servide to load and notify the user about the latest likes and comments on his latest lineup
 
 ### Collaborating:

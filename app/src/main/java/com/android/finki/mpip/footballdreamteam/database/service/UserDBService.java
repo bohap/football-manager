@@ -176,7 +176,7 @@ public class UserDBService {
     public User update(User user) {
         this.validateData(user);
         if (! this.exists(user)) {
-            String message = String.format("can't update user, user with id " +
+            String message = String.format("can't onUpdateSuccess user, user with id " +
                     "%d don't exists", user.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

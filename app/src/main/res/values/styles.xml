@@ -223,10 +223,13 @@
         <item name="android:background">@drawable/edit_text</item>
         <item name="android:textColor">@color/editText_text_color</item>
         <item name="android:textColorHint">@color/editText_textHint_color</item>
-        <item name="android:paddingLeft">@dimen/medium_verticalPadding</item>
+        <item name="android:paddingLeft">@dimen/medium_horizontalPadding</item>
         <item name="android:paddingRight">@dimen/medium_horizontalPadding</item>
         <item name="android:paddingTop">@dimen/medium_horizontalPadding</item>
         <item name="android:paddingBottom">@dimen/medium_verticalPadding</item>
+    </style>
+    <style name="EditText.NoCorners">
+        <item name="android:background">@drawable/edit_text_no_corners</item>
     </style>
 
     <!--Test View-->

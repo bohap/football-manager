@@ -106,7 +106,7 @@ public class PositionRepository extends BaseRepository<Position, Integer> {
      * Update a existing position.
      *
      * @param position Position to be setChanged
-     * @return result of the update operation
+     * @return result of the onUpdateSuccess operation
      */
     public boolean update(Position position) {
         return super.update(this.putValues(position), position);

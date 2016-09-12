@@ -34,6 +34,12 @@ public class JWTTokenInterceptor implements Interceptor {
      */
     @Override
     public Response intercept(Chain chain) throws IOException {
+        /**
+         * TODO
+         * when the connection times out, and the token is expired the server generates a
+         * new token which will not be intercepted here so when the next request is send
+         * we have the old token and the server returns 401 un authenticated.
+         */
         String token = preferences.getString(key, null);
         logger.info(String.format("add JWT token to the request, token  %s", token));
         Request request = chain.request();

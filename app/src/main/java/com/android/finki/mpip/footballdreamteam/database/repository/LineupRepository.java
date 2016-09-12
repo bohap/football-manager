@@ -109,7 +109,7 @@ public class LineupRepository extends BaseRepository<Lineup, Integer> {
      * Update a existing lineup.
      *
      * @param lineup Lineup to be setChanged
-     * @return result of the update operation
+     * @return result of the onUpdateSuccess operation
      */
     public boolean update(Lineup lineup) {
         return super.update(this.putValues(lineup), lineup);

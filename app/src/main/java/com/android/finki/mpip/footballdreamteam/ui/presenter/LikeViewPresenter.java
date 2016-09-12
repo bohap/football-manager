@@ -120,12 +120,12 @@ public class LikeViewPresenter extends BasePresenter {
             likesCall.enqueue(new Callback<List<UserLike>>() {
                 @Override
                 public void onResponse(Call<List<UserLike>> call, Response<List<UserLike>> response) {
-                    likesLoadingSuccess(response);
+                    onLikesLoadingSuccess(response);
                 }
 
                 @Override
                 public void onFailure(Call<List<UserLike>> call, Throwable t) {
-                    likesLoadingFailed(call, t);
+                    onLikesLoadingFailed(call, t);
                 }
             });
         }
@@ -136,7 +136,7 @@ public class LikeViewPresenter extends BasePresenter {
      *
      * @param response server response
      */
-    public void likesLoadingSuccess(Response<List<UserLike>> response) {
+    public void onLikesLoadingSuccess(Response<List<UserLike>> response) {
         logger.info("likes request success");
         likesCall = null;
         loadLikesRequestSending = false;
@@ -160,7 +160,7 @@ public class LikeViewPresenter extends BasePresenter {
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    public void likesLoadingFailed(Call<List<UserLike>> call, Throwable t) {
+    public void onLikesLoadingFailed(Call<List<UserLike>> call, Throwable t) {
         logger.info("likes request failed");
         loadLikesRequestSending = false;
         if (call.isCanceled()) {
@@ -252,7 +252,7 @@ public class LikeViewPresenter extends BasePresenter {
             throw new IllegalArgumentException("lineup not liked");
         }
         if (!removeLikeRequestSending) {
-            logger.info("sending remove like request");
+            logger.info("sending onRemoveSuccess like request");
             removeLikeRequestSending = true;
             if (viewLayoutCreated) {
                 view.showLikeRemoving();
@@ -276,7 +276,7 @@ public class LikeViewPresenter extends BasePresenter {
      * Called when removing the like is successful.
      */
     private void removeLikeSuccess() {
-        logger.info("remove like request success");
+        logger.info("onRemoveSuccess like request success");
         removeLikeRequestSending = false;
         likeAdded = false;
         removeLikeCall = null;
@@ -292,10 +292,10 @@ public class LikeViewPresenter extends BasePresenter {
      * @param t    exception that has been thrown
      */
     private void removeLikeFailed(Call<Void> call, Throwable t) {
-        logger.info("remove like request failed");
+        logger.info("onRemoveSuccess like request failed");
         removeLikeRequestSending = false;
         if (call.isCanceled()) {
-            logger.info("remove like request canceled");
+            logger.info("onRemoveSuccess like request canceled");
         } else {
             t.printStackTrace();
             if (viewLayoutCreated) {

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Borce on 05.09.2016.
  */
-public interface CommentsView {
+public interface CommentsView extends BaseView {
 
     String LINEUP_ID_KEY = "lineup_id";
 
@@ -16,4 +16,16 @@ public interface CommentsView {
     void showCommentsLoadingSuccess(List<Comment> comments);
 
     void showCommentLoadingFailed();
+
+    void showCommentAddingSuccess(Comment comment);
+
+    void showCommentAddingFailed();
+
+    void showCommentUpdatingSuccess(Comment comment, Comment newComment);
+
+    void showCommentUpdatingFailed(Comment comment);
+
+    void showCommentDeletingSuccess(Comment comment);
+
+    void showCommentDeletingFailed(Comment comment);
 }

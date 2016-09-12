@@ -509,7 +509,7 @@ public class LineupPlayersActivityTest {
 //        Button button = (Button) activity.findViewById(R.id.lineupPlayersLayout_btnUpdate);
 //        assertNotNull(button);
 //        button.performClick();
-//        verify(presenter).update(anyListOf(LineupPlayer.class));
+//        verify(presenter).onUpdateSuccess(anyListOf(LineupPlayer.class));
     }
 
     /**
@@ -555,7 +555,7 @@ public class LineupPlayersActivityTest {
                 .findViewById(R.id.lineupPlayersActivity_btnTryUpdateAgain);
         assertNotNull(button);
         button.performClick();
-//        verify(presenter).update(anyListOf(LineupPlayer.class));
+//        verify(presenter).onUpdateSuccess(anyListOf(LineupPlayer.class));
     }
 
     /**

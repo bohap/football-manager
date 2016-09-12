@@ -183,7 +183,7 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
      * Update a existing player.
      *
      * @param player Player ot be setChanged
-     * @return result of the update operation.
+     * @return result of the onUpdateSuccess operation.
      */
     public boolean update(Player player) {
         return super.update(this.putValues(player), player);

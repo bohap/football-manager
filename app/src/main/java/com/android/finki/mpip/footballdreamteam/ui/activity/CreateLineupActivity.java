@@ -147,7 +147,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         logger.info("onCreateOptionsMenu");
-        this.getMenuInflater().inflate(R.menu.save_lineup_menu, menu);
+        this.getMenuInflater().inflate(R.menu.create_lineup_menu, menu);
         Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
         MenuItem item = menu.findItem(R.id.lineupMenu_save);
         if (fragment instanceof LineupFormationFragment && presenter.isFormationValid()) {

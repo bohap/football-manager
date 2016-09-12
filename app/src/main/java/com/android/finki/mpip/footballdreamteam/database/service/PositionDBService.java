@@ -173,7 +173,7 @@ public class PositionDBService {
     public Position update(Position position) {
         this.validateData(position);
         if (! this.exists(position.getId())) {
-            String message = String.format("can't update position, position with " +
+            String message = String.format("can't onUpdateSuccess position, position with " +
                     "id %d don't exists", position.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

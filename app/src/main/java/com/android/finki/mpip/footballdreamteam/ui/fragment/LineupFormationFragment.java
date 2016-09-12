@@ -176,6 +176,9 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     public void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
+        if (this.getActivity() instanceof BaseFragment.Listener) {
+            ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
+        }
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new LineupFormationViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
@@ -340,7 +343,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * Remove the player on the selected lineup position.
      */
     public void removeSelectedPlayer() {
-        logger.info("remove selected player");
+        logger.info("onRemoveSuccess selected player");
         presenter.removeSelectedPlayer();
     }
 

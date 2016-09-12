@@ -186,7 +186,7 @@ public class CommentDBService {
     public Comment update(Comment comment) {
         this.validateData(comment);
         if (!this.exists(comment.getId())) {
-            String message = String.format("can't update comment, comment with " +
+            String message = String.format("can't onUpdateSuccess comment, comment with " +
                     "id %d don't exists", comment.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

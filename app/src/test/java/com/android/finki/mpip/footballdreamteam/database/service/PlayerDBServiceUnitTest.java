@@ -155,7 +155,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null param.
+     * Test the behavior on onUpdateSuccess method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNull() {
@@ -163,7 +163,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with invalid id.
+     * Test the behavior on onUpdateSuccess method called with invalid id.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnInvalidId() {
@@ -171,7 +171,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null name.
+     * Test the behavior on onUpdateSuccess method called with null name.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNullName() {
@@ -179,7 +179,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with un existing id.
+     * Test the behavior on onUpdateSuccess method called with un existing id.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnExitingId() {
@@ -188,7 +188,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record in the database failed.
+     * Test the behavior on onUpdateSuccess method when updating the record in the database failed.
      */
     @Test(expected = PlayerException.class)
     public void testFailedUpdate() {
@@ -198,7 +198,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record in the database is successful;
+     * Test the behavior on onUpdateSuccess method when updating the record in the database is successful;
      */
     @Test
     public void testSuccessUpdate() {

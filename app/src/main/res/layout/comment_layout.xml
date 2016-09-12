@@ -3,8 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include
+        android:visibility="gone"
         layout="@layout/spinner" />
     <include
+        android:visibility="gone"
         layout="@layout/error" />
     <RelativeLayout
         android:id="@+id/commentsLayout_mainContent"
@@ -14,23 +16,73 @@
             android:id="@+id/commentsLayout_listView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/commentsLayout_btnAddComment" />
-        <RelativeLayout
-            android:id="@+id/commentsLayout_btnAddComment"
-            style="@style/Button.Block.Primary.NoCornersRadius"
+            android:layout_above="@+id/commentsLayout_addCommentContent"
+            android:descendantFocusability="afterDescendants" />
+        <LinearLayout
+            android:id="@+id/commentsLayout_addCommentContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true">
-            <TextView
-                android:id="@+id/commentsLayout_btnAddComment_text"
-                style="@style/TextView.Button.Primary"
+            <Button
+                android:id="@+id/commentsLayout_btnAddComment"
+                style="@style/Button.Block.Primary.NoCornersRadius"
                 android:text="@string/commentsLayout_btnAddComment_text" />
-            <ProgressBar
-                android:id="@+id/spinnerLikeRemoving"
-                style="@style/ButtonSpinner"
-                android:layout_toRightOf="@id/commentsLayout_btnAddComment_text"
-                android:layout_toEndOf="@id/commentsLayout_btnAddComment_text"
-                android:layout_marginLeft="@dimen/base_horizontalMargin"
-                android:layout_marginStart="@dimen/base_horizontalMargin"
-                android:visibility="gone" />
-        </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/commentsLayout_addCommentMainContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/small_verticalPadding"
+                android:visibility="gone">
+                <EditText
+                    android:id="@+id/commentsLayout_txtComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/EditText"
+                    android:textSize="@dimen/smallTextSize"
+                    android:inputType="textMultiLine"
+                    android:maxLines="5"
+                    android:layout_toLeftOf="@+id/commentsLayout_addCommentBtnContent"
+                    android:layout_toStartOf="@id/commentsLayout_addCommentBtnContent"
+                    android:layout_marginLeft="@dimen/base_horizontalMargin"
+                    android:layout_marginStart="@dimen/base_horizontalMargin"
+                    android:layout_marginRight="@dimen/base_horizontalMargin"
+                    android:layout_marginEnd="@dimen/base_horizontalMargin"
+                    android:minHeight="60dp" />
+                <LinearLayout
+                    android:id="@+id/commentsLayout_addCommentBtnContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="50dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="@dimen/base_horizontalMargin"
+                    android:layout_marginEnd="@dimen/base_horizontalMargin"
+                    android:orientation="vertical">
+                    <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                        android:id="@+id/commentsLayout_btnSubmitComment"
+                        style="@style/Button.Small.Primary.Icon"
+                        android:layout_width="match_parent"
+                        android:text="@string/fa_paper_plane_o"
+                        android:visibility="gone" />
+                    <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
+                        android:id="@+id/commentsLayout_btnCancelAddingComment"
+                        style="@style/Button.Small.Danger.Icon"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/small_verticalMargin"
+                        android:text="@string/fa_times" />
+                    <LinearLayout
+                        android:id="@+id/commentsLayout_spinnerSubmittingComment"
+                        style="@style/Button.Primary"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:visibility="gone">
+                        <ProgressBar
+                            style="@style/ButtonSpinner" />
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

@@ -6,6 +6,8 @@
     <string name="mainMenu_menuItemRefresh_title">Refresh lineups</string>
     <string name="mainMenu_menuItemLogout_title">Logout</string>
     <string name="lineup_menuItemSave_title">Save</string>
+    <string name="lineup_menuItemLikes_title">Likes</string>
+    <string name="lineup_menuItemComments_title">Comments</string>
     <string name="formationContextMenuTitle">Choose a formation</string>
     <string name="formation_4_4_2_title">4–4–2</string>
     <string name="formation_3_2_3_2_title">3–2–3–2</string>
@@ -95,9 +97,15 @@
         Loading latest lineups…
     </string>
     <string name="listLineupLayout_loadingFailed_test">
-        Error occurred while loading the lienups.
+        Error occurred while loading the lineups.
     </string>
     <string name="listLineupsLayout_headerText">Latest lineups</string>
+    <string name="listLineupLayout_deletingSuccess_text">
+        Lineup has been deleted successfully.
+    </string>
+    <string name="listLineupLayout_deletingFailed_text">
+        Error occurred while deleting the lineup.
+    </string>
     <!--Lineups List View-->
     <string name="lineupsListViewItem_imageDesc">Lineup image</string>
     <string name="lineupsListView_loadMoreBtnText">Load More</string>
@@ -118,6 +126,27 @@
     <string name="commentsLayout_title">Comments</string>
     <string name="commentsLayout_btnAddComment_text">Add Comment</string>
     <string name="commentsLayout_spinnerText">Loading comments…</string>
+    <string name="commentsLayout_loadingCommentsFailed_text">
+        Error occurred while loading the comments.
+    </string>
+    <string name="commentsLayout_addingCommentSuccess_text">
+        Comment was added successfully.
+    </string>
+    <string name="commentsLayout_addingCommentFailed_text">
+        Error occurred while adding the comment.
+    </string>
+    <string name="commentsLayout_updatingCommentSuccess_text">
+        Comment was updated successfully.
+    </string>
+    <string name="commentsLayout_updatingCommentFailed_text">
+        Error occurred while updating the comment.
+    </string>
+    <string name="commentLayout_deletingCommentSuccess_text">
+        Comment was deleted successfully.
+    </string>
+    <string name="commentLayout_deletingCommentFailed_text">
+        Error occurred while deleting the comment.
+    </string>
     <!--LineupPlayers Activity-->
     <string name="lineupPlayersActivity_title">Lineup Players</string>
     <string name="lineupPlayersActivity_spinnerLoadPlayers_text">Loading lineup players…</string>

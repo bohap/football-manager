@@ -129,7 +129,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null param.
+     * Test the behavior on onUpdateSuccess method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNull() {
@@ -137,7 +137,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with invalid id.
+     * Test the behavior on onUpdateSuccess method called with invalid id.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnInvalidId() {
@@ -145,7 +145,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with un existing id.
+     * Test the behavior on onUpdateSuccess method called with un existing id.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnExistingId() {
@@ -154,7 +154,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record in the database failed.
+     * Test the behavior on onUpdateSuccess method when updating the record in the database failed.
      */
     @Test(expected = LineupException.class)
     public void testFailedUpdate() {
@@ -164,7 +164,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record in the database is successful.
+     * Test the behavior on onUpdateSuccess method when updating the record in the database is successful.
      */
     @Test
     public void testSuccessUpdate() {
@@ -195,7 +195,7 @@ public class LineupDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record in the database is successful.
+     * Test the behavior on onUpdateSuccess method when updating the record in the database is successful.
      */
     @Test
     public void testSuccessDelete() {

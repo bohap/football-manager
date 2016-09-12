@@ -13,7 +13,6 @@ import com.android.finki.mpip.footballdreamteam.rest.response.ServerResponse;
 
 import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -58,6 +57,7 @@ public interface LineupApi {
      * @return success response
      */
     @POST("lineups")
+    @Headers("Connection:close")
     Call<LineupResponse> store(@Body LineupRequest lineup);
 
     /**
@@ -68,6 +68,7 @@ public interface LineupApi {
      * @return success response
      */
     @PUT("lineups/{id}")
+    @Headers("Connection:close")
     Call<LineupResponse> update(@Path("id") int id, @Body LineupRequest lineup);
 
     /**
@@ -77,6 +78,7 @@ public interface LineupApi {
      * @return Void indicating that the lineup was deleted successfully
      */
     @DELETE("lineups/{id}")
+    @Headers("Connection:close")
     Call<Void> delete(@Path("id") int id);
 
     /**
@@ -123,6 +125,7 @@ public interface LineupApi {
      * @return success response
      */
     @POST("lineups/{id}/likes")
+    @Headers("Connection:close")
     Call<ServerResponse> addLike(@Path("id") int id);
 
     /**
@@ -132,6 +135,7 @@ public interface LineupApi {
      * @return Empty server response
      */
     @DELETE("lineups/{id}/likes")
+    @Headers("Connection:close")
     Call<Void> deleteLike(@Path("id") int id);
 
     /**
@@ -155,6 +159,7 @@ public interface LineupApi {
      * @return success response
      */
     @POST("lineups/{id}/comments")
+    @Headers("Connection:close")
     Call<CommentResponse> addComment(@Path("id") int id, @Body CommentRequest comment);
 
     /**
@@ -166,6 +171,7 @@ public interface LineupApi {
      * @return success response
      */
     @PUT("lineups/{id}/comments/{commentId}")
+    @Headers("Connection:close")
     Call<CommentResponse> updateComment(@Path("id") int id, @Path("commentId") int commentId,
                                         @Body CommentRequest comment);
 
@@ -177,5 +183,6 @@ public interface LineupApi {
      * @return Void indicating that the response was delete successfully
      */
     @DELETE("lineups/{id}/comments/{commentId}")
+    @Headers("Connection:close")
     Call<Void> deleteComment(@Path("id") int id, @Path("commentId") int commentId);
 }

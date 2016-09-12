@@ -197,7 +197,7 @@ public class PlayerDBService {
     public Player update(Player player) {
         this.validateData(player);
         if (! this.exists(player)) {
-            String message = String.format("can't update player, player with " +
+            String message = String.format("can't onUpdateSuccess player, player with " +
                     "id %d don't exists", player.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

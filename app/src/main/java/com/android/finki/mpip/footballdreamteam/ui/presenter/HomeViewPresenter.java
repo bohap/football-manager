@@ -51,7 +51,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     private boolean requestSending = false;
     private boolean viewLayoutCreated = false;
     private boolean isInfoDialogShowed = false;
-    private boolean mainViewVisible = false;
 
     public HomeViewPresenter(HomeView view, SharedPreferences preferences, Context context,
                              TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
@@ -132,24 +131,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     public void loadData() {
         this.loadTeams();
-    }
-
-    /**
-     * Set the visibility of the main view.
-     *
-     * @param mainViewVisible new main view visibility
-     */
-    public void setMainViewVisible(boolean mainViewVisible) {
-        this.mainViewVisible = mainViewVisible;
-    }
-
-    /**
-     * Checks if the main view is visible.
-     *
-     * @return whatever the main view is visible
-     */
-    public boolean isMainViewVisible() {
-        return mainViewVisible;
     }
 
     /**

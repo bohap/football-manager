@@ -3,6 +3,7 @@ package com.android.finki.mpip.footballdreamteam.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -19,6 +20,9 @@ import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.BaseFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
+import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupPlayersViewPresenter;
@@ -42,6 +46,7 @@ import butterknife.OnClick;
  * Created by Borce on 15.08.2016.
  */
 public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
+        BaseFragment.Listener,
         LineupPlayersView,
         ListPositionPlayersFragment.Listener,
         LineupFormationFragment.Listener,
@@ -132,16 +137,20 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         logger.info("onCreateOptionsMenu");
-        this.getMenuInflater().inflate(R.menu.save_lineup_menu, menu);
-        MenuItem item = menu.findItem(R.id.lineupMenu_save);
         Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
-        if (fragment instanceof LineupFormationFragment && presenter.isChanged() &&
-                presenter.isLineupValid() && !presenter.isLineupUpdateFailed()) {
-            item.setVisible(true);
+        if (fragment instanceof LineupFormationFragment) {
+            this.getMenuInflater().inflate(R.menu.lineup_players_menu, menu);
+            MenuItem item = menu.findItem(R.id.lineupMenu_save);
+            if (presenter.isChanged() && presenter.isLineupValid() &&
+                    !presenter.isLineupUpdateFailed()) {
+                item.setVisible(true);
+            } else {
+                item.setVisible(false);
+            }
+            return true;
         } else {
-            item.setVisible(false);
+            return super.onCreateOptionsMenu(menu);
         }
-        return true;
     }
 
     /**
@@ -158,8 +167,14 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
                 super.checkLineupFormationFragmentVisibility();
                 presenter.update();
                 return true;
+            case R.id.lineupMenu_likes:
+                this.showLineupLikesFragment();
+                return true;
+            case R.id.lineupMenu_comments:
+                this.showLineupCommentsFragment();
+                return true;
             case android.R.id.home:
-                super.onBackPressed();
+                this.onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -219,6 +234,26 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     }
 
     /**
+     * Called when some of the sub fragments is active.
+     */
+    @Override
+    public void onFragmentActive() {
+        this.invalidateOptionsMenu();
+    }
+
+    /**
+     * Change the action bar title.
+     *
+     * @param title new action bar title
+     */
+    @Override
+    public void changeTitle(String title) {
+        if (this.getSupportActionBar() != null) {
+            this.getSupportActionBar().setTitle(title);
+        }
+    }
+
+    /**
      * Checks if the formation has been changed.
      *
      * @return whatever the formation has been changed
@@ -235,7 +270,9 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      */
     @Override
     protected void toggleBtnChangeFormation(boolean visible) {
-        super.toggleVisibility(btnChangeFormation, visible);
+        if (presenter.canEditLineup()) {
+            super.toggleVisibility(btnChangeFormation, visible);
+        }
     }
 
     /**
@@ -273,9 +310,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
         super.toggleVisibility(error, false);
         super.toggleVisibility(lineupUpdateErrorLayout, false);
         super.showLineupFormationFragment(players, presenter.canEditLineup());
-        if (presenter.canEditLineup()) {
-            super.toggleVisibility(btnChangeFormation, true);
-        }
+        this.toggleBtnChangeFormation(true);
     }
 
     /**
@@ -292,7 +327,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     }
 
     /**
-     * Called when a request has been send to update lineup data.
+     * Called when a request has been send to onUpdateSuccess lineup data.
      */
     @Override
     public void showUpdating() {
@@ -456,6 +491,34 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     }
 
     /**
+     * Show the LineupLikesFragment.
+     */
+    private void showLineupLikesFragment() {
+        logger.info("showLineupLikesFragment");
+        super.checkLineupFormationFragmentVisibility();
+        LikeFragment fragment = LikeFragment.newInstance(presenter.getLineup());
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(LineupFormationFragment.TAG);
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+        this.toggleBtnChangeFormation(false);
+    }
+
+    /**
+     * Show the LineupCommentsFragment.
+     */
+    private void showLineupCommentsFragment() {
+        logger.info("showLineupCommentsFragment");
+        super.checkLineupFormationFragmentVisibility();
+        CommentsFragment fragment = CommentsFragment.newInstance(presenter.getLineup().getId());
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(LineupFormationFragment.TAG);
+        transaction.replace(R.id.content, fragment);
+        transaction.commit();
+        this.toggleBtnChangeFormation(false);
+    }
+
+    /**
      * Handle click on the button "Try Again"
      */
     @OnClick(R.id.error_btnTryAgain)
@@ -465,11 +528,25 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     }
 
     /**
-     * Handle click on button to update the lineup again.
+     * Handle click on button to onUpdateSuccess the lineup again.
      */
     @OnClick(R.id.lineupPlayersActivity_btnTryUpdateAgain)
     void tryUpdateAgain() {
         logger.info("btn 'Try Update Again' clicked");
         presenter.update();
+    }
+
+    /**
+     * Called when the back button is pressed.
+     */
+    @Override
+    public void onBackPressed() {
+        logger.info("onBackPressed");
+        super.onBackPressed();
+        if (this.getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            this.changeTitle(title);
+            this.toggleBtnChangeFormation(true);
+            this.invalidateOptionsMenu();
+        }
     }
 }

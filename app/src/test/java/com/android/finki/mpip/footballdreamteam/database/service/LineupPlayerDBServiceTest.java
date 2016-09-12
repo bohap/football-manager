@@ -163,7 +163,7 @@ public class LineupPlayerDBServiceTest {
     }
 
     /**
-     * Test the behavior on update method called with un existing primary key.
+     * Test the behavior on onUpdateSuccess method called with un existing primary key.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnExistingPrimaryKey() {
@@ -172,7 +172,7 @@ public class LineupPlayerDBServiceTest {
     }
 
     /**
-     * Test the behavior on update method when inserting the record in the database failed.
+     * Test the behavior on onUpdateSuccess method when inserting the record in the database failed.
      */
     @Test(expected = LineupPlayerException.class)
     public void testFailedUpdate() {
@@ -182,7 +182,7 @@ public class LineupPlayerDBServiceTest {
     }
 
     /**
-     * Test the behavior on update method when inserting the record in the database is successful.
+     * Test the behavior on onUpdateSuccess method when inserting the record in the database is successful.
      */
     @Test
     public void testSuccessUpdate() {

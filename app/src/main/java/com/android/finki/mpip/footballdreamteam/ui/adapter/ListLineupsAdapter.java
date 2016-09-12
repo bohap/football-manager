@@ -5,18 +5,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,15 +33,18 @@ import butterknife.OnClick;
 public class ListLineupsAdapter extends BaseAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(ListLineupsAdapter.class);
-
     private Context context;
     private Listener listener;
+    private User user;
     private List<Lineup> lineups;
+    private Map<Integer, Boolean> deleting;
 
-    public ListLineupsAdapter(Context context, Listener listener) {
+    public ListLineupsAdapter(Context context, User user, Listener listener) {
         this.context = context;
         this.listener = listener;
+        this.user = user;
         lineups = new ArrayList<>();
+        deleting = new HashMap<>();
     }
 
     /**
@@ -83,12 +91,14 @@ public class ListLineupsAdapter extends BaseAdapter {
      * @param lineup Lineup to be added
      */
     public void add(Lineup lineup) {
+        logger.info("add");
         if (lineup == null) {
             String message = "lineup can't be null";
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
         this.lineups.add(lineup);
+        this.deleting.put(lineup.getId(), false);
         super.notifyDataSetChanged();
     }
 
@@ -98,8 +108,12 @@ public class ListLineupsAdapter extends BaseAdapter {
      * @param lineups List of new lineups
      */
     public void update(List<Lineup> lineups) {
+        logger.info("onUpdateSuccess");
         if (this.lineups.size() == 0) {
-            this.lineups.addAll(lineups);
+            for (Lineup lineup : lineups) {
+                this.lineups.add(lineup);
+                this.deleting.put(lineup.getId(), false);
+            }
         }
         List<Lineup> lineupToBeAdded = new ArrayList<>();
         for (Lineup lineup1 : lineups) {
@@ -112,9 +126,31 @@ public class ListLineupsAdapter extends BaseAdapter {
             }
             if (!found) {
                 lineupToBeAdded.add(lineup1);
+                this.deleting.put(lineup1.getId(), false);
             }
         }
         this.lineups.addAll(lineupToBeAdded);
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * Delete the lineup from the adapter.
+     *
+     * @param lineup lineup to be deleted
+     */
+    public void delete(Lineup lineup) {
+        lineups.remove(lineup);
+        this.deleting.remove(lineup.getId());
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * Called when deleting the lineup failed.
+     *
+     * @param lineup lineup that was deleting
+     */
+    public void onDeletingFailed(Lineup lineup) {
+        this.deleting.put(lineup.getId(), true);
         super.notifyDataSetChanged();
     }
 
@@ -138,13 +174,7 @@ public class ListLineupsAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        Lineup lineup = lineups.get(position);
-        holder.setLineup(lineup);
-        User user = lineup.getUser();
-        if (user != null) {
-            holder.txtUser.setText(String.format("by %s", user.getName()));
-        }
-        holder.txtUpdatedAt.setText(DateUtils.dayNameFormat(lineup.getUpdatedAt()));
+        holder.setPosition(position);
         return view;
     }
 
@@ -153,35 +183,62 @@ public class ListLineupsAdapter extends BaseAdapter {
      */
     public class ViewHolder {
 
+        private int position;
         private Lineup lineup;
+
+        @BindView(R.id.lineupsItem_mainContent)
+        RelativeLayout content;
+
+        @BindView(R.id.lineupsItem_spinner)
+        LinearLayout spinner;
 
         @BindView(R.id.lineupsItem_user)
         TextView txtUser;
 
-        @BindView(R.id.lineups_item_updated_at_text)
+        @BindView(R.id.lineupsItem_updatedAt_text)
         TextView txtUpdatedAt;
+
+        @BindView(R.id.lineupItem_btnDelete)
+        ButtonAwesome btnDelete;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
 
         /**
-         * Set the holder lineup.
+         * Set the holder position in the adapter.
          *
-         * @param lineup ViewHolder lineup
+         * @param position holder position
          */
-        public void setLineup(Lineup lineup) {
-            this.lineup = lineup;
+        public void setPosition(int position) {
+            this.position = position;
+            lineup = lineups.get(position);
+            User lineupUser = lineup.getUser();
+            if (lineupUser != null) {
+                txtUser.setText(String.format("by %s", lineupUser.getName()));
+            }
+            txtUpdatedAt.setText(DateUtils.dayNameFormat(lineup.getUpdatedAt()));
+            int userId = lineup.getUserId();
+            if (userId < 1 && lineup.getUser() != null) {
+                userId = lineup.getUser().getId();
+            }
+            boolean canEdit = lineupUser != null && userId == user.getId();
+            if (canEdit) {
+                btnDelete.setVisibility(View.VISIBLE);
+            } else {
+                btnDelete.setVisibility(View.GONE);
+            }
+            boolean requestSending = deleting.get(lineup.getId());
+            spinner.setVisibility(requestSending ? View.VISIBLE : View.GONE);
+            content.setVisibility(requestSending ? View.GONE : View.VISIBLE);
         }
 
         /**
          * Handle click on the main content.
          */
         @OnClick(R.id.lineupsListItem_main)
-        void onMainContentClick() {
-            if (lineup == null) {
-                throw new IllegalArgumentException("lineup not set");
-            }
+        void onMainClick() {
+            logger.info(String.format("onMainClick, position %d", position));
             listener.onLineupPlayersSelected(lineup);
         }
 
@@ -189,10 +246,8 @@ public class ListLineupsAdapter extends BaseAdapter {
          * Handle click on the likes content.
          */
         @OnClick(R.id.lineupsListItem_likes)
-        void onLikedClick() {
-            if (lineup == null) {
-                throw new IllegalArgumentException("lineup not set");
-            }
+        void onLikesClick() {
+            logger.info(String.format("onLikesClick, position %d", position));
             listener.onLineupLikesSelected(lineup);
         }
 
@@ -201,13 +256,26 @@ public class ListLineupsAdapter extends BaseAdapter {
          */
         @OnClick(R.id.lineupsListItem_comments)
         void onCommentsClick() {
-            if (lineup == null) {
-                throw new IllegalArgumentException("lineup not set");
-            }
+            logger.info(String.format("onCommentsClick, position %d", position));
             listener.onLineupCommentsSelected(lineup);
+        }
+
+        /**
+         * Handle click on the 'Delete' button.
+         */
+        @OnClick(R.id.lineupItem_btnDelete)
+        void onBtnDeleteClick() {
+            logger.info(String.format("btn 'Delete' clicked, position %d", position));
+            deleting.put(lineup.getId(), true);
+            content.setVisibility(View.GONE);
+            spinner.setVisibility(View.VISIBLE);
+            listener.onBtnDeleteClick(lineup);
         }
     }
 
+    /**
+     * Listener used for communication with the view using the listener.
+     */
     public interface Listener {
 
         void onLineupPlayersSelected(Lineup lineup);
@@ -215,5 +283,7 @@ public class ListLineupsAdapter extends BaseAdapter {
         void onLineupLikesSelected(Lineup lineup);
 
         void onLineupCommentsSelected(Lineup lineup);
+
+        void onBtnDeleteClick(Lineup lineup);
     }
 }

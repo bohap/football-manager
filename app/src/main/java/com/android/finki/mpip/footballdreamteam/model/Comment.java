@@ -37,6 +37,10 @@ public class Comment extends BaseModel<Integer> implements Serializable {
     public Comment() {
     }
 
+    public Comment(int id) {
+        this.id = id;
+    }
+
     public Comment(int id, int userId, int lineupId, String body, Date createdAt, Date updatedAt,
                    User user, Lineup lineup) {
         this.id = id;

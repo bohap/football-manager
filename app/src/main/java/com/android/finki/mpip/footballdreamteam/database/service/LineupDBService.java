@@ -165,7 +165,7 @@ public class LineupDBService {
     public Lineup update(Lineup lineup) {
         this.validateData(lineup);
         if (!this.exists(lineup)) {
-            String message = String.format("can't update lineup, lineup with id " +
+            String message = String.format("can't onUpdateSuccess lineup, lineup with id " +
                     "%d don't exists", lineup.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);

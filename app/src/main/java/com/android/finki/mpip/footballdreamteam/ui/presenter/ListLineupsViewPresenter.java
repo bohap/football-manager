@@ -1,15 +1,18 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
+import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.ListLineupsView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import retrofit2.Call;
@@ -24,16 +27,19 @@ public class ListLineupsViewPresenter extends BasePresenter {
     private static final Logger logger = LoggerFactory.getLogger(ListLineupsViewPresenter.class);
     private ListLineupsView view;
     private LineupApi api;
+    private User user;
     private Call<List<Lineup>> call;
     private boolean requestSending = false;
     private boolean viewLayoutCreated = false;
     static final int LINEUPS_LIMIT = 20;
     private int lineupCounter = 0;
     private Set<Lineup> lineups = new LinkedHashSet<>();
+    private Queue<DeleteCall> deleteCalls = new ArrayDeque<>();
 
-    public ListLineupsViewPresenter(ListLineupsView view, LineupApi api) {
+    public ListLineupsViewPresenter(ListLineupsView view, LineupApi api, User user) {
         this.view = view;
         this.api = api;
+        this.user = user;
     }
 
     /**
@@ -67,6 +73,10 @@ public class ListLineupsViewPresenter extends BasePresenter {
         if (call != null) {
             call.cancel();
         }
+        DeleteCall deleteCall = deleteCalls.peek();
+        if (deleteCall != null) {
+            deleteCall.cancel();
+        }
     }
 
     /**
@@ -76,6 +86,15 @@ public class ListLineupsViewPresenter extends BasePresenter {
      */
     public List<Lineup> getLineups() {
         return Arrays.asList(lineups.toArray(new Lineup[lineups.size()]));
+    }
+
+    /**
+     * Get the authenticated user.
+     *
+     * @return authenticated
+     */
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -146,9 +165,13 @@ public class ListLineupsViewPresenter extends BasePresenter {
         requestSending = false;
         this.call = null;
         lineupCounter++;
-        lineups.addAll(response.body());
+        List<Lineup> body = response.body();
+        lineups.addAll(body);
         if (viewLayoutCreated) {
             view.showLoadingSuccess(response.body());
+            if (body.size() < LINEUPS_LIMIT) {
+                view.showNoMoreLineups();
+            }
         }
     }
 
@@ -171,5 +194,123 @@ public class ListLineupsViewPresenter extends BasePresenter {
             }
         }
         this.call = null;
+    }
+
+    /**
+     * Execute the next call from the queue.
+     */
+    private void executeCall() {
+        DeleteCall call = deleteCalls.peek();
+        if (call != null && !call.isSending()) {
+            call.execute();
+        }
+    }
+
+    /**
+     * Send a request for deleting the lineup.
+     *
+     * @param lineup lineup to be deleted
+     */
+    public void deleteLineup(Lineup lineup) {
+        deleteCalls.add(new DeleteCall(lineup));
+        this.executeCall();
+    }
+
+    /**
+     * Called when deleting the lineup is successful.
+     *
+     * @param lineup deleted lineup
+     */
+    public void onLineupDeletingSuccess(Lineup lineup) {
+        logger.info(String.format("delete lineup success, lineup id %d", lineup.getId()));
+        if (viewLayoutCreated) {
+            view.showLineupDeletingSuccess(lineup);
+        }
+        deleteCalls.poll();
+        this.executeCall();
+    }
+
+    /**
+     * Called when deleting the lineup failed.
+     *
+     * @param lineup failed deleted lineup
+     * @param call   retrofit call
+     * @param t      exception that has been thrown
+     */
+    public void onLineupDeletingFailed(Lineup lineup, Call<Void> call, Throwable t) {
+        logger.info(String.format("delete lineup failed, lineup %d", lineup.getId()));
+        if (call.isCanceled()) {
+            logger.info(String.format("delete lineup canceled, lineup %d", lineup.getId()));
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showLineupDeletingFailed(lineup);
+                super.onRequestFailed(view, t);
+            }
+        }
+        deleteCalls.poll();
+        this.executeCall();
+    }
+
+    /**
+     * Wrapper class for deleting lineup call.
+     */
+    public class DeleteCall implements Callback<Void> {
+
+        private Lineup lineup;
+        private Call<Void> call;
+
+        public DeleteCall(Lineup lineup) {
+            this.lineup = lineup;
+        }
+
+        /**
+         * Send a request for deleting the lineup.
+         */
+        public void execute() {
+            logger.info(String.format("delete lineup request, lineup id %d", lineup.getId()));
+            call = api.delete(lineup.getId());
+            call.enqueue(this);
+        }
+
+        /**
+         * Called when deleting the lineup is successful.
+         *
+         * @param call     retrofit call
+         * @param response server response
+         */
+        @Override
+        public void onResponse(Call<Void> call, Response<Void> response) {
+            onLineupDeletingSuccess(lineup);
+        }
+
+        /**
+         * Called when deleting the lineup failed.
+         *
+         * @param call retrofit call
+         * @param t    exception that has been thrown
+         */
+        @Override
+        public void onFailure(Call<Void> call, Throwable t) {
+            onLineupDeletingFailed(lineup, call, t);
+        }
+
+        /**
+         * Cancel the request.
+         */
+        public void cancel() {
+            if (call != null) {
+                call.cancel();
+            }
+        }
+
+        /**
+         * Checks whatever a request is sending.
+         *
+         * @return whatever the request is sending
+         */
+        public boolean isSending() {
+            return call != null;
+        }
     }
 }

@@ -157,11 +157,11 @@ public class TeamRepositoryTest {
     }
 
     /**
-     * Test that the update method will update the team data.
+     * Test that the onUpdateSuccess method will onUpdateSuccess the team data.
      */
     @Test
     public void testUpdate() {
-        String name = "Team update";
+        String name = "Team onUpdateSuccess";
         team1.setName(name);
         boolean result = repository.update(team1);
         assertTrue(result);
@@ -172,7 +172,7 @@ public class TeamRepositoryTest {
     }
 
     /**
-     * Test that the update method will return false when updating the record
+     * Test that the onUpdateSuccess method will return false when updating the record
      * in the database failed.
      */
     @Test
