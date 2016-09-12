@@ -3,7 +3,7 @@ package com.android.finki.mpip.footballdreamteam.dependency.module;
 import android.content.Context;
 
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.rest.interceptor.ErrorInterceptor;
+import com.android.finki.mpip.footballdreamteam.rest.utils.ErrorInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -14,7 +14,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -66,19 +65,16 @@ public class NetModule {
     /**
      * Provides instance of the default OkHttpClient builder.
      *
-     * @param loggingInterceptor instance of HttpLoggingInterceptor
      * @param errorInterceptor Error interceptor for intercepting server error response codes.
      * @return OkHttpClient builder
      */
     @Provides
-    OkHttpClient.Builder providesOkHttpClientBuild(HttpLoggingInterceptor loggingInterceptor,
-                                                   ErrorInterceptor errorInterceptor) {
+    OkHttpClient.Builder providesOkHttpClientBuild(ErrorInterceptor errorInterceptor) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(60, TimeUnit.SECONDS);
         builder.writeTimeout(60, TimeUnit.SECONDS);
         builder.readTimeout(60, TimeUnit.SECONDS);
         builder.addInterceptor(errorInterceptor);
-        builder.addInterceptor(loggingInterceptor);
         return builder;
     }
 
@@ -91,7 +87,9 @@ public class NetModule {
     @Provides
     @Named("un_authenticated")
     @Singleton
-    OkHttpClient provideUnAuthenticatedOkHttpClient(OkHttpClient.Builder builder) {
+    OkHttpClient provideUnAuthenticatedOkHttpClient(OkHttpClient.Builder builder,
+                                                    HttpLoggingInterceptor loggingInterceptor) {
+        builder.addInterceptor(loggingInterceptor);
         return builder.build();
     }
 

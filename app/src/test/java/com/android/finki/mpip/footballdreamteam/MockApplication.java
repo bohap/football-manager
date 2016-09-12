@@ -35,7 +35,6 @@ public class MockApplication extends MainApplication {
     private SplashViewComponent splashActivityComponent;
     private LoginViewComponent loginActivityComponent;
     private HomeViewComponent homeActivityComponent;
-    private LineupDetailsActivityComponent lineupDetailsActivityComponent;
     private LineupPlayersViewComponent lineupPlayerActivityComponent;
     private LineupFormationViewComponent lineupFormationFragmentComponent;
     private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
@@ -71,8 +70,6 @@ public class MockApplication extends MainApplication {
             userComponent = mock(UserComponent.class);
             when(userComponent.plus(any(HomeViewModule.class)))
                     .thenReturn(homeActivityComponent);
-            when(userComponent.plus(any(LineupDetailsActivityModule.class)))
-                    .thenReturn(lineupDetailsActivityComponent);
             when(userComponent.plus(any(LikeViewModule.class)))
                     .thenReturn(likeFragmentComponent);
             when(userComponent.plus(any(LineupPlayersViewModule.class)))
@@ -114,15 +111,6 @@ public class MockApplication extends MainApplication {
      */
     public void setHomeActivityComponent(HomeViewComponent component) {
         this.homeActivityComponent = component;
-    }
-
-    /**
-     * Set a mocked instance of the LineupDetailsActivityComponent.
-     *
-     * @param component mocked instance of the LineupDetailsActivityComponent
-     */
-    public void setLineupDetailsActivityComponent(LineupDetailsActivityComponent component) {
-        this.lineupDetailsActivityComponent = component;
     }
 
     /**

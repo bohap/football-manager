@@ -1,4 +1,4 @@
-package com.android.finki.mpip.footballdreamteam.rest.interceptor;
+package com.android.finki.mpip.footballdreamteam.rest.utils;
 
 import android.content.SharedPreferences;
 
@@ -34,14 +34,8 @@ public class JWTTokenInterceptor implements Interceptor {
      */
     @Override
     public Response intercept(Chain chain) throws IOException {
-        /**
-         * TODO
-         * when the connection times out, and the token is expired the server generates a
-         * new token which will not be intercepted here so when the next request is send
-         * we have the old token and the server returns 401 un authenticated.
-         */
+        logger.info("intercept");
         String token = preferences.getString(key, null);
-        logger.info(String.format("add JWT token to the request, token  %s", token));
         Request request = chain.request();
         if (token != null) {
             request = request.newBuilder()
@@ -49,9 +43,10 @@ public class JWTTokenInterceptor implements Interceptor {
                     .build();
         }
         Response response = chain.proceed(request);
+        logger.info("checking server response");
         token = response.header("Authorization", null);
         if (token != null) {
-            logger.info(String.format("new user token %s", token));
+            logger.info("updating jwt token in preferences");
             token = token.split(" ")[1];
             preferences.edit().putString(key, token).apply();
         }

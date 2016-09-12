@@ -90,6 +90,9 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     public void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
+        if (this.getActivity() instanceof BaseFragment.Listener) {
+            ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
+        }
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new ListLineupsViewModule(this)).inject(this);
         presenter.onViewCreated();

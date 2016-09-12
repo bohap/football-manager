@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Created by Borce on 27.07.2016.
  */
-public class User extends BaseModel<Integer> implements Serializable, Comparable<User> {
+public class User extends BaseModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -23,6 +23,8 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
 
     @SerializedName("email")
     private String email;
+
+    private String password;
 
     @SerializedName("created_at")
     private Date createdAt;
@@ -48,11 +50,12 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
     public User() {
     }
 
-    public User(int id, String name, String email, Date createdAt, Date updatedAt,
+    public User(int id, String name, String email, String password, Date createdAt, Date updatedAt,
                 int lineupsCount, int likesCount, int commentsCount) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lineupsCount = lineupsCount;
@@ -60,12 +63,13 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
         this.commentsCount = commentsCount;
     }
 
-    public User(int id, String name, String email, Date createdAt, Date updatedAt) {
-        this(id, name, email, createdAt, updatedAt, 0, 0, 0);
+    public User(int id, String name, String email, String password,
+                Date createdAt, Date updatedAt) {
+        this(id, name, email, password, createdAt, updatedAt, 0, 0, 0);
     }
 
     public User(int id, String name) {
-        this(id, name, null, null, null);
+        this(id, name, null, null, null, null);
     }
 
     @Override
@@ -92,6 +96,14 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Date getCreatedAt() {
@@ -160,18 +172,6 @@ public class User extends BaseModel<Integer> implements Serializable, Comparable
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof User)) {
-            return false;
-        }
-        User user = (User)o;
-        return this.getId().equals(user.getId());
-    }
-
-    @Override
-    public int compareTo(@NonNull User user) {
-        if (this.getId().equals(user.getId())) {
-            return 0;
-        }
-        return 1;
+        return o instanceof User && this.id == ((User) o).getId();
     }
 }

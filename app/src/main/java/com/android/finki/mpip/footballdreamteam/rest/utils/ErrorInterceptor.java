@@ -1,12 +1,14 @@
-package com.android.finki.mpip.footballdreamteam.rest.interceptor;
+package com.android.finki.mpip.footballdreamteam.rest.utils;
 
 import com.android.finki.mpip.footballdreamteam.exception.InternalServerErrorException;
 import com.android.finki.mpip.footballdreamteam.exception.NotAuthenticatedException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
-import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -14,8 +16,10 @@ import okhttp3.Response;
  */
 public class ErrorInterceptor implements Interceptor {
 
+    private static final Logger logger = LoggerFactory.getLogger(ErrorInterceptor.class);
+
     /**
-     * CHeck if the server has responded with a error.
+     * Check if the server has responded with a error.
      *
      * @param chain requests chain
      * @return request response
@@ -23,8 +27,9 @@ public class ErrorInterceptor implements Interceptor {
      */
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
-        Response response = chain.proceed(request);
+        logger.info("intercept");
+        Response response = chain.proceed(chain.request());
+        logger.info("checking server response");
         int code = response.code();
         if (code >= 400 && code <= 500) {
             switch (code) {

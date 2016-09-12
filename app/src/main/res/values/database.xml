@@ -9,6 +9,7 @@
     <string name="users_column_id">id</string>
     <string name="users_column_name">name</string>
     <string name="users_column_email">email</string>
+    <string name="users_column_password">password</string>
     <string name="users_column_created_at">created_at</string>
     <string name="users_column_updated_at">updated_at</string>
     <!--Teams table-->

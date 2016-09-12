@@ -42,6 +42,8 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     private String JWT_TOKEN_KEY;
     private boolean requestSending = false;
     private boolean viewLayoutCreated = false;
+    private String email;
+    private String password;
 
     public LoginViewPresenter(LoginView view, SharedPreferences preferences, Context context,
                               UserDBService userDBService, AuthApi authApi) {
@@ -129,6 +131,8 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             if (viewLayoutCreated) {
                 view.showLogging();
             }
+            this.email = email;
+            this.password = password;
             AuthenticateUserRequest request = new AuthenticateUserRequest(email, password);
             call = authApi.login(request);
             call.enqueue(this);
@@ -183,8 +187,7 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
      */
     private void loginSuccess(Response<AuthenticateUserResponse> response) {
         AuthenticateUserResponse body = response.body();
-        User user = new User(body.getId(), body.getName(),
-                body.getEmail(), new Date(), new Date());
+        User user = new User(body.getId(), body.getName(), email, password, new Date(), new Date());
         userDBService.open();
         try {
             if (!userDBService.exists(user.getId())) {
@@ -200,13 +203,17 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             userDBService.close();
             return;
         }
+        User savedUser = userDBService.get(response.body().getId());
         userDBService.close();
+        if (savedUser == null) {
+            throw new IllegalArgumentException("user was not saved");
+        }
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(AUTH_USER_ID_KEY, user.getId());
+        editor.putInt(AUTH_USER_ID_KEY, savedUser.getId());
         editor.putString(JWT_TOKEN_KEY, body.getJwtToken());
         editor.apply();
         if (viewLayoutCreated) {
-            view.createUserComponent(user);
+            view.createUserComponent(savedUser);
             view.showLoginSuccessful();
         }
     }
@@ -217,15 +224,17 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
      * @param response server response
      */
     private void authenticationFailed(okhttp3.Response response) {
-        Gson gson = new Gson();
-        try {
-            AuthenticationFailedResponse error = gson.fromJson(response.body().string(),
-                    AuthenticationFailedResponse.class);
-            view.showLoginFailed(error.getErrors());
-        } catch (IOException | JsonSyntaxException exp) {
-            exp.printStackTrace();
-            view.showLoginFailed();
-            view.showInternalServerError();
+        if (response != null) {
+            Gson gson = new Gson();
+            try {
+                AuthenticationFailedResponse error = gson.fromJson(response.body().string(),
+                        AuthenticationFailedResponse.class);
+                view.showLoginFailed(error.getErrors());
+            } catch (IOException | JsonSyntaxException exp) {
+                exp.printStackTrace();
+                view.showLoginFailed();
+                view.showInternalServerError();
+            }
         }
     }
 }
