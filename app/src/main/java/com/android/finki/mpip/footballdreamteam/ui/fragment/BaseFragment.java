@@ -59,4 +59,14 @@ public class BaseFragment extends Fragment implements BaseView {
             ((BaseView) this.getActivity()).showNoInternetConnection();
         }
     }
+
+    /**
+     * Base listener user for communication with the activities.
+     */
+    public static interface Listener {
+
+        void onFragmentActive();
+
+        void changeTitle(String title);
+    }
 }

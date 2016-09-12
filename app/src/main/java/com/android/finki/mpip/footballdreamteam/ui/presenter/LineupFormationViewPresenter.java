@@ -62,6 +62,7 @@ public class LineupFormationViewPresenter {
      * @param args view arguments
      */
     public void onViewCreated(Bundle args) {
+        logger.info("onViewCreated");
         if (args == null) {
             throw new IllegalArgumentException("bundle argument can't be null");
         }
@@ -92,8 +93,15 @@ public class LineupFormationViewPresenter {
      * Called when the view layout is created.
      */
     public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
         view.bindPlayers();
+        List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
+        if (validator.validate(lineupPlayers)) {
+            view.showValidLineup();
+        } else {
+            view.showInvalidLineup();
+        }
     }
 
     /**
@@ -176,7 +184,7 @@ public class LineupFormationViewPresenter {
         List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
         if (viewLayoutCreated) {
             if (validator.validate(lineupPlayers)) {
-                view.showInvalidLineup();
+                view.showValidLineup();
             } else {
                 view.showInvalidLineup();
             }

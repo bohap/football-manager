@@ -18,7 +18,6 @@ import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.ui.adapter.LikesAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.component.LikeView;
-import com.android.finki.mpip.footballdreamteam.ui.listener.ActivityTitleSetterListener;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeViewPresenter;
 
 import org.slf4j.Logger;
@@ -121,6 +120,9 @@ public class LikeFragment extends BaseFragment implements LikeView {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
+        if (this.getActivity() instanceof Listener) {
+            ((Listener) this.getActivity()).onFragmentActive();
+        }
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new LikeViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
@@ -142,8 +144,8 @@ public class LikeFragment extends BaseFragment implements LikeView {
         View view = inflater.inflate(R.layout.like_layout, container, false);
         unbinder = ButterKnife.bind(this, view);
         presenter.onViewLayoutCreated();
-        if (this.getActivity() instanceof ActivityTitleSetterListener) {
-            ((ActivityTitleSetterListener) this.getActivity()).setTitle(title);
+        if (this.getActivity() instanceof Listener) {
+            ((Listener) this.getActivity()).changeTitle(title);
         }
         return view;
     }

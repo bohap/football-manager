@@ -96,6 +96,9 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
     public void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
+        if (this.getActivity() instanceof BaseFragment.Listener) {
+            ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
+        }
         ((MainApplication) this.getActivity().getApplication()).getUserComponent()
                 .plus(new ListPositionPlayersViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());

@@ -183,7 +183,7 @@ public class LineupPlayerDBService {
      */
     public LineupPlayer update(LineupPlayer lineupPlayer) {
         if (! this.exists(lineupPlayer)) {
-            String message = String.format("can't update, lineupPlayer with " +
+            String message = String.format("can't onUpdateSuccess, lineupPlayer with " +
                             "lineup id %d and player id %d don't exists", lineupPlayer.getLineupId(),
                     lineupPlayer.getPlayerId());
             logger.error(message);
@@ -259,7 +259,7 @@ public class LineupPlayerDBService {
      * Update the data about the lineup players.
      *
      * @param lineupPlayers List of players in the lineup
-     * @return whatever the update is successful
+     * @return whatever the onUpdateSuccess is successful
      */
     private boolean updatePlayers(List<LineupPlayer> lineupPlayers) {
         for (LineupPlayer lineupPlayer : lineupPlayers) {

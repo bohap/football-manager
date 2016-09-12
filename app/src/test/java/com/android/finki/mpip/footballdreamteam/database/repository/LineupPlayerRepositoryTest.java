@@ -255,7 +255,7 @@ public class LineupPlayerRepositoryTest {
     }
 
     /**
-     * Test that the update method will update the existing player in the lineup.
+     * Test that the onUpdateSuccess method will onUpdateSuccess the existing player in the lineup.
      */
     @Test
     public void testUpdate() {
@@ -272,7 +272,7 @@ public class LineupPlayerRepositoryTest {
     }
 
     /**
-     * Test that the update method will return false when updating the record
+     * Test that the onUpdateSuccess method will return false when updating the record
      * in the database failed.
      */
     @Test

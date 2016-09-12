@@ -176,7 +176,7 @@ public class UserRepositoryTest {
     }
 
     /**
-     * Test that the update method update the user data in the database.
+     * Test that the onUpdateSuccess method onUpdateSuccess the user data in the database.
      */
     @Test
     public void testUpdate() {
@@ -191,7 +191,7 @@ public class UserRepositoryTest {
     }
 
     /**
-     * Test that update method returns false when updating the record in the database failed.
+     * Test that onUpdateSuccess method returns false when updating the record in the database failed.
      */
     @Test
     public void testFailedUpdate() {

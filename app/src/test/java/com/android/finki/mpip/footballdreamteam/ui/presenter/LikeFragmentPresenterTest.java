@@ -525,7 +525,7 @@ public class LikeFragmentPresenterTest {
     }
 
     /**
-     * Test the behavior when remove like is called and the user didn't liked the lineup.
+     * Test the behavior when onRemoveSuccess like is called and the user didn't liked the lineup.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveLikeWhenTheUserDidNotLikedTheLineup() {

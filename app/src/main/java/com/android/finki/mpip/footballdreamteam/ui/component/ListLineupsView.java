@@ -14,4 +14,10 @@ public interface ListLineupsView extends BaseView {
     void showLoadingSuccess(List<Lineup> lineups);
 
     void showLoadingFailed();
+
+    void showNoMoreLineups();
+
+    void showLineupDeletingSuccess(Lineup lineup);
+
+    void showLineupDeletingFailed(Lineup lineup);
 }

@@ -169,7 +169,7 @@ public class LineupRepositoryTest {
     }
 
     /**
-     * Test that update method will successfully update a lineup in the database.
+     * Test that onUpdateSuccess method will successfully onUpdateSuccess a lineup in the database.
      */
     @Test
     public void testUpdate() {
@@ -185,7 +185,7 @@ public class LineupRepositoryTest {
     }
 
     /**
-     * Test that the update method will return false when updating
+     * Test that the onUpdateSuccess method will return false when updating
      * the record in the database failed.
      */
     @Test

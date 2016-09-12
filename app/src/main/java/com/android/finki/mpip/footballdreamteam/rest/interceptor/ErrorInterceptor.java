@@ -26,7 +26,7 @@ public class ErrorInterceptor implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
         int code = response.code();
-        if (code != 200 && code >= 400 && code <= 500) {
+        if (code >= 400 && code <= 500) {
             switch (code) {
                 case 401:
                     throw new NotAuthenticatedException(response);

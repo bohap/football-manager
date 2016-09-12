@@ -157,7 +157,7 @@ public class LikeAdapterTest {
     }
 
     /**
-     * Test that removeLike method remove a item from the adapter.
+     * Test that removeLike method onRemoveSuccess a item from the adapter.
      */
     @Test
     public void testRemoveLike() {

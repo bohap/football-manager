@@ -21,8 +21,7 @@
             <FrameLayout
                 android:id="@+id/content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/field" />
+                android:layout_height="match_parent" />
             <com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome
                 android:id="@+id/createLineupLayout_btnChangeFormation"
                 android:minWidth="0dp"

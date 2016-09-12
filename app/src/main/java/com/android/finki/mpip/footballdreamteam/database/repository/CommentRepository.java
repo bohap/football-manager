@@ -150,7 +150,7 @@ public class CommentRepository extends BaseRepository<Comment, Integer> {
      * Update a existing comment.
      *
      * @param comment Comment to be setChanged
-     * @return result of the update operation
+     * @return result of the onUpdateSuccess operation
      */
     public boolean update(Comment comment) {
         return super.update(this.putValues(comment), comment);

@@ -19,12 +19,14 @@ import com.android.finki.mpip.footballdreamteam.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnFocusChange;
+import butterknife.OnTextChanged;
 
 /**
  * Created by Borce on 05.09.2016.
@@ -34,15 +36,19 @@ public class CommentsAdapter extends BaseAdapter {
     private static final Logger logger = LoggerFactory.getLogger(CommentsAdapter.class);
     private Context context;
     private List<Comment> comments;
+    private Map<Integer, Item> items;
     private User user;
     private Listener listener;
-    private int selectedPosition = -1;
 
     public CommentsAdapter(Context context, List<Comment> comments, User user, Listener listener) {
         this.context = context;
         this.comments = comments;
         this.user = user;
         this.listener = listener;
+        items = new HashMap<>();
+        for (Comment comment : comments) {
+            items.put(comment.getId(), new Item());
+        }
     }
 
     /**
@@ -91,94 +97,89 @@ public class CommentsAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        logger.info("Get view CommentsAdapter");
         ViewHolder holder;
-        boolean viewNull = false;
         if (view == null) {
-            viewNull = true;
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.comments_list_item, viewGroup, false);
-            holder = new ViewHolder(view, i);
+            holder = new ViewHolder(view);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        Comment comment = comments.get(i);
-        if (comment.getUser() != null) {
-            holder.user.setText(comment.getUser().getName());
-        }
-        holder.body.setText(comment.getBody());
-        holder.txtBody.setText(comment.getBody());
-        int commentUserId = comment.getUserId();
-        if (commentUserId == 0 && comment.getUser() != null) {
-            commentUserId = comment.getUser().getId();
-        }
-        boolean canEdit = commentUserId == user.getId();
-        /**
-         * When the keyboard is showed android redraws the list view by calling on every
-         * item getView method, so we check if the view is null and if that is true we
-         * show the buttons.
-         */
-        if (canEdit && viewNull) {
-            holder.btnEdit.setVisibility(View.VISIBLE);
-            holder.btnRemove.setVisibility(View.VISIBLE);
-        }
+        holder.setPosition(i);
         return view;
     }
 
     /**
-     * Get the position of the selected comment.
+     * Add a new comment in the adapter.
      *
-     * @return position of the selected comment
+     * @param comment new comment
      */
-    public int getSelectedPosition() {
-        if (selectedPosition == -1) {
-            throw new IllegalArgumentException("selected position is not yet set");
-        }
-        return selectedPosition;
-    }
-
-    /**
-     * Called when a request has been send to aether update or delete comment.
-     *
-     * @param view comment view
-     */
-    public void showCommentUpdating(View view) {
-        if (view == null || !(view.getTag() instanceof ViewHolder)) {
-            return;
-        }
-        ((ViewHolder) view.getTag()).onCommentUpdating();
-    }
-
-    /**
-     * Called when the request to update or delete comment responded either successfully or not.
-     *
-     * @param view comment view
-     */
-    public void showCommentUpdatingDone(View view) {
-        if (view == null || !(view.getTag() instanceof ViewHolder)) {
-            return;
-        }
-        ((ViewHolder) view.getTag()).onCommentUpdatingDone();
-    }
-
-    /**
-     * Remove the comment at the selected position.
-     */
-    public void removeComment() {
-        comments.remove(selectedPosition);
-        selectedPosition = -1;
+    public void add(Comment comment) {
+        logger.info(String.format("add comment, id %d", comment.getId()));
+        comments.add(0, comment);
+        items.put(comment.getId(), new Item());
         super.notifyDataSetChanged();
     }
 
-    public void addComment() {
-        //TODO
+    /**
+     * Called when updating the comment value is successful.
+     *
+     * @param comment comment that was updating
+     * @param newComment new comment value
+     */
+    public void onUpdateSuccess(Comment comment, Comment newComment) {
+        logger.info(String.format("onUpdateSuccess comment, id %d", comment.getId()));
+        comments.set(comments.indexOf(comment), newComment);
+        items.get(comment.getId()).setEditing(false);
+        items.get(comment.getId()).setSending(false);
+        super.notifyDataSetChanged();
     }
 
+    /**
+     * Called when updating the comment failed.
+     *
+     * @param comment comment that was updating
+     */
+    public void onUpdateFailed(Comment comment) {
+        logger.info(String.format("onUpdateFailed comment, id %d", comment.getId()));
+        items.get(comment.getId()).setEditing(true);
+        items.get(comment.getId()).setSending(false);
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * Called when removing the comment is successful .
+     *
+     * @param comment comment that was removing
+     */
+    public void onRemoveSuccess(Comment comment) {
+        logger.info(String.format("onRemoveSuccess comment, id %d", comment.getId()));
+        comments.remove(comment);
+        items.remove(comment.getId());
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * Called when removing the comment failed.
+     *
+     * @param comment comment that was removing
+     */
+    public void onRemoveFailed(Comment comment) {
+        logger.info(String.format("onRemoveFailed comment, id %d", comment.getId()));
+        items.get(comment.getId()).setEditing(false);
+        items.get(comment.getId()).setSending(false);
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * ViewHolder class for the adapter.
+     */
     public class ViewHolder {
 
         private int position;
+        private Comment comment;
 
         @BindView(R.id.commentListItem_content)
         RelativeLayout content;
@@ -187,7 +188,7 @@ public class CommentsAdapter extends BaseAdapter {
         LinearLayout spinner;
 
         @BindView(R.id.commentListItem_user)
-        TextView user;
+        TextView txtUser;
 
         @BindView(R.id.commentListItem_body)
         TextView body;
@@ -207,9 +208,66 @@ public class CommentsAdapter extends BaseAdapter {
         @BindView(R.id.commentListItem_btnRemove)
         Button btnRemove;
 
-        public ViewHolder(View view, int position) {
+        public ViewHolder(View view) {
             ButterKnife.bind(this, view);
+        }
+
+        /**
+         * Set the holder position in the list.
+         *
+         * @param position holder position
+         */
+        public void setPosition(int position) {
             this.position = position;
+            this.comment = comments.get(position);
+            if (comment.getUser() != null) {
+                this.txtUser.setText(comment.getUser().getName());
+            }
+            this.body.setText(comment.getBody());
+            String editedBody = items.get(comment.getId()).getEditedBody();
+            this.txtBody.setText(editedBody != null ? editedBody : comment.getBody());
+            this.showEditing(items.get(comment.getId()).isEditing());
+            this.showRequestSending(items.get(comment.getId()).isSending());
+        }
+
+        /**
+         * Show the views when the comment is editing.
+         *
+         * @param editing whatever the comment is editing or not
+         */
+        private void showEditing(boolean editing) {
+            int commentUserId = comment.getUserId();
+            if (commentUserId == 0 && comment.getUser() != null) {
+                commentUserId = comment.getUser().getId();
+            }
+            boolean canEdit = commentUserId == user.getId();
+            body.setVisibility(editing ? View.GONE : View.VISIBLE);
+            txtBody.setVisibility(editing ? View.VISIBLE : View.GONE);
+            boolean equalBody = txtBody.getText().toString().equals(comment.getBody());
+            btnUpdate.setVisibility(editing && !equalBody ? View.VISIBLE : View.GONE);
+            btnUpdateCancel.setVisibility(editing ? View.VISIBLE : View.GONE);
+            btnEdit.setVisibility(editing ? View.GONE : View.VISIBLE);
+            btnRemove.setVisibility(editing ? View.GONE : View.VISIBLE);
+            if (!canEdit) {
+                btnEdit.setVisibility(View.GONE);
+                btnRemove.setVisibility(View.GONE);
+            }
+            if (!editing) {
+                ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(txtBody.getWindowToken(), 0);
+            }
+        }
+
+        /**
+         * Show the views when a request is sending for the comment.
+         *
+         * @param sending whatever the request is sending for the comment or not
+         */
+        private void showRequestSending(boolean sending) {
+            spinner.setVisibility(sending ? View.VISIBLE : View.GONE);
+            content.setVisibility(sending ? View.GONE : View.VISIBLE);
+            ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .hideSoftInputFromWindow(txtBody.getWindowToken(), 0);
         }
 
         /**
@@ -217,6 +275,7 @@ public class CommentsAdapter extends BaseAdapter {
          */
         @OnClick(R.id.commentListItem_body)
         void onBodyClick() {
+            logger.info(String.format("onBodyClick, position %d", position));
             if (body.getLineCount() > 2) {
                 body.setMaxLines(2);
             } else {
@@ -229,43 +288,34 @@ public class CommentsAdapter extends BaseAdapter {
          */
         @OnClick(R.id.commentListItem_btnEdit)
         void onBtnEditClick() {
-            CommentsAdapter.this.selectedPosition = position;
-            body.setVisibility(View.GONE);
-            txtBody.setVisibility(View.VISIBLE);
-            txtBody.requestFocus();
-            btnUpdate.setVisibility(View.VISIBLE);
-            btnUpdateCancel.setVisibility(View.VISIBLE);
-            btnEdit.setVisibility(View.GONE);
-            btnRemove.setVisibility(View.GONE);
+            logger.info(String.format("onBtnEditClick, position %d", position));
+            items.get(comment.getId()).setEditing(true);
+            this.showEditing(true);
         }
 
         /**
-         * Called when EditText body focus has been changed.
+         * Handle changing the content on the body edit text.
          */
-        @OnFocusChange(R.id.commentListItem_txtBody)
-        public void onTxtBodyFocusChange() {
-            btnUpdate.setVisibility(View.VISIBLE);
-            btnUpdateCancel.setVisibility(View.VISIBLE);
-            btnEdit.setVisibility(View.GONE);
-            btnRemove.setVisibility(View.GONE);
+        @OnTextChanged(R.id.commentListItem_txtBody)
+        void onTxtBodyChanged() {
+            String content = txtBody.getText().toString();
+            if (content.equals(comment.getBody())) {
+                btnUpdate.setVisibility(View.GONE);
+                items.get(comment.getId()).setEditedBody(null);
+            } else {
+                btnUpdate.setVisibility(View.VISIBLE);
+                items.get(comment.getId()).setEditedBody(content);
+            }
         }
 
         /**
-         * Handle click on the button for canceling update.
+         * Handle click on the button for canceling onUpdateSuccess.
          */
         @OnClick(R.id.commentListItem_btnCancelUpdate)
         void onBtnCancelUpdateClick() {
-            CommentsAdapter.this.selectedPosition = -1;
-            body.setVisibility(View.VISIBLE);
-            txtBody.setVisibility(View.GONE);
-            /* Hide the keyboard */
-            InputMethodManager imm = (InputMethodManager)context
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(txtBody.getWindowToken(), 0);
-            btnUpdate.setVisibility(View.GONE);
-            btnUpdateCancel.setVisibility(View.GONE);
-            btnEdit.setVisibility(View.VISIBLE);
-            btnRemove.setVisibility(View.VISIBLE);
+            logger.info(String.format("onBtnCancelUpdateClick, position %d", position));
+            items.get(comment.getId()).setEditing(false);
+            this.showEditing(false);
         }
 
         /**
@@ -273,7 +323,12 @@ public class CommentsAdapter extends BaseAdapter {
          */
         @OnClick(R.id.commentListItem_btnUpdate)
         void onBtnUpdateClick() {
-            CommentsAdapter.this.listener.updateComment();
+            logger.info(String.format("onBtnUpdateClick, position %d", position));
+            items.get(comment.getId()).setEditing(false);
+            items.get(comment.getId()).setSending(true);
+            listener.updateComment(position, txtBody.getText().toString());
+            this.showEditing(false);
+            this.showRequestSending(true);
         }
 
         /**
@@ -281,38 +336,55 @@ public class CommentsAdapter extends BaseAdapter {
          */
         @OnClick(R.id.commentListItem_btnRemove)
         void onBtnRemoveClick() {
-            CommentsAdapter.this.selectedPosition = position;
-            CommentsAdapter.this.listener.deleteComment();
-        }
-
-        /**
-         * Called when the comment is updating.
-         */
-        public void onCommentUpdating() {
-            spinner.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-        }
-
-        /**
-         * Called when the comment updating is done.
-         */
-        public void onCommentUpdatingDone() {
-            CommentsAdapter.this.selectedPosition = -1;
-            spinner.setVisibility(View.VISIBLE);
-            content.setVisibility(View.GONE);
-            body.setVisibility(View.VISIBLE);
-            txtBody.setVisibility(View.VISIBLE);
-            btnUpdate.setVisibility(View.GONE);
-            btnUpdateCancel.setVisibility(View.GONE);
-            btnEdit.setVisibility(View.VISIBLE);
-            btnRemove.setVisibility(View.VISIBLE);
+            logger.info(String.format("onBtnRemoveClick, positions %d", position));
+            items.get(comment.getId()).setSending(true);
+            listener.deleteComment(position);
+            this.showRequestSending(true);
         }
     }
 
+    /**
+     * Wrapper class for each comment holding information about if the comment
+     * is editing, updating or none at the moment.
+     */
+    private class Item {
+
+        boolean editing = false;
+        boolean sending = false;
+        private String editedBody = null;
+
+        public void setEditing(boolean editing) {
+            this.editing = editing;
+        }
+
+        public boolean isEditing() {
+            return editing;
+        }
+
+        public void setSending(boolean sending) {
+            this.sending = sending;
+        }
+
+        public boolean isSending() {
+            return sending;
+        }
+
+        public void setEditedBody(String editedBody) {
+            this.editedBody = editedBody;
+        }
+
+        public String getEditedBody() {
+            return editedBody;
+        }
+    }
+
+    /**
+     * Listener class used for communication with the view using the adapter.
+     */
     public interface Listener {
 
-        void updateComment();
+        void updateComment(int position, String newBOdy);
 
-        void deleteComment();
+        void deleteComment(int position);
     }
 }

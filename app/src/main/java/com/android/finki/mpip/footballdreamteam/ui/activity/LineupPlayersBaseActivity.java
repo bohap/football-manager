@@ -83,7 +83,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(playersList);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
         LineupFormationFragment fragment = LineupFormationFragment.newInstance(formation, players);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
                 .newInstance(place, playersToExclude);
         transaction.addToBackStack(LineupFormationFragment.TAG);
         transaction.replace(R.id.content, fragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
         this.toggleBtnChangeFormation(false);
     }
 

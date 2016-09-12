@@ -113,7 +113,7 @@ public class ListLineupsAdapterTest {
     }
 
     /**
-     * Test the update method will the merge the current list with the given one.
+     * Test the onUpdateSuccess method will the merge the current list with the given one.
      */
     @Test
     public void testUpdate() {
@@ -140,7 +140,7 @@ public class ListLineupsAdapterTest {
         TextView txtUser = (TextView) view.findViewById(R.id.lineupsItem_user);
         assertNotNull(txtUser);
         assertEquals("by " + lineup1.getUser().getName(), txtUser.getText());
-        TextView txtUpdatedAt = (TextView) view.findViewById(R.id.lineups_item_updated_at_text);
+        TextView txtUpdatedAt = (TextView) view.findViewById(R.id.lineupsItem_updatedAt_text);
         assertNotNull(txtUpdatedAt);
         assertEquals(sDate, txtUpdatedAt.getText());
     }

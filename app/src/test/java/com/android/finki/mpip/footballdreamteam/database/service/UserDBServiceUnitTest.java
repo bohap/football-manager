@@ -140,7 +140,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null param.
+     * Test the behavior on onUpdateSuccess method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNull() {
@@ -153,7 +153,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null name.
+     * Test the behavior on onUpdateSuccess method called with null name.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNullName() {
@@ -161,7 +161,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with null email.
+     * Test the behavior on onUpdateSuccess method called with null email.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNullEmail() {
@@ -169,7 +169,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method called with un existing id.
+     * Test the behavior on onUpdateSuccess method called with un existing id.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnExistingId() {
@@ -178,7 +178,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on update method when updating the record on the database failed.
+     * Test the behavior on onUpdateSuccess method when updating the record on the database failed.
      */
     @Test(expected = UserException.class)
     public void testFailedUpdate() {

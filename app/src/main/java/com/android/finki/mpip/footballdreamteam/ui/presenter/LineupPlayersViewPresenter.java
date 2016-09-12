@@ -123,6 +123,15 @@ public class LineupPlayersViewPresenter extends BasePresenter {
     }
 
     /**
+     * Get the lineup for the players.
+     *
+     * @return players lineup
+     */
+    public Lineup getLineup() {
+        return lineup;
+    }
+
+    /**
      * Check if the authenticated user can edit the lineup.
      *
      * @return whatever the user can edit the lineup
@@ -239,21 +248,21 @@ public class LineupPlayersViewPresenter extends BasePresenter {
     }
 
     /**
-     * Send a request to update the lineup players.
+     * Send a request to onUpdateSuccess the lineup players.
      */
     public void update() {
         if (this.lineup == null) {
             throw new IllegalArgumentException("lineup data is not yet sey");
         }
         if (!this.changed) {
-            throw new IllegalArgumentException("update called but data was not changed");
+            throw new IllegalArgumentException("onUpdateSuccess called but data was not changed");
         }
         final List<LineupPlayer> lineupPlayers = view.getLineupPlayers();
         if (!validator.validate(lineupPlayers)) {
             throw new IllegalArgumentException("lineup players are not valid");
         }
         if (!updateRequestSending) {
-            logger.info("sending lineup update request");
+            logger.info("sending lineup onUpdateSuccess request");
             updateRequestSending = true;
             if (viewLayoutCreated) {
                 view.showUpdating();
@@ -299,7 +308,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
      * @param lineupPlayers players in the lineup
      */
     private void onUpdateSuccess(List<LineupPlayer> lineupPlayers) {
-        logger.info("lineup update request success");
+        logger.info("lineup onUpdateSuccess request success");
         updateRequestSending = false;
         changed = false;
         lineupUpdateFailed = false;
@@ -358,11 +367,11 @@ public class LineupPlayersViewPresenter extends BasePresenter {
      * @param t    exception that has been thrown
      */
     private void onUpdateFailed(Call<LineupResponse> call, Throwable t) {
-        logger.info("lineup update request failed");
+        logger.info("lineup onUpdateSuccess request failed");
         lineupUpdateFailed = true;
         updateRequestSending = false;
         if (call.isCanceled()) {
-            logger.info("lineup update call canceled");
+            logger.info("lineup onUpdateSuccess call canceled");
         } else {
             t.printStackTrace();
             if (viewLayoutCreated) {

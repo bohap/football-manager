@@ -230,7 +230,7 @@ public class PlayerRepositoryTest {
     }
 
     /**
-     * Test that the update method will update the player data.
+     * Test that the onUpdateSuccess method will onUpdateSuccess the player data.
      */
     @Test
     public void testUpdate() {
@@ -245,7 +245,7 @@ public class PlayerRepositoryTest {
     }
 
     /**
-     * Test that update method will return false when updating the record in the database failed.
+     * Test that onUpdateSuccess method will return false when updating the record in the database failed.
      */
     @Test
     public void testFailedUpdate() {

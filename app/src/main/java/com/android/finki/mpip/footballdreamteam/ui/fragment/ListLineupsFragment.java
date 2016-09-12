@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
@@ -67,6 +67,12 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     @BindView(R.id.listLineupsLayout_listVIew)
     ListView listView;
 
+    @BindString(R.string.listLineupLayout_deletingSuccess_text)
+    String deletingSuccessText;
+
+    @BindString(R.string.listLineupLayout_deletingFailed_text)
+    String deletingFailedText;
+
     private ListLineupsAdapter adapter;
     private LineupsListViewFooterHolder listViewFooterHolder;
 
@@ -108,7 +114,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         View footer = inflater.inflate(R.layout.lineups_footer, null);
         listView.addFooterView(footer);
         listViewFooterHolder = new LineupsListViewFooterHolder(footer);
-        adapter = new ListLineupsAdapter(this.getActivity(), this);
+        adapter = new ListLineupsAdapter(this.getActivity(), presenter.getUser(), this);
         listView.setAdapter(adapter);
         adapter.update(presenter.getLineups());
         return view;
@@ -232,6 +238,50 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     }
 
     /**
+     * Called when there are not more lineups to be loaded.
+     */
+    @Override
+    public void showNoMoreLineups() {
+        logger.info("showNoMoreLineups");
+        listViewFooterHolder.hideBtnLoadMore();
+    }
+
+    /**
+     * Called when the Delete button has been click for the lineup.
+     *
+     * @param lineup selected lineup
+     */
+    @Override
+    public void onBtnDeleteClick(Lineup lineup) {
+        logger.info("onBtnDeleteClick");
+        presenter.deleteLineup(lineup);
+    }
+
+    /**
+     * Called when deleting the lineup is successful.
+     *
+     * @param lineup deleted lineup
+     */
+    @Override
+    public void showLineupDeletingSuccess(Lineup lineup) {
+        logger.info("showLineupDeletingSuccess");
+        Toast.makeText(this.getActivity(), deletingSuccessText, Toast.LENGTH_SHORT).show();
+        adapter.delete(lineup);
+    }
+
+    /**
+     * Called when deleting the lineup failed.
+     *
+     * @param lineup failed deleted lineup
+     */
+    @Override
+    public void showLineupDeletingFailed(Lineup lineup) {
+        logger.info("showLineupDeletingFailed");
+        Toast.makeText(this.getActivity(), deletingFailedText, Toast.LENGTH_SHORT).show();
+        adapter.onDeletingFailed(lineup);
+    }
+
+    /**
      * Class holder for the lineups list view footer.
      */
     class LineupsListViewFooterHolder {
@@ -242,6 +292,9 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
          */
         @BindView(R.id.lineupsListVIew_spinnerLoadMore)
         ProgressBar lineupsListViewSpinner;
+
+        @BindView(R.id.lineupsListView_btnLoadMore)
+        RelativeLayout btnLoadMore;
 
         LineupsListViewFooterHolder(View view) {
             ButterKnife.bind(this, view);
@@ -255,6 +308,14 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
             logger.info("btn 'Load More' clicked");
             lineupsListViewSpinner.setVisibility(View.VISIBLE);
             presenter.loadMoreLineups();
+        }
+
+
+        /**
+         * Hide the load more button.
+         */
+        public void hideBtnLoadMore() {
+            btnLoadMore.setVisibility(View.GONE);
         }
     }
 
