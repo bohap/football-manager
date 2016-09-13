@@ -22,7 +22,7 @@ Android application that enables making football dream team. User that want to u
 - [x] Updating lineup players
 - [x] Creating new lineup
 - [x] Deleting existing lineup
-- [ ] Background servide to load and notify the user about the latest likes and comments on his latest lineup
+- [ ] Background service to load and notify the user about the latest likes and comments on his latest lineup
 
 ### Collaborating:
 ---
