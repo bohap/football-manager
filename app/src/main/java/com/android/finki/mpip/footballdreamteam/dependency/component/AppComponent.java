@@ -8,7 +8,9 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.AuthModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.NetModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginViewModule;
+import com.android.finki.mpip.footballdreamteam.dependency.module.ui.RegisterViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashViewModule;
+import com.android.finki.mpip.footballdreamteam.ui.component.RegisterView;
 
 import javax.inject.Singleton;
 
@@ -26,6 +28,8 @@ public interface AppComponent {
     SplashViewComponent plus(SplashViewModule module);
 
     LoginViewComponent plus(LoginViewModule module);
+
+    RegisterViewComponent plus(RegisterViewModule module);
 
     UserComponent plus(UserModule module);
 }

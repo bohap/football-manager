@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.rest.utils;
 
+import com.android.finki.mpip.footballdreamteam.exception.UnProcessableEntityException;
 import com.android.finki.mpip.footballdreamteam.exception.InternalServerErrorException;
 import com.android.finki.mpip.footballdreamteam.exception.NotAuthenticatedException;
 
@@ -35,6 +36,8 @@ public class ErrorInterceptor implements Interceptor {
             switch (code) {
                 case 401:
                     throw new NotAuthenticatedException(response);
+                case 422:
+                    throw new UnProcessableEntityException(response);
                 case 500:
                     throw new InternalServerErrorException(response);
                 default:

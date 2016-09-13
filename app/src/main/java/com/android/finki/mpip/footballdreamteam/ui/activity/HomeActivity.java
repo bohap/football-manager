@@ -49,7 +49,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
 
     private HomeViewPresenter presenter;
 
-    @BindString(R.string.homeActivity_title)
+    @BindString(R.string.homeLayout_title)
     String title;
 
     @BindString(R.string.sidebarOpen_title)

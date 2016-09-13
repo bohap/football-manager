@@ -23,6 +23,7 @@ public class PlayerDBService {
     private PlayerRepository repository;
     private TeamDBService teamDBService;
     private PositionDBService positionDBService;
+    private int connections = 0;
 
     public PlayerDBService(PlayerRepository repository, TeamDBService teamDBService,
                            PositionDBService positionDBService) {
@@ -35,8 +36,12 @@ public class PlayerDBService {
      * Open a new connection to the database.
      */
     public void open() {
-        if (! repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (!repository.isOpen()) {
+                repository.open();
+            }
         }
         teamDBService.open();
         positionDBService.open();
@@ -46,8 +51,14 @@ public class PlayerDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
         teamDBService.close();
         positionDBService.close();

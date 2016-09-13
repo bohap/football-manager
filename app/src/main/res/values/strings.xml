@@ -54,20 +54,45 @@
         is started for the first time, so this may take a minute. Please be patient.
     </string>
     <!--LoginActivity-->
-    <string name="loginActivity_title">Login</string>
-    <string name="loginActivity_emailEditText_hint">Email</string>
-    <string name="loginActivity_email_EditText_requiredErrorMessage">
+    <string name="loginLayout_title">Login</string>
+    <string name="loginLayout_txtEmail_hint">Email</string>
+    <string name="loginLayout_txtEmail_requiredErrorMessage">
         The email field is required
     </string>
-    <string name="loginActivity_emailEditText_invalidErrorMessage">The email is invalid</string>
-    <string name="loginActivity_passwordEditText_hint">Password</string>
-    <string name="loginActivity_passwordEditText_requiredErrorMessage">
+    <string name="loginLayout_txtEmail_invalidErrorMessage">The email is invalid</string>
+    <string name="loginLayout_txtPassword_hint">Password</string>
+    <string name="loginLayout_txtPassword_requiredErrorMessage">
         The password field is required
     </string>
-    <string name="loginActivity_loginBtnText">Login</string>
-    <string name="loginActivity_registerBtnText">Register</string>
+    <string name="loginLayout_btnLogin">Login</string>
+    <string name="loginLayout_btnRegister">Register</string>
+    <!--Register Activity-->
+    <string name="registerLayout_title">Register</string>
+    <string name="registerLayout_txtName_hint">Name</string>
+    <string name="registerLayout_txtName_requiredErrorMessage">
+        The name field is required.
+    </string>
+    <string name="registerLayout_txtEmail_hint">Email</string>
+    <string name="registerLayout_txtEmail_requiredErrorMessage">
+        The email field is required.
+    </string>
+    <string name="registerLayout_txtEmail_invalidErrorMessage">
+        The email is invalid.
+    </string>
+    <string name="registerLayout_txtPassword_hint">Password</string>
+    <string name="registerLayout_txtPassword_requiredErrorMessage">
+        The password field is required.
+    </string>
+    <string name="registerLayout_txtRepeatPassword_hint">Repeat Password</string>
+    <string name="registerLayout_txtRepeatPassword_requiredErrorMessage">
+        The repeat password field is required.
+    </string>
+    <string name="registerLayout_txtRepeatPassword_notMatchErrorMessage">
+        The passwords don\'t match.
+    </string>
+    <string name="registerLayout_btnRegister">Register</string>
     <!--Home Activity-->
-    <string name="homeActivity_title">Home</string>
+    <string name="homeLayout_title">Home</string>
     <string name="homeLayout_spinnerTeamsLoading_text">Loading teams…</string>
     <string name="homeLayout_teamsLoadingFailed_text">
         Error occurred while loading the teams.

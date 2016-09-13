@@ -4,13 +4,13 @@ Android application that enables making football dream team. User that want to u
 
 ### Extra technologies used:
 ---
-* Retrofit 3 for making REST calls simpler
+* Retrofit 2 for making REST calls simpler
 * Dagger 2 for DI
-* Robolectric 2 for Unit testing the app
+* Robolectric 3 for Unit testing the app
 
 ### To be implemented:
 ---
-- [ ] User registration
+- [x] User registration
 - [x] User authentication using JWT tokens
 - [x] Loading teams, positions and players data and saving it into local SQLite database on first launch
 - [x] Listing latest lineups
@@ -19,7 +19,7 @@ Android application that enables making football dream team. User that want to u
 - [x] Displaying lineup comments
 - [x] Adding, updating and removing comments to the lineup
 - [x] Displaying lineup players
-- [x] Updaing lineup players
+- [x] Updating lineup players
 - [x] Creating new lineup
 - [x] Deleting existing lineup
 - [ ] Background servide to load and notify the user about the latest likes and comments on his latest lineup

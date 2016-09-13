@@ -121,7 +121,7 @@ public class HomeActivityTest {
      */
     @Test
     public void testActivityIsCreated() {
-        String title = activity.getString(R.string.homeActivity_title);
+        String title = activity.getString(R.string.homeLayout_title);
         assertNotNull(activity.getSupportActionBar());
         assertEquals(title, activity.getSupportActionBar().getTitle());
         verify(presenter).loadData();

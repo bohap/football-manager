@@ -21,6 +21,7 @@ public class PositionDBService {
 
     private Logger logger = LoggerFactory.getLogger(PositionDBService.class);
     private PositionRepository repository;
+    private int connections = 0;
 
     public PositionDBService(PositionRepository repository) {
         this.repository = repository;
@@ -30,8 +31,12 @@ public class PositionDBService {
      * Open a new connection to the database.
      */
     public void open() {
-        if (! repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (! repository.isOpen()) {
+                repository.open();
+            }
         }
     }
 
@@ -39,8 +44,14 @@ public class PositionDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
     }
 

@@ -35,10 +35,10 @@ public class LoginViewModule {
      */
     @Provides
     @ActivityScope
-    LoginViewPresenter provideLoginActivityPresenter(SharedPreferences preferences,
-                                                     Context context,
-                                                     UserDBService userDBService,
-                                                     AuthApi authApi) {
+    LoginViewPresenter provideLoginViewPresenter(SharedPreferences preferences,
+                                                 Context context,
+                                                 UserDBService userDBService,
+                                                 AuthApi authApi) {
         return new LoginViewPresenter(view, preferences, context, userDBService, authApi);
     }
 }

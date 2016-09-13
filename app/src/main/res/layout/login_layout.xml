@@ -1,71 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/RootView"
     android:orientation="vertical">
-
     <include
         layout="@layout/toolbar" />
-
     <LinearLayout
         style="@style/MainContent"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
         <EditText
-            style="@style/EditText"
             android:id="@+id/loginLayout_txtEmail"
+            style="@style/EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:inputType="textEmailAddress"
-            android:hint="@string/loginActivity_emailEditText_hint" />
+            android:hint="@string/loginLayout_txtEmail_hint" />
         <TextView
             android:id="@+id/loginLayout_email_requiredError"
             style="@style/TextView.Block.Error.Small"
             android:visibility="gone"
-            android:text="@string/loginActivity_email_EditText_requiredErrorMessage"/>
+            android:text="@string/loginLayout_txtEmail_requiredErrorMessage"/>
         <TextView
             android:id="@+id/loginLayout_email_invalidError"
             style="@style/TextView.Block.Error.Small"
             android:visibility="gone"
-            android:text="@string/loginActivity_emailEditText_invalidErrorMessage"/>
+            android:text="@string/loginLayout_txtEmail_invalidErrorMessage"/>
         <EditText
-            style="@style/EditText"
             android:id="@+id/loginLayout_txtPassword"
+            style="@style/EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:inputType="textPassword"
-            android:hint="@string/loginActivity_passwordEditText_hint" />
+            android:hint="@string/loginLayout_txtPassword_hint" />
         <TextView
             android:id="@+id/loginLayout_password_requiredError"
             style="@style/TextView.Block.Error.Small"
             android:visibility="gone"
-            android:text="@string/loginActivity_passwordEditText_requiredErrorMessage"/>
-        <RelativeLayout
-            style="@style/Button.Block.Primary"
-            android:id="@+id/login_btnLogin"
-            android:clickable="true">
+            android:text="@string/loginLayout_txtPassword_requiredErrorMessage"/>
+        <LinearLayout
+            android:id="@+id/loginLayout_btnLogin"
+            style="@style/Button.Block.Primary">
             <TextView
                 android:id="@+id/loginLayout_btnLoginText"
                 style="@style/TextView.Button.Primary"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
                 android:layout_marginRight="@dimen/base_horizontalMargin"
                 android:layout_marginEnd="@dimen/base_horizontalMargin"
-                android:text="@string/loginActivity_loginBtnText" />
+                android:text="@string/loginLayout_btnLogin" />
             <ProgressBar
                 style="@style/ButtonSpinner"
-                android:id="@+id/login_spinner"
-                android:visibility="gone"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/loginLayout_btnLoginText"
-                android:layout_toEndOf="@id/loginLayout_btnLoginText" />
-        </RelativeLayout>
+                android:id="@+id/loginLayout_spinner"
+                android:visibility="gone" />
+        </LinearLayout>
         <Button
             android:id="@+id/loginLayout_btnRegister"
             style="@style/Button.Block.Primary"
@@ -73,10 +63,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/loginActivity_registerBtnText" />
+            android:text="@string/loginLayout_btnRegister" />
         <LinearLayout
+            android:id="@+id/loginLayout_errorsContainer"
             style="@style/ErrorContainer"
-            android:id="@+id/login_errors"
             android:orientation="vertical"
             android:visibility="gone" />
     </LinearLayout>

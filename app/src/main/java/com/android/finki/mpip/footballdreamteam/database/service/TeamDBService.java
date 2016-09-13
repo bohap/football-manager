@@ -18,6 +18,7 @@ public class TeamDBService {
 
     private Logger logger = LoggerFactory.getLogger(TeamDBService.class);
     private TeamRepository repository;
+    private int connections = 0;
 
     public TeamDBService(TeamRepository repository) {
         this.repository = repository;
@@ -27,8 +28,12 @@ public class TeamDBService {
      * Open a connection to the database.
      */
     public void open() {
-        if (! repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (! repository.isOpen()) {
+                repository.open();
+            }
         }
     }
 
@@ -36,8 +41,14 @@ public class TeamDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
     }
 

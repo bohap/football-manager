@@ -189,6 +189,8 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
         AuthenticateUserResponse body = response.body();
         User user = new User(body.getId(), body.getName(), email, password, new Date(), new Date());
         userDBService.open();
+        userDBService.open();
+        userDBService.close();
         try {
             if (!userDBService.exists(user.getId())) {
                 userDBService.store(user);
@@ -198,8 +200,10 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
         } catch (RuntimeException exp) {
             logger.info("user saving/updating failed");
             exp.printStackTrace();
-            view.showLoginFailed();
-            view.showInternalServerError();
+            if (viewLayoutCreated) {
+                view.showLoginFailed();
+                view.showInternalServerError();
+            }
             userDBService.close();
             return;
         }

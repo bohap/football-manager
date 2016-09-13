@@ -24,6 +24,7 @@ public class LineupPlayerDBService {
     private LineupDBService lineupDBService;
     private PlayerDBService playerDBService;
     private PositionDBService positionDBService;
+    private int connections = 0;
 
     public LineupPlayerDBService(LineupPlayerRepository repository,
                                  LineupDBService lineupDBService,
@@ -39,8 +40,12 @@ public class LineupPlayerDBService {
      * Open a new connection to the database.
      */
     public void open() {
-        if (!repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (!repository.isOpen()) {
+                repository.open();
+            }
         }
         lineupDBService.open();
         playerDBService.open();
@@ -51,8 +56,14 @@ public class LineupPlayerDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
         lineupDBService.close();
         playerDBService.close();

@@ -85,9 +85,9 @@ public class LoginActivityTest {
         passwordErrorRequired = (TextView) activity
                 .findViewById(R.id.loginLayout_password_requiredError);
         assertNotNull(passwordErrorRequired);
-        spinner = (ProgressBar) activity.findViewById(R.id.login_spinner);
+        spinner = (ProgressBar) activity.findViewById(R.id.loginLayout_spinner);
         assertNotNull(spinner);
-        button = (RelativeLayout) activity.findViewById(R.id.login_btnLogin);
+        button = (RelativeLayout) activity.findViewById(R.id.loginLayout_btnLogin);
         assertNotNull(button);
     }
 
@@ -115,7 +115,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testActivityTitleIsSet() {
-        String title = application.getString(R.string.loginActivity_title);
+        String title = application.getString(R.string.loginLayout_title);
         assertNotNull(activity.getSupportActionBar());
         assertEquals(title, activity.getSupportActionBar().getTitle());
     }
@@ -285,7 +285,7 @@ public class LoginActivityTest {
 
         activity.failedLogin(errors);
         assertEquals(View.GONE, spinner.getVisibility());
-        LinearLayout errorsContainer = (LinearLayout) activity.findViewById(R.id.login_errors);
+        LinearLayout errorsContainer = (LinearLayout) activity.findViewById(R.id.loginLayout_errorsContainer);
         assertNotNull(errorsContainer);
         assertEquals(View.VISIBLE, errorsContainer.getVisibility());
         assertEquals(number_of_errors, errorsContainer.getChildCount());

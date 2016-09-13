@@ -20,6 +20,7 @@ public class LikeDBService {
     private LikeRepository repository;
     private UserDBService userDBService;
     private LineupDBService lineupDBService;
+    private int connections = 0;
 
     public LikeDBService(LikeRepository repository, UserDBService userDBService,
                          LineupDBService lineupDBService) {
@@ -32,8 +33,12 @@ public class LikeDBService {
      * Open a new connection to the database.
      */
     public void open() {
-        if (!repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (!repository.isOpen()) {
+                repository.open();
+            }
         }
         userDBService.open();
         lineupDBService.open();
@@ -43,8 +48,14 @@ public class LikeDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
         userDBService.close();
         lineupDBService.close();

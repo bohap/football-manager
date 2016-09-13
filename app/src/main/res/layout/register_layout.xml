@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/RootView"
+    android:orientation="vertical">
+    <include
+        layout="@layout/toolbar" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            style="@style/MainContent"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/registerLayout_txtName"
+                style="@style/EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:inputType="text"
+                android:hint="@string/registerLayout_txtName_hint" />
+            <TextView
+                android:id="@+id/registerLayout_name_requiredError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtName_requiredErrorMessage"
+                android:visibility="gone" />
+            <EditText
+                android:id="@+id/registerLayout_txtEmail"
+                style="@style/EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:inputType="textEmailAddress"
+                android:hint="@string/registerLayout_txtEmail_hint" />
+            <TextView
+                android:id="@+id/registerLayout_email_requiredError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtEmail_requiredErrorMessage"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/registerLayout_email_invalidError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtEmail_invalidErrorMessage"
+                android:visibility="gone" />
+            <EditText
+                android:id="@+id/registerLayout_txtPassword"
+                style="@style/EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:inputType="textPassword"
+                android:hint="@string/registerLayout_txtPassword_hint" />
+            <TextView
+                android:id="@+id/registerLayout_password_requiredError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtPassword_requiredErrorMessage"
+                android:visibility="gone" />
+            <EditText
+                android:id="@+id/registerLayout_txtRepeatPassword"
+                style="@style/EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:inputType="textPassword"
+                android:hint="@string/registerLayout_txtRepeatPassword_hint" />
+            <TextView
+                android:id="@+id/registerLayout_repeatPassword_requiredError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtRepeatPassword_requiredErrorMessage"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/registerLayout_repeatPassword_notMatchError"
+                style="@style/TextView.Block.Error.Small"
+                android:text="@string/registerLayout_txtRepeatPassword_notMatchErrorMessage"
+                android:visibility="gone" />
+            <LinearLayout
+                android:id="@+id/registerLayout_btnRegister"
+                style="@style/Button.Block.Primary">
+                <TextView
+                    style="@style/TextView.Button.Primary"
+                    android:layout_marginRight="@dimen/base_horizontalMargin"
+                    android:layout_marginEnd="@dimen/base_horizontalMargin"
+                    android:text="@string/registerLayout_btnRegister" />
+                <ProgressBar
+                    android:id="@+id/registerLayout_spinner"
+                    style="@style/ButtonSpinner"
+                    android:visibility="gone" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/registerLayout_errorsContainer"
+                style="@style/ErrorContainer"
+                android:orientation="vertical"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

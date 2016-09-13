@@ -40,7 +40,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindString(R.string.loginActivity_title)
+    @BindString(R.string.loginLayout_title)
     String title;
 
     @BindView(R.id.loginLayout_txtEmail)
@@ -58,10 +58,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @BindView(R.id.loginLayout_password_requiredError)
     TextView passwordErrorRequired;
 
-    @BindView(R.id.login_spinner)
+    @BindView(R.id.loginLayout_spinner)
     ProgressBar spinner;
 
-    @BindView(R.id.login_errors)
+    @BindView(R.id.loginLayout_errorsContainer)
     LinearLayout errorsContainer;
 
     /**
@@ -109,7 +109,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     /**
      * Call the login method on the presenter when the login btn is clicked.
      */
-    @OnClick(R.id.login_btnLogin)
+    @OnClick(R.id.loginLayout_btnLogin)
     void login() {
         logger.info("btn 'Login' clicked");
         String username = txtEmail.getText().toString();
@@ -124,7 +124,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
     void register() {
         logger.info("btn 'Register' clicked");
         this.startActivity(new Intent(this, RegisterActivity.class));
-        super.finish();
     }
 
     /**
@@ -133,7 +132,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
      * @param txtEdit EditText
      * @param error   whatever the background should be error or not
      */
-    private void toggleEditTextBackground(EditText txtEdit, boolean error) {
+    private void toggleErrorBackground(EditText txtEdit, boolean error) {
         if (error) {
             txtEdit.setBackgroundResource(R.drawable.error_edit_text);
         } else {
@@ -147,7 +146,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void showEmailError(EMAIL_ERROR error) {
         logger.info(String.format("showEmailError, error %s", error));
-        this.toggleEditTextBackground(txtEmail, true);
+        this.toggleErrorBackground(txtEmail, true);
         if (error == EMAIL_ERROR.REQUIRED) {
             this.toggleVisibility(emailErrorRequired, true);
             this.toggleVisibility(emailErrorInvalid, false);
@@ -163,7 +162,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void showEmailOk() {
         logger.info("showEmailOk");
-        this.toggleEditTextBackground(txtEmail, false);
+        this.toggleErrorBackground(txtEmail, false);
         this.toggleVisibility(emailErrorRequired, false);
         this.toggleVisibility(emailErrorInvalid, false);
     }
@@ -174,7 +173,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void showPasswordError() {
         logger.info("showPasswordError");
-        this.toggleEditTextBackground(txtPassword, true);
+        this.toggleErrorBackground(txtPassword, true);
         this.toggleVisibility(passwordErrorRequired, true);
     }
 
@@ -184,7 +183,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void showPasswordOk() {
         logger.info("showPasswordOk");
-        this.toggleEditTextBackground(txtPassword, false);
+        this.toggleErrorBackground(txtPassword, false);
         this.toggleVisibility(passwordErrorRequired, false);
     }
 
@@ -238,6 +237,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     public void showLoginFailed() {
         logger.info("showLoginFailed with no messages");
         super.toggleVisibility(spinner, false);
+        super.toggleVisibility(errorsContainer, false);
     }
 
     /**

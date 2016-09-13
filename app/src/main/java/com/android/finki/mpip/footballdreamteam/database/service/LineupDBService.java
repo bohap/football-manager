@@ -20,6 +20,7 @@ public class LineupDBService {
     private Logger logger = LoggerFactory.getLogger(LineupDBService.class);
     private LineupRepository repository;
     private UserDBService userDBService;
+    private int connections = 0;
 
     public LineupDBService(LineupRepository repository, UserDBService userDBService) {
         this.repository = repository;
@@ -30,8 +31,12 @@ public class LineupDBService {
      * Open a new connection to the database.
      */
     public void open() {
-        if (!repository.isOpen()) {
-            repository.open();
+        synchronized (this) {
+            logger.info("open");
+            connections++;
+            if (!repository.isOpen()) {
+                repository.open();
+            }
         }
         userDBService.open();
     }
@@ -40,8 +45,14 @@ public class LineupDBService {
      * Close the database connection.
      */
     public void close() {
-        if (repository.isOpen()) {
-            repository.close();
+        synchronized (this) {
+            if (repository.isOpen()) {
+                logger.info("close");
+                connections--;
+                if (connections == 0) {
+                    repository.close();
+                }
+            }
         }
         userDBService.close();
     }

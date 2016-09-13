@@ -293,6 +293,7 @@
     </style>
     <style name="TextView.Block.Error.Small">
         <item name="android:textSize">@dimen/smallTextSize</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:layout_marginLeft">@dimen/small_horizontalMargin</item>
         <item name="android:layout_marginRight">@dimen/small_horizontalMargin</item>
         <item name="android:layout_marginTop">@dimen/small_verticalMargin</item>
