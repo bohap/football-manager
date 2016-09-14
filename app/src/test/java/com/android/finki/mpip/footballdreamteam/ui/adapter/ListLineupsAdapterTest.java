@@ -61,7 +61,7 @@ public class ListLineupsAdapterTest {
     @Before
     public void setup() {
         context = RuntimeEnvironment.application.getBaseContext();
-        adapter = new ListLineupsAdapter(context);
+        adapter = new ListLineupsAdapter(context, null, null);
         shadow = shadowOf(adapter);
         adapter.add(lineup1);
         adapter.add(lineup2);
@@ -151,8 +151,8 @@ public class ListLineupsAdapterTest {
     @Test
     public void testGetViewOnRecycleView() {
         View recycleView = View.inflate(context, R.layout.lineups_list_item, null);
-        ListLineupsAdapter.ViewHolder holder = new ListLineupsAdapter.ViewHolder(recycleView);
-        recycleView.setTag(holder);
+//        ListLineupsAdapter.ViewHolder holder = new ListLineupsAdapter.ViewHolder(recycleView);
+//        recycleView.setTag(holder);
         View view = adapter.getView(i1, recycleView, null);
         assertSame(recycleView, view);
     }

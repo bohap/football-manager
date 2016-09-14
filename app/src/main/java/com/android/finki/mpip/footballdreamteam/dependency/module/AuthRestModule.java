@@ -7,6 +7,9 @@ import com.android.finki.mpip.footballdreamteam.rest.web.PositionApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.UsersApi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Named;
 
 import dagger.Module;
@@ -17,7 +20,7 @@ import retrofit2.Retrofit;
  * Created by Borce on 09.08.2016.
  */
 @Module
-public class UserApiModule {
+public class AuthRestModule {
 
     /**
      * Provides instance of the UserApi.
@@ -63,7 +66,7 @@ public class UserApiModule {
      */
     @Provides
     @UserScope
-    PlayerApi providePlayeAapi(@Named("authenticated") Retrofit retrofit) {
+    PlayerApi providePlayerApi(@Named("authenticated") Retrofit retrofit) {
         return retrofit.create(PlayerApi.class);
     }
 

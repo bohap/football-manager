@@ -146,7 +146,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).onFragmentActive();
         }
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new CommentsViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
     }

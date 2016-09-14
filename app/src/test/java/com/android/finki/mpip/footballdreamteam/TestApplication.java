@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam;
 
 import android.app.Application;
 
-import com.android.finki.mpip.footballdreamteam.dependency.component.DaggerTestAppComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.TestAppComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.TestAppModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.TestAuthModule;

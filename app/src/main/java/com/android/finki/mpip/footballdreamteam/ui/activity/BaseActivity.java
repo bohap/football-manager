@@ -85,11 +85,7 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
      */
     @Override
     public void showNotAuthenticated() {
-        ((MainApplication) this.getApplication()).releaseUserComponent();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(AUTH_USER_KEY, -1);
-        editor.putString(JWT_TOKEN, null);
-        editor.apply();
+        ((MainApplication) this.getApplication()).releaseAuthComponent();
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(intent);

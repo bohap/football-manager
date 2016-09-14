@@ -11,7 +11,6 @@ import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
 import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
-import com.android.finki.mpip.footballdreamteam.ui.activity.LineupPlayersActivity;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
@@ -111,7 +110,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
         if (args == null) {
             throw new IllegalArgumentException("view arguments can't be null");
         }
-        Serializable serializable = args.getSerializable(LineupPlayersActivity.LINEUP_BUNDLE_KEY);
+        Serializable serializable = args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY);
         if (serializable == null || !(serializable instanceof Lineup)) {
             throw new IllegalArgumentException("lineup must be provided for the presenter");
         }

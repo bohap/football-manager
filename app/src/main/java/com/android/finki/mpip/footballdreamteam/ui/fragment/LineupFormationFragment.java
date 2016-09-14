@@ -179,7 +179,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
         if (this.getActivity() instanceof BaseFragment.Listener) {
             ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
         }
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new LineupFormationViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
     }

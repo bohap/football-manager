@@ -53,7 +53,6 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
         PlayerDetailsDialog.Listener {
 
     private Logger logger = LoggerFactory.getLogger(LineupPlayersActivity.class);
-    public static final String LINEUP_BUNDLE_KEY = "lineup";
     private LineupPlayersViewPresenter presenter;
 
     @BindView(R.id.toolbar)
@@ -116,7 +115,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.lineup_players_layout);
         ButterKnife.bind(this);
-        ((MainApplication) this.getApplication()).getUserComponent()
+        ((MainApplication) this.getApplication()).getAuthComponent()
                 .plus(new LineupPlayersViewModule(this)).inject(this);
         this.setSupportActionBar(toolbar);
         if (this.getSupportActionBar() != null) {

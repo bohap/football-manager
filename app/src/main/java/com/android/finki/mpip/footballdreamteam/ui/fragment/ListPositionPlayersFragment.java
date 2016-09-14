@@ -99,7 +99,7 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         if (this.getActivity() instanceof BaseFragment.Listener) {
             ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
         }
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new ListPositionPlayersViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
     }

@@ -42,6 +42,4 @@ public interface RegisterView extends BaseView {
     void showRegisteringFailed(List<String> errors);
 
     void showRegisteringFailed();
-
-    void creteUserComponent(User user);
 }

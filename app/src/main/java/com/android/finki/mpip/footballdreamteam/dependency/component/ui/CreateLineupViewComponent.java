@@ -3,7 +3,6 @@ package com.android.finki.mpip.footballdreamteam.dependency.component.ui;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.CreateLineupViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.ui.activity.CreateLineupActivity;
-import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
 
 import dagger.Subcomponent;
 

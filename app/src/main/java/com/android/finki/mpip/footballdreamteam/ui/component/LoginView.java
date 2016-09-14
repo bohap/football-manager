@@ -29,6 +29,4 @@ public interface LoginView extends BaseView {
     void showLoginFailed(List<String> errors);
 
     void showLoginFailed();
-
-    void createUserComponent(User user);
 }

@@ -72,7 +72,7 @@ public class SplashActivityTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 SplashActivity activity = (SplashActivity) invocation.getArguments()[0];
-                activity.presenter = presenter;
+                activity.setPresenter(presenter);
                 return null;
             }
         }).when(component).inject(any(SplashActivity.class));
@@ -94,7 +94,7 @@ public class SplashActivityTest {
      */
     @Test
     public void testShowLoginActivity() {
-        activity.showLoginActivity();
+        activity.showLoginView();
         ShadowActivity shadow = shadowOf(activity);
         Intent expectedIntent = new Intent(activity, LoginActivity.class);
         Intent actualIntent = shadow.getNextStartedActivity();
@@ -108,7 +108,7 @@ public class SplashActivityTest {
      */
     @Test
     public void testShowHomeActivity() {
-        activity.showHomeActivity();
+        activity.showHomeView();
         ShadowActivity shadow = shadowOf(activity);
         Intent expectedIntent = new Intent(activity, HomeActivity.class);
         Intent actualIntent = shadow.getNextStartedActivity();

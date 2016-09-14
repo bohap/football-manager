@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface LineupPlayersView extends BaseView {
 
+    String LINEUP_BUNDLE_KEY = "lineup";
+
     void showLoading();
 
     void showLoadingSuccess(List<Player> players);

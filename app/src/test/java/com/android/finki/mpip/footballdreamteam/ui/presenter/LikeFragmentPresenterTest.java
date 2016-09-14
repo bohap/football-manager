@@ -84,7 +84,7 @@ public class LikeFragmentPresenterTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        presenter = new LikeViewPresenter(fragment, api, user, lineupDBService, likeDBService);
+//        presenter = new LikeViewPresenter(fragment, api, user, lineupDBService, likeDBService);
         when(api.likes(anyInt(), anyBoolean(), anyInt(), anyInt()))
                 .thenReturn(callListUserLikes);
         when(api.addLike(anyInt())).thenReturn(callAddLike);
@@ -100,7 +100,7 @@ public class LikeFragmentPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testLoadLikesOnNullBundle() {
-        presenter.loadLikes(null);
+//        presenter.loadLikes(null);
     }
 
     /**
@@ -109,7 +109,7 @@ public class LikeFragmentPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testLoadLikesOnInvalidBundleData() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(new User());
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
     }
 
     /**
@@ -126,7 +126,7 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testLoadDataWhenViewLayoutIsNotYetCreated() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(api).likes(lineup.getId(), true, null, null);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         verify(fragment, never()).showLoading();
@@ -138,8 +138,8 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testLoadDataWhenViewLayoutIsCreated() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.onViewCreated();
-        presenter.loadLikes(args);
+//        presenter.onViewCreated();
+//        presenter.loadLikes(args);
         verify(api).likes(lineup.getId(), true, null, null);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         verify(fragment).showLoading();
@@ -156,7 +156,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(false);
         doThrow(new LineupException("")).when(lineupDBService).store(any(Lineup.class));
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -181,7 +181,7 @@ public class LikeFragmentPresenterTest {
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(false);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -206,7 +206,7 @@ public class LikeFragmentPresenterTest {
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -233,7 +233,7 @@ public class LikeFragmentPresenterTest {
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(false);
         doThrow(new LikeException("")).when(likeDBService).store(any(LineupLike.class));
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -256,7 +256,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(false);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -279,7 +279,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(true);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
 
@@ -298,7 +298,7 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testLoadLikesSuccessWhenUserDidNotLikedTheLineup() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         verify(fragment).showLoadingSuccess(likes);
@@ -312,7 +312,7 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testLoadingLikesFailed() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onFailure(callListUserLikes, new Throwable());
         verify(fragment).showLoadingFailed();
@@ -324,7 +324,7 @@ public class LikeFragmentPresenterTest {
      */
     @Test
     public void testOnViewCreatedWhenLoadRequestIsNotSending() {
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(fragment, never()).showLoading();
     }
 
@@ -335,8 +335,8 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testOnViewCreatedWhenLoadRequestIsSending() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
-        presenter.onViewCreated();
+//        presenter.loadLikes(args);
+//        presenter.onViewCreated();
         verify(fragment).showLoading();
     }
 
@@ -356,7 +356,7 @@ public class LikeFragmentPresenterTest {
         likes.add(new UserLike(user.getId(), user.getName(),
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.addLike();
@@ -368,7 +368,7 @@ public class LikeFragmentPresenterTest {
     @Test
     public void testAddLike() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.addLike();
@@ -386,7 +386,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(false);
         doThrow(LineupException.class).when(lineupDBService).store(any(Lineup.class));
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -410,7 +410,7 @@ public class LikeFragmentPresenterTest {
     public void testAddLikeSuccessWhenLineupStoringIsSuccessful() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(false);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -434,7 +434,7 @@ public class LikeFragmentPresenterTest {
     public void testAddLikeSuccessWhenLineupAlreadySaved() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -460,7 +460,7 @@ public class LikeFragmentPresenterTest {
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(false);
         doThrow(new LikeException("")).when(likeDBService).store(any(LineupLike.class));
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -482,7 +482,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(false);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -503,7 +503,7 @@ public class LikeFragmentPresenterTest {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
         when(likeDBService.exists(anyInt(), anyInt())).thenReturn(true);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         presenter.addLike();
         verify(api).addLike(lineup.getId());
         verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
@@ -530,7 +530,7 @@ public class LikeFragmentPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveLikeWhenTheUserDidNotLikedTheLineup() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.removeLike();
@@ -544,7 +544,7 @@ public class LikeFragmentPresenterTest {
         likes.add(new UserLike(user.getId(), user.getName(),
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.removeLike();
@@ -564,7 +564,7 @@ public class LikeFragmentPresenterTest {
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
         doThrow(new LikeException("")).when(likeDBService).delete(anyInt(), anyInt());
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.removeLike();
@@ -588,7 +588,7 @@ public class LikeFragmentPresenterTest {
         likes.add(new UserLike(user.getId(), user.getName(),
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.removeLike();
@@ -610,7 +610,7 @@ public class LikeFragmentPresenterTest {
         likes.add(new UserLike(user.getId(), user.getName(),
                 new LineupLike(user, lineup, new Date())));
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
-        presenter.loadLikes(args);
+//        presenter.loadLikes(args);
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         presenter.removeLike();

@@ -77,4 +77,13 @@ public interface UsersApi {
     @GET("users/{id}/comments")
     Call<List<Comment>> comments(@Path("id") int id, @Query("latest") Boolean latest,
                                  @Query("limit") Integer limit, @Query("skip") Integer skip);
+
+    /**
+     * Get the number of likes and comments for the autheticated user last lineup.
+     *
+     * @param lastChecked time in mills when the data was last checked
+     * @return user last Lineup, if not Lineup is found a empry lineup with id 0 is returned.
+     */
+    @GET("users/me/statistic")
+    Call<Lineup> statistic(@Query("date") Long lastChecked);
 }

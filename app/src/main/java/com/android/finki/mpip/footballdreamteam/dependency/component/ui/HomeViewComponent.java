@@ -1,7 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.dependency.component.ui;
 
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeViewModule;
-import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
 

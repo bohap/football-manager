@@ -1,7 +1,7 @@
 package com.android.finki.mpip.footballdreamteam;
 
 import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.UserComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.AuthComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLineupViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.HomeViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LikeViewComponent;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 public class MockApplication extends MainApplication {
 
     private AppComponent appComponent;
-    private UserComponent userComponent;
+    private AuthComponent userComponent;
     private SplashViewComponent splashActivityComponent;
     private LoginViewComponent loginActivityComponent;
     private HomeViewComponent homeActivityComponent;
@@ -60,14 +60,14 @@ public class MockApplication extends MainApplication {
     }
 
     /**
-     * Get a instance of mocked UserComponent.
+     * Get a instance of mocked AuthComponent.
      *
-     * @return mocked instance of the UserComponent
+     * @return mocked instance of the AuthComponent
      */
     @Override
-    public UserComponent getUserComponent() {
+    public AuthComponent getAuthComponent() {
         if (userComponent == null) {
-            userComponent = mock(UserComponent.class);
+            userComponent = mock(AuthComponent.class);
             when(userComponent.plus(any(HomeViewModule.class)))
                     .thenReturn(homeActivityComponent);
             when(userComponent.plus(any(LikeViewModule.class)))

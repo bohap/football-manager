@@ -43,12 +43,12 @@ public class LineupRepositoryTest {
 
     private final int NUMBER_OF_USER_1_LINEUPS = 2;
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User", "user@user1.com", calendar.getTime(),
-            calendar.getTime(), null);
+    private User user1 = new User(user1Id, "User", "user@user1.com", "pass",
+            calendar.getTime(), calendar.getTime());
     private final int NUMBER_OF_USER_2_LINEUPS = 1;
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User", "user@user2.com", calendar.getTime(),
-            calendar.getTime(), null);
+    private User user2 = new User(user2Id, "User", "user@user2.com","pass",
+            calendar.getTime(), calendar.getTime());
 
     private final int NUMBER_OF_LINEUPS = 3;
     private final int lineup1Id = 1;

@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.finki.mpip.footballdreamteam">
 
-    <!--Permisons-->
+    <!--Permissions-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name="com.android.finki.mpip.footballdreamteam.MainApplication"
@@ -32,10 +33,25 @@
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".ui.activity.LineupPlayersActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape"
+            android:parentActivityName=".ui.activity.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activity.HomeActivity" />
+        </activity>
         <activity
             android:name=".ui.activity.CreateLineupActivity"
             android:screenOrientation="landscape"></activity>
+
+        <!--Services-->
+        <service android:name=".service.UserStatisticService"></service>
+
+        <!--Receivers-->
+        <receiver android:name=".receiver.ApplicationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

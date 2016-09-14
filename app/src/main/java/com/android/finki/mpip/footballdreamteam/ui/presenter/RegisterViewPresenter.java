@@ -214,7 +214,6 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
         }
         dbService.close();
         preferences.edit().putString(key, response.getToken()).apply();
-        view.creteUserComponent(user);
         view.showRegisteringSuccess();
     }
 

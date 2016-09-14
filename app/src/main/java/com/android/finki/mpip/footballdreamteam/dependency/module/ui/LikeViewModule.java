@@ -1,6 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.dependency.module.ui;
 
-import com.android.finki.mpip.footballdreamteam.dependency.scope.FragmentScope;
+import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.LikeView;
@@ -29,7 +29,7 @@ public class LikeViewModule {
      * @return new instance of the LikeFragment presenter
      */
     @Provides
-    @FragmentScope
+    @ViewScope
     LikeViewPresenter provideLikeFragmentPresenter(LineupApi api, User user) {
         return new LikeViewPresenter(view, api, user);
     }

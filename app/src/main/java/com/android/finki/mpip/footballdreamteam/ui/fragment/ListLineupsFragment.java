@@ -93,7 +93,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         if (this.getActivity() instanceof BaseFragment.Listener) {
             ((BaseFragment.Listener) this.getActivity()).onFragmentActive();
         }
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new ListLineupsViewModule(this)).inject(this);
         presenter.onViewCreated();
     }

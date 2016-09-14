@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
  * Created by Borce on 07.08.2016.
  */
 @Module
-public class TestAuthModule extends AuthModule {
+public class TestAuthModule extends UserModule {
 
     /**
      * Provide instance of retrofit AuthApi used for authenticating the user.

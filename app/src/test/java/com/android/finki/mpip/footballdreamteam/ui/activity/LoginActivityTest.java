@@ -87,7 +87,7 @@ public class LoginActivityTest {
         assertNotNull(passwordErrorRequired);
         spinner = (ProgressBar) activity.findViewById(R.id.loginLayout_spinner);
         assertNotNull(spinner);
-        button = (RelativeLayout) activity.findViewById(R.id.loginLayout_btnLogin);
+//        button = (RelativeLayout) activity.findViewById(R.id.loginLayout_btnLogin);
         assertNotNull(button);
     }
 
@@ -100,14 +100,14 @@ public class LoginActivityTest {
      * Mock the dependencies for the activity.
      */
     private void mockDependencies() {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                LoginActivity activity = (LoginActivity) invocation.getArguments()[0];
-                activity.presenter = presenter;
-                return null;
-            }
-        }).when(component).inject(any(LoginActivity.class));
+//        doAnswer(new Answer() {
+//            @Override
+//            public Object answer(InvocationOnMock invocation) throws Throwable {
+//                LoginActivity activity = (LoginActivity) invocation.getArguments()[0];
+//                activity.presenter = presenter;
+//                return null;
+//            }
+//        }).when(component).inject(any(LoginActivity.class));
     }
 
     /**
@@ -156,7 +156,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testEmailRequiredError() {
-        activity.errorEmail(LoginActivity.EMAIL_ERROR.REQUIRED);
+        activity.showEmailError(LoginActivity.EMAIL_ERROR.REQUIRED);
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.error_edit_text, shadow.getCreatedFromResId());
         assertEquals(View.VISIBLE, emailErrorRequired.getVisibility());
@@ -169,7 +169,7 @@ public class LoginActivityTest {
     @Test
     public void testEmailRequiredErrorWhenEmailWasInvalid() {
         emailErrorInvalid.setVisibility(View.VISIBLE);
-        activity.errorEmail(LoginActivity.EMAIL_ERROR.REQUIRED);
+        activity.showEmailError(LoginActivity.EMAIL_ERROR.REQUIRED);
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.error_edit_text, shadow.getCreatedFromResId());
         assertEquals(View.VISIBLE, emailErrorRequired.getVisibility());
@@ -182,7 +182,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testEmailInvalidError() {
-        activity.errorEmail(LoginActivity.EMAIL_ERROR.INVALID);
+        activity.showEmailError(LoginActivity.EMAIL_ERROR.INVALID);
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.error_edit_text, shadow.getCreatedFromResId());
         assertEquals(View.VISIBLE, emailErrorInvalid.getVisibility());
@@ -195,7 +195,7 @@ public class LoginActivityTest {
     @Test
     public void testEmailInvalidErrorWhenEmailWasRequired() {
         emailErrorRequired.setVisibility(View.VISIBLE);
-        activity.errorEmail(LoginActivity.EMAIL_ERROR.INVALID);
+        activity.showEmailError(LoginActivity.EMAIL_ERROR.INVALID);
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.error_edit_text, shadow.getCreatedFromResId());
         assertEquals(View.VISIBLE, emailErrorInvalid.getVisibility());
@@ -207,7 +207,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testPasswordRequiredError() {
-        activity.errorPassword();
+        activity.showPasswordError();
         ShadowDrawable shadow = shadowOf(txtPassword.getBackground());
         assertEquals(R.drawable.error_edit_text, shadow.getCreatedFromResId());
         assertEquals(View.VISIBLE, passwordErrorRequired.getVisibility());
@@ -219,7 +219,7 @@ public class LoginActivityTest {
     @Test
     public void testOkEmailWhenEmailWasRequired() {
         emailErrorRequired.setVisibility(View.VISIBLE);
-        activity.okEmail();
+        activity.showEmailOk();
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.edit_text, shadow.getCreatedFromResId());
         assertEquals(View.GONE, emailErrorRequired.getVisibility());
@@ -232,7 +232,7 @@ public class LoginActivityTest {
     @Test
     public void testOkEmailWhenEmailWasInvalid() {
         emailErrorInvalid.setVisibility(View.VISIBLE);
-        activity.okEmail();
+        activity.showEmailOk();
         ShadowDrawable shadow = shadowOf(txtEmail.getBackground());
         assertEquals(R.drawable.edit_text, shadow.getCreatedFromResId());
         assertEquals(View.GONE, emailErrorRequired.getVisibility());
@@ -245,7 +245,7 @@ public class LoginActivityTest {
     @Test
     public void testOkPassword() {
         passwordErrorRequired.setVisibility(View.VISIBLE);
-        activity.okPassword();
+        activity.showPasswordOk();
         ShadowDrawable shadow = shadowOf(txtPassword.getBackground());
         assertEquals(R.drawable.edit_text, shadow.getCreatedFromResId());
         assertEquals(View.GONE, passwordErrorRequired.getVisibility());
@@ -256,7 +256,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testShowLoading() {
-        activity.showLoading();
+        activity.showLogging();
         assertEquals(View.VISIBLE, spinner.getVisibility());
     }
 
@@ -265,7 +265,7 @@ public class LoginActivityTest {
      */
     @Test
     public void testSuccessLogin() {
-        activity.successfulLogin();
+        activity.showLoginSuccessful();
         ShadowActivity shadow = shadowOf(activity);
         Intent expectedIntent = new Intent(activity, HomeActivity.class);
         Intent actualIntent = shadow.getNextStartedActivity();
@@ -283,7 +283,7 @@ public class LoginActivityTest {
         final int number_of_errors = 3;
         List<String> errors = Arrays.asList("error 1", "error 2", "error 3");
 
-        activity.failedLogin(errors);
+        activity.showLoginFailed(errors);
         assertEquals(View.GONE, spinner.getVisibility());
         LinearLayout errorsContainer = (LinearLayout) activity.findViewById(R.id.loginLayout_errorsContainer);
         assertNotNull(errorsContainer);
@@ -305,7 +305,7 @@ public class LoginActivityTest {
     @Test
     public void testLoginError() {
         spinner.setVisibility(View.VISIBLE);
-        activity.loginError();
+        activity.showLoginFailed();
         assertEquals(View.GONE, spinner.getVisibility());
     }
 }

@@ -45,36 +45,6 @@ public class BaseActivityTest {
     }
 
     /**
-     * Test the behavior on the activity when showAppError message is called.
-     */
-    @Test
-    public void testShowAppErrorMessage() {
-        String message = activity.getString(R.string.app_errorMessage);
-        activity.showAppErrorMessage();
-        assertEquals(message, ShadowToast.getTextOfLatestToast());
-    }
-
-    /**
-     * Test the behavior on the activity when showConnectionTimeoutMessage method is called.
-     */
-    @Test
-    public void testShowConnectionTimeoutMessage() {
-        String message = application.getString(R.string.server_connectionTimeoutMessage);
-        activity.showConnectionTimeoutMessage();
-        assertEquals(message, ShadowToast.getTextOfLatestToast());
-    }
-
-    /**
-     * Test the behavior on the activity when showServerErrorMessage method is called.
-     */
-    @Test
-    public void testShowServerErrorMessage() {
-        String message = application.getString(R.string.server_errorMessage);
-        activity.showServerErrorMessage();
-        assertEquals(message, ShadowToast.getTextOfLatestToast());
-    }
-
-    /**
      * Test the toggleVisibility method will hide the view when called with false param.
      */
     @Test

@@ -202,6 +202,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void showLoginSuccessful() {
         logger.info("showLoginSuccessful");
+        ((MainApplication) this.getApplication()).createAuthComponent();
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
@@ -238,16 +239,5 @@ public class LoginActivity extends BaseActivity implements LoginView {
         logger.info("showLoginFailed with no messages");
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, false);
-    }
-
-    /**
-     * Create the user component for the application.
-     *
-     * @param user authenticated user
-     */
-    @Override
-    public void createUserComponent(User user) {
-        logger.info("createUserComponent");
-        ((MainApplication) this.getApplication()).createUserComponent(user);
     }
 }

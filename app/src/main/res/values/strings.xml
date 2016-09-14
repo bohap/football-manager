@@ -211,4 +211,10 @@
     <string name="lineupActivity_confirmDialog_message">
         The changes in the lineup are not yet saved. Are you sure you want to exit?
     </string>
+    <!--UserStatisticService-->
+    <string name="notification_ticker">New Notification</string>
+    <string name="notification_title">Awesome lineup!</string>
+    <string name="notification_body">
+        There are %1$d new likes and %2$d new comments on your last lineup
+    </string>
 </resources>

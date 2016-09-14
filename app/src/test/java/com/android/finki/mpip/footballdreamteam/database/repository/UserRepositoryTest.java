@@ -46,17 +46,17 @@ public class UserRepositoryTest {
 
     private final int NUMBER_OF_USERS = 3;
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User 1", "user@user-1.com",
-            calendar.getTime(), calendar.getTime(), null);
+    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "pass",
+            calendar.getTime(), calendar.getTime());
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User 1", "user@user-2.com",
-            calendar.getTime(), calendar.getTime(), null);
+    private User user2 = new User(user2Id, "User 1", "user@user-2.com", "pass",
+            calendar.getTime(), calendar.getTime());
     private final int user3Id = 3;
-    private User user3 = new User(user3Id, "User 1", "user@user-3.com",
-            calendar.getTime(), calendar.getTime(), null);
+    private User user3 = new User(user3Id, "User 1", "user@user-3.com", "pass",
+            calendar.getTime(), calendar.getTime());
     private final int unExistingUserId = 4;
-    private User unExistingUser = new User(unExistingUserId, "User 4", "user@user-4.com",
-            calendar.getTime(), calendar.getTime(), null);
+    private User unExistingUser = new User(unExistingUserId, "User 4", "user@user-4.com", "pass",
+            calendar.getTime(), calendar.getTime());
 
     /**
      * Create a new instance of the UserRepository, open the connection and seed the table.

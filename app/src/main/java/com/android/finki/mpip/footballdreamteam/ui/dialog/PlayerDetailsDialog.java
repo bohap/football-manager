@@ -90,7 +90,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
     public void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new PlayerDetailsViewModule(this)).inject(this);
         this.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
         presenter.onViewCreated(this.getArguments());

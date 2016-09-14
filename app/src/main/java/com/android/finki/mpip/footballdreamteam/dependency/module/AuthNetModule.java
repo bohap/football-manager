@@ -10,6 +10,9 @@ import com.android.finki.mpip.footballdreamteam.rest.utils.JWTTokenInterceptor;
 import com.android.finki.mpip.footballdreamteam.rest.utils.AuthenticateInterceptor;
 import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Named;
 
 import dagger.Module;
@@ -23,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Borce on 09.08.2016.
  */
 @Module
-public class UserNetModule {
+public class AuthNetModule {
 
     /**
      * Provides instance of the JWT token interceptor.

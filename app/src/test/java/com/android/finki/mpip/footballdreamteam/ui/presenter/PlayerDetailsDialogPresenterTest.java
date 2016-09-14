@@ -60,7 +60,7 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnDialogCreatedWithInvalidPlayerId() {
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1)).thenReturn(0);
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1)).thenReturn(0);
         presenter.onViewCreated(args);
     }
 
@@ -69,8 +69,8 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerOnUnExistingPlayerId() {
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-                .thenReturn(player.getId());
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
+//                .thenReturn(player.getId());
         presenter.onViewCreated(args);
         verify(dbService).open();
         verify(dbService).close();
@@ -82,8 +82,8 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerOnPlayerNullTeam() {
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-                .thenReturn(player.getId());
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
+//                .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setTeam(null);
         presenter.onViewCreated(args);
@@ -97,8 +97,8 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerWithPlayerNullPosition() {
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-                .thenReturn(player.getId());
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
+//                .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setPosition(null);
         presenter.onViewCreated(args);
@@ -112,8 +112,8 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test
     public void testGetPlayer() {
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-                .thenReturn(player.getId());
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
+//                .thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         presenter.onViewCreated(args);
         verify(dbService).open();
@@ -130,13 +130,13 @@ public class PlayerDetailsDialogPresenterTest {
         String team = player.getTeam().getName();
         String age = String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth()));
         String position = player.getPosition().getName();
-        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-                .thenReturn(player.getId());
-        when(args.getBoolean(PlayerDetailsDialog.getBundleEditableKey(), false))
-                .thenReturn(true);
+//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
+//                .thenReturn(player.getId());
+//        when(args.getBoolean(PlayerDetailsDialog.getBundleEditableKey(), false))
+//                .thenReturn(true);
         when(dbService.get(player.getId())).thenReturn(player);
         presenter.onViewCreated(args);
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(dialog).bindPlayer(name, team, age, position, true);
     }
 }

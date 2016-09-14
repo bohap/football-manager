@@ -268,6 +268,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     @Override
     public void showRegisteringSuccess() {
         logger.info("showRegisteringSuccess");
+        ((MainApplication) this.getApplication()).createAuthComponent();
         Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(intent);
@@ -305,15 +306,5 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
         logger.info("showRegisteringFailed");
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, false);
-    }
-
-    /**
-     * Create the user component for the given user.
-     *
-     * @param user authenticated user
-     */
-    @Override
-    public void creteUserComponent(User user) {
-        ((MainApplication) this.getApplication()).createUserComponent(user);
     }
 }

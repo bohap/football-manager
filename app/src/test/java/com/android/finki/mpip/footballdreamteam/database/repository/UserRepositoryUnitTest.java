@@ -51,8 +51,8 @@ public class UserRepositoryUnitTest {
     private String COLUMN_CREATED_AT = "created_at";
     private String COLUMN_UPDATED_AT = "updated_at";
     private String COLUMN_JWT_TOKEN = "jwt_token";
-    private User user = new User(1, "User", "user@user.com", calendar.getTime(),
-            calendar.getTime(), null);
+    private User user = new User(1, "User", "user@user.com", "pass",
+            calendar.getTime(), calendar.getTime());
 
     @Before
     public void setup() {
@@ -70,7 +70,6 @@ public class UserRepositoryUnitTest {
         when(context.getString(R.string.users_column_email)).thenReturn(COLUMN_EMAIL);
         when(context.getString(R.string.users_column_created_at)).thenReturn(COLUMN_CREATED_AT);
         when(context.getString(R.string.users_column_updated_at)).thenReturn(COLUMN_UPDATED_AT);
-        when(context.getString(R.string.users_column_jwt_token)).thenReturn(COLUMN_JWT_TOKEN);
     }
 
     /**
@@ -104,7 +103,6 @@ public class UserRepositoryUnitTest {
         assertEquals(user.getEmail(), mapped.getEmail());
         assertEquals(sDate, DateUtils.format(mapped.getCreatedAt()));
         assertEquals(sDate, DateUtils.format(mapped.getUpdatedAt()));
-        assertEquals(user.getJwtToken(), mapped.getJwtToken());
     }
 
     /**
@@ -119,6 +117,5 @@ public class UserRepositoryUnitTest {
         assertEquals(user.getEmail(), map.get(COLUMN_EMAIL));
         assertEquals(sDate, map.get(COLUMN_CREATED_AT));
         assertEquals(sDate, map.get(COLUMN_UPDATED_AT));
-        assertEquals(user.getJwtToken(), map.get(COLUMN_JWT_TOKEN));
     }
 }

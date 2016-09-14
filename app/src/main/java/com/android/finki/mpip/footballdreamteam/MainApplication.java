@@ -3,16 +3,20 @@ package com.android.finki.mpip.footballdreamteam;
 import android.app.Application;
 
 import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.AuthComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.DaggerAppComponent;
-import com.android.finki.mpip.footballdreamteam.dependency.component.UserComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.AppModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.AuthModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.NetModule;
 import com.android.finki.mpip.footballdreamteam.dependency.module.UserModule;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.utility.AlarmManagerUtils;
+import com.android.finki.mpip.footballdreamteam.utility.AuthUserUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 /**
  * Created by Borce on 25.07.2016.
@@ -21,12 +25,47 @@ public class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
     private AppComponent appComponent;
-    private UserComponent userComponent;
+    private AuthComponent authComponent;
+    private AuthUserUtils authUserUtils;
+    private AlarmManagerUtils alarmManagerUtils;
 
+    /**
+     * Set the instance of the AuthUserUtils.
+     *
+     * @param authUserUtils instance of the AuthUserUtils
+     */
+    @Inject
+    public void setAuthUserUtils(AuthUserUtils authUserUtils) {
+        this.authUserUtils = authUserUtils;
+    }
+
+    /**
+     * Set the instance of the AlarmManagerUtils.
+     *
+     * @param alarmManagerUtils instance of AlarmManagerUtils
+     */
+    @Inject
+    public void setAlarmManagerUtils(AlarmManagerUtils alarmManagerUtils) {
+        this.alarmManagerUtils = alarmManagerUtils;
+    }
+
+    /**
+     * Called when the application is ready to brew created.
+     */
     @Override
     public void onCreate() {
+        logger.info("onCreate");
         super.onCreate();
         this.initAppComponent();
+    }
+
+    /**
+     * Called when the application is using to many memory.
+     */
+    @Override
+    public void onLowMemory() {
+        logger.info("onLowMemory");
+        super.onLowMemory();
     }
 
     /**
@@ -48,12 +87,12 @@ public class MainApplication extends Application {
     }
 
     /**
-     * Get a new instance of the AuthModule.
+     * Get a new instance of the UserModule.
      *
-     * @return instance of the AuthModule
+     * @return instance of the UserModule
      */
-    private AuthModule getAuthModule() {
-        return new AuthModule();
+    private UserModule getAuthModule() {
+        return new UserModule();
     }
 
     /**
@@ -63,8 +102,9 @@ public class MainApplication extends Application {
         appComponent = DaggerAppComponent.builder()
                 .appModule(getAppModule())
                 .netModule(getNetModule())
-                .authModule(getAuthModule())
+                .userModule(getAuthModule())
                 .build();
+        appComponent.inject(this);
     }
 
     /**
@@ -77,39 +117,46 @@ public class MainApplication extends Application {
     }
 
     /**
-     * Get a new instance of UserModule.
+     * Get a new instance of AuthModule.
      *
      * @param user authenticated user
-     * @return instance of UserModule
+     * @return instance of AuthModule
      */
-    private UserModule getUserModule(User user) {
-        return new UserModule(user);
+    private AuthModule getAuthModule(User user) {
+        return new AuthModule(user);
     }
 
     /**
-     * Create a new instance of UserComponent.
+     * Create a new instance of AuthComponent.
+     */
+    public void createAuthComponent() {
+        if (authComponent == null) {
+            User user = authUserUtils.authenticate();
+            if (user == null) {
+                throw new IllegalArgumentException("auth user not set");
+            }
+            logger.info(String.format("Creating AuthComponent for user with id %d.", user.getId()));
+            authComponent = appComponent.plus(getAuthModule(user));
+            alarmManagerUtils.setupUserStatisticRepeatingService();
+        }
+    }
+
+    /**
+     * get the instance of the AuthComponent.
      *
-     * @param user authenticated user
+     * @return instance of the AuthComponent
      */
-    public void createUserComponent(User user) {
-        logger.info(String.format("Creating UserComponent for user with id %d.", user.getId()));
-        userComponent = appComponent.plus(getUserModule(user));
+    public AuthComponent getAuthComponent() {
+        return authComponent;
     }
 
     /**
-     * get the instance of the UserComponent.
-     *
-     * @return instance of the UserComponent
+     * Release the instance of AuthComponent.
      */
-    public UserComponent getUserComponent() {
-        return userComponent;
-    }
-
-    /**
-     * Release the instance of UserComponent.
-     */
-    public void releaseUserComponent() {
+    public void releaseAuthComponent() {
         logger.info("releasing user component");
-        userComponent = null;
+        authUserUtils.removeAuthUser();
+        authComponent = null;
+        alarmManagerUtils.cancelUserStatisticRepeatingService();
     }
 }

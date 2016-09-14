@@ -12,6 +12,4 @@ public interface SplashView {
     void showLoginView();
 
     void showHomeView();
-
-    void createUserComponent(User user);
 }

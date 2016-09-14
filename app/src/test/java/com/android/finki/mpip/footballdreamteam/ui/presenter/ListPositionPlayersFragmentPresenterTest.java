@@ -52,7 +52,7 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmentCreatedWithNotSetPlaceBundleKey() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey())).thenReturn(null);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey())).thenReturn(null);
         presenter.onViewCreated(args);
     }
 
@@ -61,8 +61,8 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnFragmnetCreatedWithNotSetExcludePlayersKey() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
         presenter.onViewCreated(args);
     }
 
@@ -71,10 +71,10 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnFragmentCreatedWithKeepersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
@@ -89,10 +89,10 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnFragmentCreatedWithDefendersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
@@ -107,10 +107,10 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnFragmentCreatedWithMidfieldersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
@@ -125,10 +125,10 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnFragmentCreatedWithAttackersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
         verify(playerDBService).open();
         verify(playerDBService).close();
@@ -143,7 +143,7 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testOnViewCreatedWhenPositionPlaceIsNotSet() {
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
     }
 
     /**
@@ -151,12 +151,12 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnViewCreatedWithKeepersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.KEEPERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Keepers");
     }
@@ -166,12 +166,12 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnViewCreatedWithDefendersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.DEFENDERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Defenders");
     }
@@ -181,12 +181,12 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnViewCreatedWithMidfieldersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.MIDFIELDERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Midfielders");
     }
@@ -196,12 +196,12 @@ public class ListPositionPlayersFragmentPresenterTest {
      */
     @Test
     public void testOnViewCreatedWithAttackersPositionPlace() {
-        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
-                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
-        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
-                .thenReturn(playersToExclude);
+//        when(args.getSerializable(ListPositionPlayersFragment.getPlaceKey()))
+//                .thenReturn(PositionUtils.POSITION_PLACE.ATTACKERS);
+//        when(args.getIntArray(ListPositionPlayersFragment.getExcludeLayersKey()))
+//                .thenReturn(playersToExclude);
         presenter.onViewCreated(args);
-        presenter.onViewCreated();
+//        presenter.onViewCreated();
         verify(fragment).setAdapter(anyListOf(Player.class));
         verify(fragment).setPositionPlace("Attackers");
     }

@@ -126,7 +126,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.create_lineup_layout);
         ButterKnife.bind(this);
-        ((MainApplication) this.getApplication()).getUserComponent()
+        ((MainApplication) this.getApplication()).getAuthComponent()
                 .plus(new CreateLineupViewModule(this)).inject(this);
         this.setSupportActionBar(toolbar);
         if (this.getSupportActionBar() != null) {

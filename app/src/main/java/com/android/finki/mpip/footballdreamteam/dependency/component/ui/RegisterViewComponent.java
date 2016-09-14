@@ -1,4 +1,4 @@
-package com.android.finki.mpip.footballdreamteam.dependency.component;
+package com.android.finki.mpip.footballdreamteam.dependency.component.ui;
 
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.RegisterViewModule;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;

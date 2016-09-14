@@ -9,12 +9,10 @@ import com.android.finki.mpip.footballdreamteam.background.task.StoreTeamsTask;
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.database.service.PositionDBService;
 import com.android.finki.mpip.footballdreamteam.database.service.TeamDBService;
-import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
 import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.rest.web.PlayerApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.PositionApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
-import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
 import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.HomeViewPresenter;
 

@@ -30,7 +30,7 @@ public class UserDBServiceUnitTest {
     private UserDBService service;
 
     private final int userId = 1;
-    private User user = new User(userId, "User", "user@email.com", new Date(), new Date(), null);
+    private User user = new User(userId, "User", "user@email.com", "pass", new Date(), new Date());
 
     @Before
     public void setup() {

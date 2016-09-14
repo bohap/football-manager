@@ -24,6 +24,9 @@ import com.android.finki.mpip.footballdreamteam.utility.PlayerUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -31,7 +34,7 @@ import dagger.Provides;
  * Created by Borce on 09.08.2016.
  */
 @Module
-public class UserPersistenceModule {
+public class AuthPersistenceModule {
 
     /**
      * Provides instance of the LineupPlayerValidator.
@@ -84,7 +87,8 @@ public class UserPersistenceModule {
     @Provides
     @UserScope
     PlayerDBService providePlayerDBService(Context context, MainSQLiteOpenHelper dbHelper,
-                                           TeamDBService teamDBService, PositionDBService positionDBService) {
+                                           TeamDBService teamDBService,
+                                           PositionDBService positionDBService) {
         PlayerRepository repository = new PlayerRepository(context, dbHelper);
         return new PlayerDBService(repository, teamDBService, positionDBService);
     }
@@ -117,7 +121,8 @@ public class UserPersistenceModule {
     @Provides
     @UserScope
     CommentDBService provideCommentDBService(Context context, MainSQLiteOpenHelper dbHelper,
-                                 UserDBService userDBService, LineupDBService lineupDBService) {
+                                             UserDBService userDBService,
+                                             LineupDBService lineupDBService) {
         CommentRepository repository = new CommentRepository(context, dbHelper);
         return new CommentDBService(repository, userDBService, lineupDBService);
     }
@@ -135,8 +140,10 @@ public class UserPersistenceModule {
     @Provides
     @UserScope
     LineupPlayerDBService provideLineupPlayerDBService(Context context,
-                           MainSQLiteOpenHelper dbHelper, LineupDBService lineupDBService,
-                           PlayerDBService playerDBService, PositionDBService positionDBService) {
+                                                       MainSQLiteOpenHelper dbHelper,
+                                                       LineupDBService lineupDBService,
+                                                       PlayerDBService playerDBService,
+                                                       PositionDBService positionDBService) {
         LineupPlayerRepository repository = new LineupPlayerRepository(context, dbHelper);
         return new LineupPlayerDBService(repository, lineupDBService,
                 playerDBService, positionDBService);
@@ -154,7 +161,8 @@ public class UserPersistenceModule {
     @Provides
     @UserScope
     LikeDBService provideLikeDBService(Context context, MainSQLiteOpenHelper dbHelper,
-                                   UserDBService userDBService, LineupDBService lineupDBService) {
+                                       UserDBService userDBService,
+                                       LineupDBService lineupDBService) {
         LikeRepository repository = new LikeRepository(context, dbHelper);
         return new LikeDBService(repository, userDBService, lineupDBService);
     }

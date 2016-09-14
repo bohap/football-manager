@@ -52,10 +52,6 @@ public class SplashViewPresenter {
         if (userId == -1) {
             view.showLoginView();
         } else {
-            userDBService.open();
-            User user = userDBService.get(userId);
-            userDBService.close();
-            view.createUserComponent(user);
             view.showHomeView();
         }
     }

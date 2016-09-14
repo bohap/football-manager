@@ -21,6 +21,7 @@ import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.HomeViewModule;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
+import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.BaseFragment;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.CommentsFragment;
@@ -145,7 +146,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         this.setContentView(R.layout.home_layout);
 
         ButterKnife.bind(this);
-        ((MainApplication) this.getApplication()).getUserComponent()
+        ((MainApplication) this.getApplication()).getAuthComponent()
                 .plus(new HomeViewModule(this)).inject(this);
         this.setSupportActionBar(toolbar);
         this.changeTitle(title);
@@ -293,9 +294,9 @@ public class HomeActivity extends BaseActivity implements HomeView,
         super.onDestroy();
         presenter.onViewLayoutDestroyed();
         presenter.onViewDestroyed();
-        if (this.isFinishing()) {
-            ((MainApplication) this.getApplication()).releaseUserComponent();
-        }
+//        if (this.isFinishing()) {
+//            ((MainApplication) this.getApplication()).releaseAuthComponent();
+//        }
     }
 
     /**
@@ -492,7 +493,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
      */
     private void logout() {
         logger.info("logout options item selected");
-        presenter.logout();
+        ((MainApplication) this.getApplication()).releaseAuthComponent();
         this.startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
@@ -506,7 +507,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
     public void showLineupPlayersView(Lineup lineup) {
         logger.info("showLineupPlayersView");
         Intent intent = new Intent(this, LineupPlayersActivity.class);
-        intent.putExtra(LineupPlayersActivity.LINEUP_BUNDLE_KEY, lineup);
+        intent.putExtra(LineupPlayersView.LINEUP_BUNDLE_KEY, lineup);
         this.startActivity(intent);
     }
 

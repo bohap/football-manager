@@ -123,7 +123,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).onFragmentActive();
         }
-        ((MainApplication) this.getActivity().getApplication()).getUserComponent()
+        ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new LikeViewModule(this)).inject(this);
         presenter.onViewCreated(this.getArguments());
     }

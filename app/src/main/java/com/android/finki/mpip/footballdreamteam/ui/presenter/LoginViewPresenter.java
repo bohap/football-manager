@@ -189,8 +189,6 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
         AuthenticateUserResponse body = response.body();
         User user = new User(body.getId(), body.getName(), email, password, new Date(), new Date());
         userDBService.open();
-        userDBService.open();
-        userDBService.close();
         try {
             if (!userDBService.exists(user.getId())) {
                 userDBService.store(user);
@@ -207,17 +205,11 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             userDBService.close();
             return;
         }
-        User savedUser = userDBService.get(response.body().getId());
-        userDBService.close();
-        if (savedUser == null) {
-            throw new IllegalArgumentException("user was not saved");
-        }
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(AUTH_USER_ID_KEY, savedUser.getId());
+        editor.putInt(AUTH_USER_ID_KEY, user.getId());
         editor.putString(JWT_TOKEN_KEY, body.getJwtToken());
         editor.apply();
         if (viewLayoutCreated) {
-            view.createUserComponent(savedUser);
             view.showLoginSuccessful();
         }
     }

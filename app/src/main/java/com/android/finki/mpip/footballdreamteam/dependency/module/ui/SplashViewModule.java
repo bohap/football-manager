@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
-import com.android.finki.mpip.footballdreamteam.dependency.scope.ActivityScope;
-import com.android.finki.mpip.footballdreamteam.ui.activity.SplashActivity;
+import com.android.finki.mpip.footballdreamteam.dependency.scope.ViewScope;
 import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter;
 
@@ -33,7 +32,7 @@ public class SplashViewModule {
      * @return instance of SplashActivity presenter
      */
     @Provides
-    @ActivityScope
+    @ViewScope
     SplashViewPresenter provideSplashActivityPresenter(Context context,
                                                        SharedPreferences preferences, UserDBService service) {
         return new SplashViewPresenter(view, context, preferences, service);

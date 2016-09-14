@@ -43,8 +43,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     private String TEAMS_LOADED_KEY;
     private String POSITIONS_LOADED_KEY;
     private String PLAYERS_LOADED_KEY;
-    private String AUTH_USER_ID_KEY;
-    private String JWT_TOKEN;
     private Call<List<Team>> teamCall;
     private Call<List<Position>> positionCall;
     private Call<List<Player>> playerCall;
@@ -72,8 +70,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         this.TEAMS_LOADED_KEY = context.getString(R.string.preference_teams_loaded_key);
         this.POSITIONS_LOADED_KEY = context.getString(R.string.preference_positions_loaded_key);
         this.PLAYERS_LOADED_KEY = context.getString(R.string.preference_players_loaded_key);
-        this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
-        this.JWT_TOKEN = context.getString(R.string.preference_jwt_token_key);
     }
 
     /**
@@ -121,7 +117,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         if (playerCall != null) {
             playerCall.cancel();
         }
-        storePlayersTask.cancel(true);
+        storeTeamsTask.cancel(true);
         storePositionsTask.cancel(true);
         storePlayersTask.cancel(true);
     }
@@ -439,15 +435,5 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         if (viewLayoutCreated) {
             view.showPlayersStoringFailed();
         }
-    }
-
-    /**
-     * Remove the auth user data from the database.
-     */
-    public void logout() {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(AUTH_USER_ID_KEY, -1);
-        editor.putString(JWT_TOKEN, null);
-        editor.apply();
     }
 }

@@ -41,12 +41,12 @@ public class CommentRepositoryTest {
 
     private final int NUMBER_OF_USER_1_COMMENTS = 2;
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User 1", "user@user-1.com",
-            calendar1.getTime(), calendar.getTime(), null);
+    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "pass",
+            calendar1.getTime(), calendar.getTime());
     private final int NUMBER_OF_USER_2_COMMENTS = 1;
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User 2", "user@user-2.com",
-            calendar.getTime(), calendar.getTime(), null);
+    private User user2 = new User(user2Id, "User 2", "user@user-2.com", "pass",
+            calendar.getTime(), calendar.getTime());
 
     private final int NUMBER_OF_LINEUP_1_COMMENTS = 2;
     private final int lineup1Id = 1;

@@ -7,6 +7,9 @@ import com.android.finki.mpip.footballdreamteam.rest.utils.ErrorInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -69,7 +72,7 @@ public class NetModule {
      * @return OkHttpClient builder
      */
     @Provides
-    OkHttpClient.Builder providesOkHttpClientBuild(ErrorInterceptor errorInterceptor) {
+    OkHttpClient.Builder providesOkHttpClientBuilder(ErrorInterceptor errorInterceptor) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.connectTimeout(60, TimeUnit.SECONDS);
         builder.writeTimeout(60, TimeUnit.SECONDS);
@@ -110,8 +113,8 @@ public class NetModule {
     /**
      * Provides instance of the Retrofit for requests that don't need authentication token.
      *
-     * @param baseUrl base api url
-     * @param client instance of un authenticated OkHttpClient
+     * @param baseUrl              base api url
+     * @param client               instance of un authenticated OkHttpClient
      * @param gsonConverterFactory instance of GSON converter factory
      * @return instance of Retrofit
      */
@@ -119,8 +122,8 @@ public class NetModule {
     @Named("un_authenticated")
     @Singleton
     Retrofit provideUnAuthenticatedRetrofit(@Named("api_base_url") String baseUrl,
-                                    @Named("un_authenticated") OkHttpClient client,
-                                    GsonConverterFactory gsonConverterFactory) {
+                                            @Named("un_authenticated") OkHttpClient client,
+                                            GsonConverterFactory gsonConverterFactory) {
         return new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(client)
