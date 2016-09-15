@@ -522,6 +522,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         LikeFragment fragment = LikeFragment.newInstance(lineup);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
     }
@@ -537,6 +538,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         CommentsFragment fragment = CommentsFragment.newInstance(lineup.getId());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
     }

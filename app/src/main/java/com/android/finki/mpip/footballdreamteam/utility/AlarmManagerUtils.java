@@ -18,7 +18,7 @@ public class AlarmManagerUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AlarmManagerUtils.class);
     private static final int USER_STATISTIC_SERVICE_REQUEST_CODE = 0;
-    private static final int USER_STATISTIC_SERVICE_REPEATING_MILLS = 30000;
+    private static final int USER_STATISTIC_SERVICE_REPEATING_MILLS = 10 * 60 * 1000;
     private Context context;
     private AlarmManager manager;
 
@@ -44,10 +44,10 @@ public class AlarmManagerUtils {
      */
     public void setupUserStatisticRepeatingService() {
         logger.info("setupUserStatisticRepeatingService");
-        long triggerAtMills = SystemClock.elapsedRealtime() +
-                USER_STATISTIC_SERVICE_REPEATING_MILLS;
+        long triggerAtMills = SystemClock.elapsedRealtime() + 10000;
         manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMills,
-                USER_STATISTIC_SERVICE_REPEATING_MILLS, this.getUserStatisticServicePendingIntent());
+                USER_STATISTIC_SERVICE_REPEATING_MILLS,
+                this.getUserStatisticServicePendingIntent());
     }
 
     /**

@@ -118,12 +118,13 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     /**
-     * Show the register activity when the register button is clicked.
+     * Show the onBtnRegisterClick activity when the onBtnRegisterClick button is clicked.
      */
     @OnClick(R.id.loginLayout_btnRegister)
-    void register() {
+    void onBtnRegisterClick() {
         logger.info("btn 'Register' clicked");
         this.startActivity(new Intent(this, RegisterActivity.class));
+//        this.overridePendingTransition(R.anim.enter_from_left, R.anim.exit_from_right);
     }
 
     /**

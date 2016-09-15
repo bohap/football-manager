@@ -112,6 +112,15 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     }
 
     /**
+     * Called when the back button is pressed.
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        this.overridePendingTransition(R.anim.enter_from_left, R.anim.exit_from_right);
+    }
+
+    /**
      * Called when a options item is selected.
      *
      * @param item selected item
@@ -121,7 +130,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     public boolean onOptionsItemSelected(MenuItem item) {
         logger.info("onOptionsItemSelected");
         if (item.getItemId() == android.R.id.home) {
-            super.onBackPressed();
+            this.onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -253,7 +262,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     }
 
     /**
-     * Called when a register request has been send.
+     * Called when a onBtnRegisterClick request has been send.
      */
     @Override
     public void showRegistering() {

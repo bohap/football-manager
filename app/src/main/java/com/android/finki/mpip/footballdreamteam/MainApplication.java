@@ -104,7 +104,6 @@ public class MainApplication extends Application {
                 .netModule(getNetModule())
                 .userModule(getAuthModule())
                 .build();
-        appComponent.inject(this);
     }
 
     /**
@@ -131,13 +130,14 @@ public class MainApplication extends Application {
      */
     public void createAuthComponent() {
         if (authComponent == null) {
+            appComponent.inject(this);
             User user = authUserUtils.authenticate();
             if (user == null) {
                 throw new IllegalArgumentException("auth user not set");
             }
             logger.info(String.format("Creating AuthComponent for user with id %d.", user.getId()));
             authComponent = appComponent.plus(getAuthModule(user));
-            alarmManagerUtils.setupUserStatisticRepeatingService();
+//            alarmManagerUtils.setupUserStatisticRepeatingService();
         }
     }
 

@@ -134,7 +134,7 @@ public class LoginActivityTest {
     }
 
     /**
-     * Test that when register btn is clicked a new activity will be started
+     * Test that when onBtnRegisterClick btn is clicked a new activity will be started
      * and the current will be finished
      */
     @Test
