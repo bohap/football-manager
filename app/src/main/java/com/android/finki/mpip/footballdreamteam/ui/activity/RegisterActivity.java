@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.RegisterViewModule;
-import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.component.RegisterView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.RegisterViewPresenter;
 
