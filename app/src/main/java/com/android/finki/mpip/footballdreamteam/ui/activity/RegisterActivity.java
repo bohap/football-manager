@@ -262,7 +262,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     }
 
     /**
-     * Called when a onBtnRegisterClick request has been send.
+     * Called when the register request has been send.
      */
     @Override
     public void showRegistering() {
