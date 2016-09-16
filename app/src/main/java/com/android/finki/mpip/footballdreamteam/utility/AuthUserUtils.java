@@ -18,6 +18,7 @@ public class AuthUserUtils {
     private static final Logger logger = LoggerFactory.getLogger(AuthUserUtils.class);
     private String AUTH_USER_ID_KEY;
     private String JWT_TOKEN_KEY;
+    private String USER_STATISTIC_LAST_CHECKED_KEY;
     private SharedPreferences preferences;
     private UserDBService dbService;
 
@@ -25,6 +26,8 @@ public class AuthUserUtils {
                          UserDBService dbService) {
         this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
         this.JWT_TOKEN_KEY = context.getString(R.string.preference_jwt_token_key);
+        this.USER_STATISTIC_LAST_CHECKED_KEY = context
+                .getString(R.string.preference_user_statistic_service_last_check_mills);
         this.preferences = preferences;
         this.dbService = dbService;
     }
@@ -59,6 +62,7 @@ public class AuthUserUtils {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(AUTH_USER_ID_KEY, -1);
         editor.putString(JWT_TOKEN_KEY, null);
+        editor.remove(USER_STATISTIC_LAST_CHECKED_KEY);
         editor.apply();
     }
 }

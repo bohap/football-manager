@@ -12,6 +12,7 @@ import android.support.v4.app.TaskStackBuilder;
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
+import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.rest.web.UsersApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.LineupPlayersActivity;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupPlayersView;
@@ -29,11 +30,12 @@ import javax.inject.Inject;
 public class UserStatisticService extends IntentService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserStatisticService.class);
-    private static final String name = "BACKGROUND_SERVICE";
+    private static final String name = "USER_STATISTIC";
     private SharedPreferences preferences;
     private NotificationManager notificationManager;
     private String key;
     private UsersApi api;
+    private User user;
 
     public UserStatisticService() {
         super(name);
@@ -70,6 +72,16 @@ public class UserStatisticService extends IntentService {
     }
 
     /**
+     * Set the instance of the authenticated user.
+     *
+     * @param user authenticated user
+     */
+    @Inject
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
      * Called when the background service is ready to be created.
      */
     @Override
@@ -79,7 +91,7 @@ public class UserStatisticService extends IntentService {
         MainApplication application = (MainApplication) this.getApplication();
         application.createAuthComponent();
         application.getAuthComponent().plus().inject(this);
-        this.key = this.getString(R.string.preference_background_service_last_check_mills);
+        this.key = this.getString(R.string.preference_user_statistic_service_last_check_mills);
     }
 
     /**
@@ -144,6 +156,7 @@ public class UserStatisticService extends IntentService {
      * @param lineup lineup that will be in the pending intent
      */
     private PendingIntent getPendingIntent(Lineup lineup) {
+        lineup.setUser(user);
         Intent intent = new Intent(this, LineupPlayersActivity.class);
         intent.putExtra(LineupPlayersView.LINEUP_BUNDLE_KEY, lineup);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);

@@ -6,7 +6,7 @@
     <string name="preference_teams_loaded_key">teams_loaded</string>
     <string name="preference_positions_loaded_key">positions_loaded</string>
     <string name="preference_players_loaded_key">players_loaded</string>
-    <string name="preference_background_service_last_check_mills">
+    <string name="preference_user_statistic_service_last_check_mills">
         background_service_last_check_mills
     </string>
 </resources>
