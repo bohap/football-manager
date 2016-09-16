@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
     private Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
     private ListPositionPlayersViewPresenter presenter;
     private PositionUtils utils;
+    private float startX;
+    private float startY;
 
     @BindView(R.id.positionPlayersLayout_headerText)
     TextView txtPositionPlace;
@@ -48,11 +51,15 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
     /**
      * Create a new instance of the fragment.
      *
-     * @param place position place on the field for which the player will be listed
+     * @param place            position place on the field for which the player will be listed
+     * @param playersToExclude players ids that should be excluded from the list
+     * @param startX           view start position on x axis (user for animation)
+     * @param startY           view start position on y axis (user for animation)
      * @return new instance of the fragment
      */
     public static ListPositionPlayersFragment newInstance(PositionUtils.POSITION_PLACE place,
-                                                          int[] playersToExclude) {
+                                                          int[] playersToExclude,
+                                                          float startX, float startY) {
         if (place == null) {
             throw new IllegalArgumentException("position place can't be null");
         }
@@ -63,6 +70,8 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         Bundle args = new Bundle();
         args.putSerializable(PLACE_KEY, place);
         args.putIntArray(EXCLUDE_LAYERS_KEY, playersToExclude);
+        args.putFloat(START_X_KEY, startX);
+        args.putFloat(START_Y_KEY, startY);
         fragment.setArguments(args);
         return fragment;
     }
@@ -101,7 +110,10 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         }
         ((MainApplication) this.getActivity().getApplication()).getAuthComponent()
                 .plus(new ListPositionPlayersViewModule(this)).inject(this);
-        presenter.onViewCreated(this.getArguments());
+        Bundle args = this.getArguments();
+        presenter.onViewCreated(args);
+        this.startX = args.getFloat(START_X_KEY, 0);
+        this.startY = args.getFloat(START_Y_KEY, 0);
     }
 
     /**
@@ -120,7 +132,22 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         View view = inflater.inflate(R.layout.position_players_layout, container, false);
         ButterKnife.bind(this, view);
         presenter.onViewLayoutCreated();
+        ScaleAnimation animation = new ScaleAnimation(0, 1, 0, 1, startX, startY);
+        animation.setDuration(200);
+        view.setAnimation(animation);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        View view = this.getView();
+        if (view != null) {
+            ScaleAnimation animation = new ScaleAnimation(1, 0, 1, 0, startX, startY);
+            animation.setDuration(200);
+            view.setAnimation(animation);
+            view.setAnimation(animation);
+        }
     }
 
     /**

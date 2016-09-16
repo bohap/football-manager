@@ -11,6 +11,8 @@ public interface ListPositionPlayersView {
 
     String PLACE_KEY = "place";
     String EXCLUDE_LAYERS_KEY = "exclude_players";
+    String START_X_KEY = "start_x";
+    String START_Y_KEY = "start_y";
 
     void setAdapter(List<Player> players);
 

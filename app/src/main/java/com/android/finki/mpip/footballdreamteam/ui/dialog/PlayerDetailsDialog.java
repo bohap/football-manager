@@ -109,6 +109,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         logger.info("onCreateView");
+        this.getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         View view = inflater.inflate(R.layout.player_details_layout, container, false);
         this.getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         ButterKnife.bind(this, view);

@@ -224,8 +224,10 @@ public class LineupFormationViewPresenter {
      * Handle click on the player.
      *
      * @param positionResourceId android position resource id
+     * @param startX player x position in the layout
+     * @param startY player y position in the layout
      */
-    public void onPlayerClick(int positionResourceId) {
+    public void onPlayerClick(int positionResourceId, int startX, int startY) {
         if (mappedPlayers == null) {
             throw new IllegalArgumentException("map for the players is not yet generated");
         }
@@ -249,7 +251,8 @@ public class LineupFormationViewPresenter {
                 }
             }
             if (viewLayoutCreated) {
-                view.showListPositionPlayersView(place, ArrayUtils.toInt(playersToExclude));
+                view.showListPositionPlayersView(place,
+                        ArrayUtils.toInt(playersToExclude), startX, startY);
             }
         } else {
             throw new IllegalArgumentException(String.format("invalid player id, %d", playerId));

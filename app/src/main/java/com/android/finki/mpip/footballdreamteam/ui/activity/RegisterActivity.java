@@ -116,7 +116,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        this.overridePendingTransition(R.anim.enter_from_left, R.anim.exit_from_right);
+        this.overridePendingTransition(R.anim.hold, R.anim.exit_from_right);
     }
 
     /**

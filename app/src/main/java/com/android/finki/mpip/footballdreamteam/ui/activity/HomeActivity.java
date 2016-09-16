@@ -294,9 +294,6 @@ public class HomeActivity extends BaseActivity implements HomeView,
         super.onDestroy();
         presenter.onViewLayoutDestroyed();
         presenter.onViewDestroyed();
-//        if (this.isFinishing()) {
-//            ((MainApplication) this.getApplication()).releaseAuthComponent();
-//        }
     }
 
     /**
@@ -522,7 +519,8 @@ public class HomeActivity extends BaseActivity implements HomeView,
         LikeFragment fragment = LikeFragment.newInstance(lineup);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
-//        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top,
+                R.anim.enter_from_top, R.anim.exit_from_bottom);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
     }
@@ -538,7 +536,8 @@ public class HomeActivity extends BaseActivity implements HomeView,
         CommentsFragment fragment = CommentsFragment.newInstance(lineup.getId());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(ListLineupsFragment.TAG);
-//        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top,
+                R.anim.enter_from_top, R.anim.exit_from_bottom);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
     }

@@ -32,9 +32,14 @@
     </style>
     <!--Main Content-->
     <style name="MainContent">
-        <!--<item name="android:background">@drawable/bgg</item>-->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingLeft">@dimen/base_horizontalMargin</item>
+        <item name="android:paddingRight">@dimen/base_horizontalMargin</item>
+        <item name="android:paddingTop">@dimen/base_verticalMargin</item>
+        <item name="android:paddingBottom">@dimen/base_verticalMargin</item>
+    </style>
+    <style name="RootView.MainContent">
         <item name="android:paddingLeft">@dimen/base_horizontalMargin</item>
         <item name="android:paddingRight">@dimen/base_horizontalMargin</item>
         <item name="android:paddingTop">@dimen/base_verticalMargin</item>
@@ -354,9 +359,8 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/tinyTextSize</item>
     </style>
-
     <!--PlayerDetails Dialog-->
-    <style name="PlayerDetailsInfo">
+    <style name="PlayerDetailsInfo" parent="@android:style/Theme.Dialog">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/smallTextSize</item>
@@ -366,5 +370,10 @@
     <style name="PlayerDetailsInfo.Label">
         <item name="android:layout_marginRight">@dimen/base_horizontalMargin</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    <!--Dialog animations-->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/zoom_in</item>
+        <item name="android:windowExitAnimation">@anim/zoom_out</item>
     </style>
 </resources>

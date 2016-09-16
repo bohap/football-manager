@@ -34,7 +34,7 @@ import butterknife.Unbinder;
  * Created by Borce on 13.08.2016.
  */
 public class LineupFormationFragment extends BaseFragment implements LineupFormationView,
-                                                                    View.OnClickListener {
+        View.OnClickListener {
 
     private static Logger logger = LoggerFactory.getLogger(LineupFormationFragment.class);
     public static final String TAG = "LineupFormationFragment";
@@ -124,7 +124,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * Create a new instance of the fragment.
      *
      * @param formation lineup formation
-     * @param players list of players that are already in the lineup
+     * @param players   list of players that are already in the lineup
      * @return LineupFormation fragment instance
      */
     public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation,
@@ -296,29 +296,33 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     @Override
     public void onClick(View view) {
         logger.info("player clicked");
-        presenter.onPlayerClick(view.getId());
+        int [] location = new int[2];
+        view.getLocationOnScreen(location);
+        presenter.onPlayerClick(view.getId(), location[0], location[1]);
     }
 
     /**
      * Show the ListPlayers fragment.
      *
-     * @param place position place on the field for which the players should be listed
+     * @param place            position place on the field for which the players should be listed
      * @param playersToExclude array of players id to exclude from the list
+     * @param startX           view x position
+     * @param startY           view y position
      */
     @Override
     public void showListPositionPlayersView(PositionUtils.POSITION_PLACE place,
-                                            int[] playersToExclude) {
+                                            int[] playersToExclude, int startX, int startY) {
         logger.info("showListPositionsPlayersView");
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity())
-                    .showListPositionPlayersFragment(place, playersToExclude);
+                    .showListPositionPlayersFragment(place, playersToExclude, startX, startY);
         }
     }
 
     /**
      * Show PlayerDetails fragment.
      *
-     * @param id player id
+     * @param id       player id
      * @param editable whatever the player is editable
      */
     @Override
@@ -413,7 +417,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     public interface Listener {
 
         void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
-                                             int[] playersToExclude);
+                                             int[] playersToExclude, int startX, int startY);
 
         void showPlayerDetailsDialog(int id, boolean editable);
 

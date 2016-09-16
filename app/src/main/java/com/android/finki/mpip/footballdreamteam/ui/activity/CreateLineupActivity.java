@@ -250,12 +250,15 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
      *
      * @param place            place on the field for which the players will be showed
      * @param playersToExclude what players to exclude from the list
+     * @param startX           x position of the view (player) that was clicked
+     * @param startY           y position of the view (player) that was clicked
      */
     @Override
     public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
-                                                int[] playersToExclude) {
+                                                int[] playersToExclude,
+                                                int startX, int startY) {
         logger.info("showListPositionPlayersFragment");
-        super.showListPositionPlayersFragment(place, playersToExclude);
+        super.showListPositionPlayersFragment(place, playersToExclude, startX, startY);
     }
 
     /**

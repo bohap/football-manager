@@ -118,14 +118,15 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
      * @param playersToExclude players to exclude from the list
      */
     void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
-                                         int[] playersToExclude) {
+                                         int[] playersToExclude, int startX, int startY) {
         this.checkLineupFormationFragmentVisibility();
         FragmentManager manager = this.getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         ListPositionPlayersFragment fragment = ListPositionPlayersFragment
-                .newInstance(place, playersToExclude);
+                .newInstance(place, playersToExclude, startX, startY);
         transaction.addToBackStack(LineupFormationFragment.TAG);
         transaction.replace(R.id.content, fragment);
+
         transaction.commit();
         this.toggleBtnChangeFormation(false);
     }

@@ -13,7 +13,8 @@ public interface LineupFormationView {
 
     void bindPlayers();
 
-    void showListPositionPlayersView(PositionUtils.POSITION_PLACE place, int[] playersToExclude);
+    void showListPositionPlayersView(PositionUtils.POSITION_PLACE place,
+                                     int[] playersToExclude, int startX, int startY);
 
     void showPlayerDetailsView(int playerId, boolean editable);
 

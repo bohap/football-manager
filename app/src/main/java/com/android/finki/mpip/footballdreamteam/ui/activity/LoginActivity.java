@@ -124,7 +124,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     void onBtnRegisterClick() {
         logger.info("btn 'Register' clicked");
         this.startActivity(new Intent(this, RegisterActivity.class));
-//        this.overridePendingTransition(R.anim.enter_from_left, R.anim.exit_from_right);
+        this.overridePendingTransition(R.anim.enter_from_left, R.anim.hold);
     }
 
     /**

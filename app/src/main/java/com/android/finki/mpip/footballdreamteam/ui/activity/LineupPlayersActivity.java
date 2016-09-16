@@ -419,12 +419,15 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      *
      * @param place            position place
      * @param playersToExclude players to exclude from the list
+     * @param startX           x position of the view (player) that was clicked
+     * @param startY           y position of the view (player) that was clicked
      */
     @Override
     public void showListPositionPlayersFragment(PositionUtils.POSITION_PLACE place,
-                                                int[] playersToExclude) {
+                                                int[] playersToExclude,
+                                                int startX, int startY) {
         logger.info("showListPositionPlayersFragment");
-        super.showListPositionPlayersFragment(place, playersToExclude);
+        super.showListPositionPlayersFragment(place, playersToExclude, startX, startY);
     }
 
     /**
@@ -498,6 +501,8 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
         LikeFragment fragment = LikeFragment.newInstance(presenter.getLineup());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(LineupFormationFragment.TAG);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top,
+                R.anim.enter_from_top, R.anim.exit_from_bottom);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
         this.toggleBtnChangeFormation(false);
@@ -512,6 +517,8 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
         CommentsFragment fragment = CommentsFragment.newInstance(presenter.getLineup().getId());
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(LineupFormationFragment.TAG);
+        transaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.exit_from_top,
+                R.anim.enter_from_top, R.anim.exit_from_bottom);
         transaction.replace(R.id.content, fragment);
         transaction.commit();
         this.toggleBtnChangeFormation(false);
