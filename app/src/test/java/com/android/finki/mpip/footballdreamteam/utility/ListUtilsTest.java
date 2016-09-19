@@ -1,61 +1,39 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
-import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.User;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 /**
  * Created by Borce on 07.08.2016.
  */
 public class ListUtilsTest {
 
-    Map<String, List<String>> map = new LinkedHashMap<>();
-
-    private final int NUMBER_OF_ITEMS = 9;
-    private final String string1 = "Value 1";
-    private final String string2 = "Value 2";
-    private final String string3 = "Value 3";
-    private final String string4 = "Value 4";
-    private final String string5 = "Value 5";
-    private final String string6 = "Value 6";
-    private final String string7 = "Value 7";
-    private final String string8 = "Value 8";
-    private final String string9 = "Value 9";
+    private Map<String, List<String>> map = new LinkedHashMap<>();
+    private List<String> values = new ArrayList<>();
 
     /**
      * Put some test values into the map.
      */
     @Before
     public void setup() {
-        List<String> element = new ArrayList<>();
-        element.add(string1);
-        element.add(string2);
-        element.add(string3);
-        map.put("key 1", element);
-        element = new ArrayList<>();
-        element.add(string4);
-        element.add(string5);
-        element.add(string6);
-        map.put("key 2", element);
-        element = new ArrayList<>();
-        element.add(string7);
-        element.add(string8);
-        element.add(string9);
-        map.put("key 3", element);
+        List<String> mapElements = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            String value = String.format("Value %d", i + 1);
+            values.add(value);
+            mapElements.add(value);
+            if ((i + 1) % 3 == 0) {
+                map.put(String.format("key %d", i + 1), mapElements);
+                mapElements = new ArrayList<>();
+            }
+        }
     }
 
     /**
@@ -64,17 +42,10 @@ public class ListUtilsTest {
     @Test
     public void testAsList() {
         List<String> list = ListUtils.asList(map);
-        assertNotNull(list);
-        assertEquals(NUMBER_OF_ITEMS, list.size());
-        assertEquals(string1, list.get(0));
-        assertEquals(string2, list.get(1));
-        assertEquals(string3, list.get(2));
-        assertEquals(string4, list.get(3));
-        assertEquals(string5, list.get(4));
-        assertEquals(string6, list.get(5));
-        assertEquals(string7, list.get(6));
-        assertEquals(string8, list.get(7));
-        assertEquals(string9, list.get(8));
+        assertEquals(values.size(), list.size());
+        for (int i = 0; i < values.size(); i++) {
+            assertEquals(values.get(i), list.get(i));
+        }
     }
 
     /**
@@ -102,5 +73,64 @@ public class ListUtilsTest {
         assertEquals(2, result.size());
         assertEquals(1, result.get(0).intValue());
         assertEquals(4, result.get(1).intValue());
+    }
+
+    /**
+     * Test the behavior when concat is called with null as the first param.
+     */
+    @Test
+    public void testConcatOnNullFirstParam() {
+        List<Integer> list1 = Arrays.asList(0, 2, 3);
+        assertEquals(0, ListUtils.concat(null, list1).size());
+    }
+
+    /**
+     * Test the behavior when concat is called with null as the first param.
+     */
+    @Test
+    public void testConcatOnNullSecondParam() {
+        List<Integer> list1 = Arrays.asList(0, 2, 3);
+        assertEquals(0, ListUtils.concat(list1, null).size());
+    }
+
+    /**
+     * Test the result on the concat method.
+     */
+    @Test
+    public void testConcat() {
+        List<Integer> list1 = Arrays.asList(0, 2, 3);
+        List<Integer> list2 = Arrays.asList(1, 2, 3, 10, 100, 500);
+        List<Integer> expected = Arrays.asList(0, 2, 3, 1, 10, 100, 500);
+        List<Integer> result = ListUtils.concat(list1, list2);
+        assertEquals(expected.size(), result.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), result.get(i));
+        }
+    }
+
+    /**
+     * Test the result on the concat called when the first param is empty list.
+     */
+    @Test
+    public void testConcatOnEmptyFirstList() {
+        List<Integer> list = Arrays.asList(1, 2, 3, 10, 100, 500);
+        List<Integer> result = ListUtils.concat(new ArrayList<Integer>(), list);
+        assertEquals(list.size(), result.size());
+        for (int i = 0; i < list.size(); i++) {
+            assertEquals(list.get(i), result.get(i));
+        }
+    }
+
+    /**
+     * Test the result on the concat called when the second param is empty list.
+     */
+    @Test
+    public void testConcatOnEmptySecondList() {
+        List<Integer> list = Arrays.asList(1, 2, 3, 10, 100, 500);
+        List<Integer> result = ListUtils.concat(list, new ArrayList<Integer>());
+        assertEquals(list.size(), result.size());
+        for (int i = 0; i < list.size(); i++) {
+            assertEquals(list.get(i), result.get(i));
+        }
     }
 }

@@ -341,7 +341,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
             try {
                 boolean result;
                 if (lineupExistsInDatabase) {
-                    result = lineupPlayerDBService.updatePlayers(lineup.getId(), lineupPlayers);
+                    result = lineupPlayerDBService.syncPlayers(lineup.getId(), lineupPlayers);
                 } else {
                     result = lineupPlayerDBService.storePlayers(lineupPlayers);
                 }

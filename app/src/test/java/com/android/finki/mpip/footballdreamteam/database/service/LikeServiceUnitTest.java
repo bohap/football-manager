@@ -1,7 +1,5 @@
 package com.android.finki.mpip.footballdreamteam.database.service;
 
-import android.view.ViewDebug;
-
 import com.android.finki.mpip.footballdreamteam.database.repository.LikeRepository;
 import com.android.finki.mpip.footballdreamteam.exception.ForeignKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.exception.LikeException;
@@ -13,8 +11,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 05.08.2016.
@@ -128,9 +128,7 @@ public class LikeServiceUnitTest {
         when(repository.get(userId, lineupId)).thenReturn(null);
         when(repository.store(like)).thenReturn(true);
         LineupLike stored = service.store(like);
-        assertNotNull(stored);
-        assertEquals(userId, stored.getUserId());
-        assertEquals(lineupId, stored.getLineupId());
+        assertSame(like, stored);
     }
 
     /**

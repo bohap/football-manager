@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -38,7 +39,6 @@ public class PlayerRepositoryUnitTest {
 
     private PlayerRepository repository;
 
-    private final int NUMBER_OF_COLUMNS = 6;
     private String COLUMN_ID = "id";
     private String COLUMN_TEAM_ID = "team_id";
     private String COLUMN_POSITION_ID = "position_id";
@@ -46,18 +46,15 @@ public class PlayerRepositoryUnitTest {
     private String COLUMN_NATIONALITY = "nationality";
     private String COLUMN_DATE_OF_BIRTH = "data_of_birth";
     private String TEAMS_TABLE_NAME = "teams";
-    private String TEAMS_COLUMN_ID = "id";
     private String TEAMS_COLUMN_NAME = "name";
     private String POSITIONS_TABLE_NAME = "positions";
-    private String POSITIONS_COLUMN_ID = "id";
     private String POSITIONS_COLUMN_NAME = "name";
-
-    private final int year = 2016, month = 7, day = 31;
-    private Calendar calendar = new GregorianCalendar(year, month, day);
+    private Calendar calendar = new GregorianCalendar(2016, 6, 31);
+    private Date date = calendar.getTime();
+    private String sDate = DateUtils.format(date);
     private Team team = new Team(1, "Team");
     private Position position = new Position(1, "position");
-    private Player player = new Player(1, team, position, "Player",
-            "Nationality", calendar.getTime(), 0);
+    private Player player = new Player(1, team, position, "Player", "Nationality", date, 0);
 
     @Before
     public void setup() {
@@ -77,10 +74,10 @@ public class PlayerRepositoryUnitTest {
         when(context.getString(R.string.players_column_date_of_birth))
                 .thenReturn(COLUMN_DATE_OF_BIRTH);
         when(context.getString(R.string.teams_table_name)).thenReturn(TEAMS_TABLE_NAME);
-        when(context.getString(R.string.teams_column_id)).thenReturn(TEAMS_COLUMN_ID);
+        when(context.getString(R.string.teams_column_id)).thenReturn("id");
         when(context.getString(R.string.teams_column_name)).thenReturn(TEAMS_COLUMN_NAME);
         when(context.getString(R.string.positions_table_name)).thenReturn(POSITIONS_TABLE_NAME);
-        when(context.getString(R.string.positions_column_id)).thenReturn(POSITIONS_COLUMN_ID);
+        when(context.getString(R.string.positions_column_id)).thenReturn("id");
         when(context.getString(R.string.positions_column_name)).thenReturn(POSITIONS_COLUMN_NAME);
     }
 
@@ -100,7 +97,7 @@ public class PlayerRepositoryUnitTest {
                 .thenReturn(player.getNationality());
         when(cursor.getColumnIndex(COLUMN_DATE_OF_BIRTH)).thenReturn(5);
         when(cursor.getString(cursor.getColumnIndex(COLUMN_DATE_OF_BIRTH)))
-                .thenReturn(DateUtils.format(player.getDateOfBirth()));
+                .thenReturn(sDate);
         String column = String.format("%s_%s", TEAMS_TABLE_NAME, TEAMS_COLUMN_NAME);
         when(cursor.getColumnIndex(column)).thenReturn(6);
         when(cursor.getString(cursor.getColumnIndex(column))).thenReturn(team.getName());
@@ -116,19 +113,11 @@ public class PlayerRepositoryUnitTest {
     public void testMapCursor() {
         this.initCursor();
         Player mapped = repository.mapCursor(cursor);
-        assertNotNull(mapped);
-        assertEquals(player.getId(), mapped.getId());
-        assertEquals(player.getTeamId(), mapped.getTeamId());
-        assertEquals(player.getPositionId(), mapped.getPositionId());
-        assertEquals(player.getName(), mapped.getName());
-        assertEquals(player.getNationality(), mapped.getNationality());
-        assertEquals(player.getDateOfBirth(), mapped.getDateOfBirth());
+        assertTrue(player.same(mapped));
         Team mTeam = mapped.getTeam();
-        assertEquals(team.getId().intValue(), mTeam.getId().intValue());
-        assertEquals(team.getName(), mTeam.getName());
+        assertTrue(team.same(mTeam));
         Position mPosition = mapped.getPosition();
-        assertEquals(position.getId().intValue(), mPosition.getId().intValue());
-        assertEquals(position.getName(), mPosition.getName());
+        assertTrue(position.same(mPosition));
     }
 
     /**
@@ -137,12 +126,11 @@ public class PlayerRepositoryUnitTest {
     @Test
     public void testPutValues() {
         Map<String, String> map = repository.putValues(player);
-        assertEquals(NUMBER_OF_COLUMNS, map.size());
         assertEquals(player.getId().toString(), map.get(COLUMN_ID));
         assertEquals(String.valueOf(player.getTeamId()), map.get(COLUMN_TEAM_ID));
         assertEquals(String.valueOf(player.getPositionId()), map.get(COLUMN_POSITION_ID));
         assertEquals(player.getName(), map.get(COLUMN_NAME));
         assertEquals(player.getNationality(), map.get(COLUMN_NATIONALITY));
-        assertEquals(DateUtils.format(player.getDateOfBirth()), map.get(COLUMN_DATE_OF_BIRTH));
+        assertEquals(sDate, map.get(COLUMN_DATE_OF_BIRTH));
     }
 }

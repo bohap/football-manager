@@ -7,7 +7,7 @@ import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
-import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +17,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,7 +25,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -38,45 +38,41 @@ public class LineupRepositoryTest {
     private LineupRepository repository;
     private UserRepository userRepository;
 
-    private int year = 2016, month = 8, day = 1, hour = 14, minute = 15, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
+    private Calendar calendar = new GregorianCalendar(2016, 7, 1, 14, 15, 10);
+    private Date date = calendar.getTime();
 
-    private final int NUMBER_OF_USER_1_LINEUPS = 2;
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User", "user@user1.com", "pass",
-            calendar.getTime(), calendar.getTime());
-    private final int NUMBER_OF_USER_2_LINEUPS = 1;
+    private User user1 = new User(user1Id, "User", "user@user1.com", "pass", date, date);
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User", "user@user2.com","pass",
-            calendar.getTime(), calendar.getTime());
+    private User user2 = new User(user2Id, "User", "user@user2.com", "pass", date, date);
 
     private final int NUMBER_OF_LINEUPS = 3;
     private final int lineup1Id = 1;
-    private Lineup lineup1 = new Lineup(lineup1Id, user1Id, calendar.getTime(),
-            calendar.getTime());
+    private Lineup lineup1 = new Lineup(lineup1Id, user1Id, date, date);
     private final int lineup2Id = 2;
-    private Lineup lineup2 = new Lineup(lineup2Id, user1Id, calendar.getTime(),
-            calendar.getTime());
+    private Lineup lineup2 = new Lineup(lineup2Id, user1Id, date, date);
     private final int lineup3Id = 3;
-    private Lineup lineup3 = new Lineup(lineup3Id, user2Id, calendar.getTime(),
-            calendar.getTime());
+    private Lineup lineup3 = new Lineup(lineup3Id, user2Id, date, date);
     private final int unExistingLineupId = 4;
-    private Lineup unExistingLineup = new Lineup(unExistingLineupId, user2Id, calendar.getTime(),
-            calendar.getTime());
+    private Lineup unExistingLineup = new Lineup(unExistingLineupId, user2Id, date, date);
+    private List<Lineup> user1Lineups = Arrays.asList(lineup1, lineup2);
 
     /**
      * Create a new instances of the repositories, open the connection and seed the tables.
      */
     @Before
     public void setup() {
+        Base64Utils base64Utils = new Base64Utils();
         Context context = RuntimeEnvironment.application.getBaseContext();
         MainSQLiteOpenHelper dbHelper = new MainSQLiteOpenHelper(context);
-        userRepository = new UserRepository(context, dbHelper);
+        userRepository = new UserRepository(context, dbHelper, base64Utils);
         repository = new LineupRepository(context, dbHelper);
         userRepository.open();
         repository.open();
+        /* Seed the users table */
         userRepository.store(user1);
         userRepository.store(user2);
+        /* Seed the lineups table */
         repository.store(lineup1);
         repository.store(lineup2);
         repository.store(lineup3);
@@ -92,14 +88,23 @@ public class LineupRepositoryTest {
     }
 
     /**
-     * Assert that the given lineup data is valid.
+     * Assert that the lists are same.
      *
-     * @param compare actual lineup
-     * @param lineup  Lineup to be compared
+     * @param expectedList expected list of lineups
+     * @param actualList actual list of lineups
      */
-    private void assertLineup(Lineup compare, Lineup lineup) {
-        assertNotNull(lineup);
-        assertEquals(compare.getId(), lineup.getId());
+    private void assertList(List<Lineup> expectedList, List<Lineup> actualList) {
+        assertEquals(expectedList.size(), actualList.size());
+        int count = 0;
+        for (Lineup expected : expectedList) {
+            for (Lineup actual : actualList) {
+                if (expected.equals(actual)) {
+                    assertTrue(expected.same(actual));
+                    count++;
+                }
+            }
+        }
+        assertEquals(expectedList.size(), count);
     }
 
     /**
@@ -108,17 +113,7 @@ public class LineupRepositoryTest {
     @Test
     public void testGetAll() {
         List<Lineup> lineups = repository.getAll();
-        assertNotNull(lineups);
-        assertEquals(NUMBER_OF_LINEUPS, lineups.size());
-        int count = 0;
-        for (Lineup lineup : lineups) {
-            assertNotNull(lineup);
-            if (lineup.getId().equals(lineup1Id) || lineup.getId().equals(lineup2Id)
-                    || lineup.getId().equals(lineup3Id)) {
-                count++;
-            }
-        }
-        assertEquals(NUMBER_OF_LINEUPS, count);
+        this.assertList(Arrays.asList(lineup1, lineup2, lineup3), lineups);
     }
 
     /**
@@ -127,7 +122,7 @@ public class LineupRepositoryTest {
     @Test
     public void testGet() {
         Lineup lineup = repository.get(lineup1Id);
-        this.assertLineup(lineup1, lineup);
+        assertTrue(lineup1.same(lineup));
     }
 
     /**
@@ -155,7 +150,7 @@ public class LineupRepositoryTest {
         assertTrue(result);
         assertEquals(NUMBER_OF_LINEUPS + 1, repository.count());
         Lineup lineup = repository.get(unExistingLineupId);
-        this.assertLineup(unExistingLineup, lineup);
+        assertTrue(unExistingLineup.same(lineup));
     }
 
     /**
@@ -175,13 +170,12 @@ public class LineupRepositoryTest {
     public void testUpdate() {
         calendar.add(Calendar.HOUR, 1);
         Date date = calendar.getTime();
-        lineup1.setUpdatedAt(date);
-        boolean result = repository.update(lineup1);
+        lineup2.setUpdatedAt(date);
+        boolean result = repository.update(lineup2);
         assertTrue(result);
         assertEquals(NUMBER_OF_LINEUPS, repository.count());
-        Lineup lineup = repository.get(lineup1Id);
-        this.assertLineup(lineup1, lineup);
-        assertEquals(DateUtils.format(date), DateUtils.format(lineup.getUpdatedAt()));
+        Lineup lineup = repository.get(lineup2Id);
+        assertTrue(lineup2.same(lineup));
     }
 
     /**
@@ -199,10 +193,10 @@ public class LineupRepositoryTest {
      */
     @Test
     public void testDelete() {
-        boolean result = repository.delete(lineup1Id);
+        boolean result = repository.delete(lineup3Id);
         assertTrue(result);
         assertEquals(NUMBER_OF_LINEUPS - 1, repository.count());
-        assertNull(repository.get(lineup1Id));
+        assertNull(repository.get(lineup3Id));
     }
 
     /**
@@ -220,17 +214,7 @@ public class LineupRepositoryTest {
      */
     @Test
     public void testGetUserLineups() {
-        int userId = lineup1.getUserId();
-        List<Lineup> lineups = repository.getUserLineups(lineup1.getUserId());
-        assertEquals(NUMBER_OF_USER_1_LINEUPS, lineups.size());
-        int count = 0;
-        for (Lineup lineup : lineups) {
-            assertEquals(userId, lineup.getUserId());
-            if (lineup.getId().equals(lineup1Id) || lineup.getId().equals(lineup2Id)
-                    || lineup.getId().equals(lineup3Id)) {
-                count++;
-            }
-        }
-        assertEquals(NUMBER_OF_USER_1_LINEUPS, count);
+        List<Lineup> lineups = repository.getUserLineups(user1Id);
+        this.assertList(user1Lineups, lineups);
     }
 }

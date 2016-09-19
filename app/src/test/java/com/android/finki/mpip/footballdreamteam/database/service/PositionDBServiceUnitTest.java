@@ -160,8 +160,7 @@ public class PositionDBServiceUnitTest {
         when(repository.getByName(position.getName())).thenReturn(null);
         when(repository.store(position)).thenReturn(true);
         Position stored = service.store(position);
-        assertNotNull(stored);
-        assertEquals(positionId, stored.getId().intValue());
+        assertTrue(position.same(stored));
     }
 
     /**
@@ -215,8 +214,7 @@ public class PositionDBServiceUnitTest {
         when(repository.get(positionId)).thenReturn(position);
         when(repository.update(position)).thenReturn(true);
         Position updated = service.update(position);
-        assertNotNull(updated);
-        assertEquals(positionId, updated.getId().intValue());
+        assertTrue(position.same(updated));
     }
 
     /**

@@ -6,31 +6,27 @@ import android.os.Build;
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowApplication;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Created by Borce on 30.07.2016.
@@ -40,23 +36,20 @@ import static org.junit.Assert.fail;
 public class UserRepositoryTest {
 
     private UserRepository repository;
+    private Base64Utils base64Utils = new Base64Utils();
 
-    private int year = 2016, month = 7, day = 31, hour = 14, minute = 50, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
-
+    private Calendar calendar = new GregorianCalendar(2016, 6, 31, 14, 50, 10);
+    private Date date = calendar.getTime();
     private final int NUMBER_OF_USERS = 3;
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "pass",
-            calendar.getTime(), calendar.getTime());
+    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "password", date, date);
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User 1", "user@user-2.com", "pass",
-            calendar.getTime(), calendar.getTime());
+    private User user2 = new User(user2Id, "User 1", "user@user-2.com", "password", date, date);
     private final int user3Id = 3;
-    private User user3 = new User(user3Id, "User 1", "user@user-3.com", "pass",
-            calendar.getTime(), calendar.getTime());
+    private User user3 = new User(user3Id, "User 1", "user@user-3.com", "password", date, date);
     private final int unExistingUserId = 4;
-    private User unExistingUser = new User(unExistingUserId, "User 4", "user@user-4.com", "pass",
-            calendar.getTime(), calendar.getTime());
+    private User unExistingUser =
+            new User(unExistingUserId, "User 4", "user@user-4.com", "password", date, date);
 
     /**
      * Create a new instance of the UserRepository, open the connection and seed the table.
@@ -65,7 +58,7 @@ public class UserRepositoryTest {
     public void setup() {
         Application application = RuntimeEnvironment.application;
         MainSQLiteOpenHelper dbHelper = new MainSQLiteOpenHelper(application.getBaseContext());
-        repository = new UserRepository(application.getBaseContext(), dbHelper);
+        repository = new UserRepository(application.getBaseContext(), dbHelper, base64Utils);
         repository.open();
         repository.store(user1);
         repository.store(user2);
@@ -81,17 +74,6 @@ public class UserRepositoryTest {
     }
 
     /**
-     * Assert that the given user data is valid.
-     *
-     * @param compare actual user
-     * @param user User to be compared
-     */
-    private void assertUser(User compare, User user) {
-        assertNotNull(user);
-        assertEquals(compare.getId(), user.getId());
-    }
-
-    /**
      * Test that the getAll method returns all users in the database.
      */
     @Test
@@ -100,10 +82,12 @@ public class UserRepositoryTest {
         assertNotNull(users);
         assertEquals(NUMBER_OF_USERS, users.size());
         int count = 0;
-        for (User user : users) {
-            if (user.getId().equals(user1Id) || user.getId().equals(user2Id)
-                    || user.getId().equals(user3Id)) {
-                count++;
+        for (User expected : Arrays.asList(user1, user2, user3)) {
+            for (User actual : users) {
+                if (expected.equals(actual)) {
+                    assertTrue(expected.same(actual));
+                    count++;
+                }
             }
         }
         assertEquals(NUMBER_OF_USERS, count);
@@ -115,7 +99,7 @@ public class UserRepositoryTest {
     @Test
     public void testGet() {
         User user = repository.get(user1Id);
-        this.assertUser(user1, user);
+        assertTrue(user1.same(user));
     }
 
     /**
@@ -131,10 +115,9 @@ public class UserRepositoryTest {
      */
     @Test
     public void testGetByEmail() {
-        String email = user1.getEmail();
+        String email = user2.getEmail();
         User user = repository.getByEmail(email);
-        this.assertUser(user1, user);
-        assertEquals(email, user.getEmail());
+        assertTrue(user2.same(user));
     }
 
     /**
@@ -163,7 +146,7 @@ public class UserRepositoryTest {
         assertTrue(result);
         assertEquals(NUMBER_OF_USERS + 1, repository.count());
         User user = repository.get(unExistingUserId);
-        this.assertUser(unExistingUser, user);
+        assertTrue(unExistingUser.same(user));
     }
 
     /**
@@ -181,13 +164,12 @@ public class UserRepositoryTest {
     @Test
     public void testUpdate() {
         String email = unExistingUser.getEmail();
-        user1.setEmail(email);
-        boolean result = repository.update(user1);
+        user3.setEmail(email);
+        boolean result = repository.update(user3);
         assertTrue(result);
         assertEquals(NUMBER_OF_USERS, repository.count());
-        User user = repository.get(user1Id);
-        this.assertUser(user1, user);
-        assertEquals(email, user.getEmail());
+        User user = repository.get(user3Id);
+        assertTrue(user3.same(user));
     }
 
     /**

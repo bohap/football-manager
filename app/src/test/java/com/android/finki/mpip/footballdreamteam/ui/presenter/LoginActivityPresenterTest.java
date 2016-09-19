@@ -14,6 +14,7 @@ import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.LoginActivity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 06.08.2016.
  */
+@Ignore
 public class LoginActivityPresenterTest {
 
     @Mock

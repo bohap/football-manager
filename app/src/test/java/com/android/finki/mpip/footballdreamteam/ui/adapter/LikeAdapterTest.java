@@ -19,6 +19,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -36,18 +37,19 @@ import static org.robolectric.Shadows.shadowOf;
 public class LikeAdapterTest {
 
     private LikesAdapter adapter;
-    private final int year = 2016, month = 8, day = 25, hour = 22, minute = 22, second = 12;
-    private final Calendar calendar = new GregorianCalendar(year, month, day, hour, minute, second);
+    private final Calendar calendar = new GregorianCalendar(2016, 7, 25, 22, 22, 12);
+    private Date date = calendar.getTime();
+    private String sDate = DateUtils.dayNameFormat(date);
     private final int NUMBER_OF_ITEMS = 4;
     private List<UserLike> likes;
 
     @Before
     public void setup() {
         likes = new ArrayList<>();
-        likes.add(new UserLike(1, "User 1", new LineupLike(1, 1, calendar.getTime())));
-        likes.add(new UserLike(2, "User 2", new LineupLike(2, 1, calendar.getTime())));
-        likes.add(new UserLike(3, "User 3", new LineupLike(3, 2, calendar.getTime())));
-        likes.add(new UserLike(4, "User 4", new LineupLike(4, 2, calendar.getTime())));
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
+            String name = String.format("User %d", i + 1);
+            likes.add(new UserLike((i + 1), name, new LineupLike(i + 1, i + 1, date)));
+        }
         adapter = new LikesAdapter(RuntimeEnvironment.application.getBaseContext(), likes);
     }
 
@@ -90,8 +92,7 @@ public class LikeAdapterTest {
         assertEquals(likes.get(position).getName(), user.getText());
         TextView createdAt = (TextView) view.findViewById(R.id.likesListItem_cratedAt);
         assertNotNull(createdAt);
-        assertEquals(DateUtils.dayNameFormat(likes.get(position).getPivot().getCreatedAt()),
-                createdAt.getText());
+        assertEquals(sDate, createdAt.getText());
     }
 
     /**
@@ -104,9 +105,6 @@ public class LikeAdapterTest {
         like.setPivot(null);
         View view = adapter.getView(position, null, null);
         assertNotNull(view);
-        TextView user = (TextView) view.findViewById(R.id.likesListItem_user);
-        assertNotNull(user);
-        assertEquals(likes.get(position).getName(), user.getText());
         TextView createdAt = (TextView) view.findViewById(R.id.likesListItem_cratedAt);
         assertNotNull(createdAt);
         assertEquals("", createdAt.getText());
@@ -122,9 +120,6 @@ public class LikeAdapterTest {
         like.getPivot().setCreatedAt(null);
         View view = adapter.getView(position, null, null);
         assertNotNull(view);
-        TextView user = (TextView) view.findViewById(R.id.likesListItem_user);
-        assertNotNull(user);
-        assertEquals(likes.get(position).getName(), user.getText());
         TextView createdAt = (TextView) view.findViewById(R.id.likesListItem_cratedAt);
         assertNotNull(createdAt);
         assertEquals("", createdAt.getText());
@@ -138,7 +133,7 @@ public class LikeAdapterTest {
     public void testGetViewOnRecycledView() {
         View recycledView = View.inflate(RuntimeEnvironment.application.getBaseContext(),
                 R.layout.likes_list_item, null);
-        LikesAdapter.ViewHolder holder = new LikesAdapter.ViewHolder(recycledView);
+        LikesAdapter.ViewHolder holder = adapter.new ViewHolder(recycledView);
         recycledView.setTag(holder);
         View view = adapter.getView(1, recycledView, null);
         assertSame(recycledView, view);
@@ -149,7 +144,8 @@ public class LikeAdapterTest {
      */
     @Test
     public void testAddLike() {
-        UserLike userLike = new UserLike(5, "User 5", new LineupLike(5, 2, calendar.getTime()));
+        int id = NUMBER_OF_ITEMS + 1;
+        UserLike userLike = new UserLike(id, "User 101", new LineupLike(id, id + 2, date));
         adapter.addLike(userLike);
         assertEquals(NUMBER_OF_ITEMS + 1, adapter.getCount());
         assertSame(userLike, adapter.getItem(0));
@@ -161,10 +157,12 @@ public class LikeAdapterTest {
      */
     @Test
     public void testRemoveLike() {
-        final int position = 2;
+        List<UserLike> likes = new ArrayList<>(this.likes);
+        final int position = 1;
         UserLike userLike = likes.get(position);
         adapter.removeLike(userLike);
         assertEquals(NUMBER_OF_ITEMS - 1, adapter.getCount());
+        assertSame(likes.get(position + 1), adapter.getItem(position));
         assertTrue(shadowOf(adapter).wasNotifyDataSetChangedCalled());
     }
 }

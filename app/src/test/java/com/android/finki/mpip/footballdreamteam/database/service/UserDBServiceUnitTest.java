@@ -13,9 +13,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +29,8 @@ public class UserDBServiceUnitTest {
     private UserDBService service;
 
     private final int userId = 1;
-    private User user = new User(userId, "User", "user@email.com", "pass", new Date(), new Date());
+    private User user = new User(userId, "User", "user@email.com",
+            "password", new Date(), new Date());
 
     @Before
     public void setup() {
@@ -77,7 +77,7 @@ public class UserDBServiceUnitTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testStoreOnInvalidId() {
-        service.update(new User(0, "", "", null, null, null));
+        service.store(new User(0, "", "", "", null, null));
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserDBServiceUnitTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testStoreOnNullName() {
-        service.store(new User(1, null, "", null, null, null));
+        service.store(new User(1, null, "", "", null, null));
     }
 
     /**
@@ -93,7 +93,15 @@ public class UserDBServiceUnitTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testStoreOnNullEmail() {
-        service.store(new User(1, "", null, null, null, null));
+        service.store(new User(1, "", null, "", null, null));
+    }
+
+    /**
+     * Test the behavior on store method called with null password.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testStoreOnNullPassword() {
+        service.store(new User(1, "", "", null, null, null));
     }
 
     /**
@@ -110,9 +118,8 @@ public class UserDBServiceUnitTest {
      */
     @Test(expected = UniqueFieldConstraintException.class)
     public void testStoreOnExistingEmail() {
-        String email = user.getEmail();
         when(repository.get(userId)).thenReturn(null);
-        when(repository.getByEmail(email)).thenReturn(user);
+        when(repository.getByEmail(user.getEmail())).thenReturn(user);
         service.store(user);
     }
 
@@ -122,6 +129,7 @@ public class UserDBServiceUnitTest {
     @Test(expected = UserException.class)
     public void testFailedStore() {
         when(repository.get(userId)).thenReturn(null);
+        when(repository.getByEmail(user.getEmail())).thenReturn(null);
         when(repository.store(user)).thenReturn(false);
         service.store(user);
     }
@@ -134,38 +142,47 @@ public class UserDBServiceUnitTest {
         when(repository.get(userId)).thenReturn(null);
         when(repository.store(user)).thenReturn(true);
         User stored = service.store(user);
-        assertNotNull(stored);
-        assertEquals(userId, stored.getId().intValue());
-        assertEquals(user.getEmail(), stored.getEmail());
+        assertSame(user, stored);
     }
 
     /**
-     * Test the behavior on onUpdateSuccess method called with null param.
+     * Test the behavior on update method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNull() {
         service.update(null);
     }
 
+    /**
+     * Test the behavior on update called with invalid user id.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnInvalidId() {
-        service.update(new User(0, "", "", null, null, null));
+        service.update(new User(0, "", "", "", null, null));
     }
 
     /**
-     * Test the behavior on onUpdateSuccess method called with null name.
+     * Test the behavior on update method called with null name.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNullName() {
-        service.update(new User(1, null, "", null, null, null));
+        service.update(new User(1, null, "", "", null, null));
     }
 
     /**
-     * Test the behavior on onUpdateSuccess method called with null email.
+     * Test the behavior on update method called with null email.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnNullEmail() {
-        service.update(new User(0, "", null, null, null, null));
+        service.update(new User(1, "", null, "", null, null));
+    }
+
+    /**
+     * Test the behavior on update called with null password.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateOnNullPassword() {
+        service.update(new User(1, "", "", null, null, null));
     }
 
     /**
@@ -178,7 +195,7 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on onUpdateSuccess method when updating the record on the database failed.
+     * Test the behavior on update method when updating the record on the database failed.
      */
     @Test(expected = UserException.class)
     public void testFailedUpdate() {
@@ -188,15 +205,14 @@ public class UserDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on store method when inserting the record on the database is successful.
+     * Test the behavior on update method when inserting the record on the database is successful.
      */
     @Test
     public void testSuccessUpdate() {
         when(repository.get(userId)).thenReturn(user);
         when(repository.update(user)).thenReturn(true);
         User updated = service.update(this.user);
-        assertNotNull(updated);
-        assertEquals(userId, updated.getId().intValue());
+        assertSame(user, updated);
     }
 
     /**

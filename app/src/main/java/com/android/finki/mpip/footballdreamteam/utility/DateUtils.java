@@ -12,7 +12,6 @@ public class DateUtils {
 
     private static String format = "yyyy-MM-dd HH:mm:ss";
     private static SimpleDateFormat formatter = new SimpleDateFormat(format);
-
     private static String dayNameFormat = "E dd.MM.yy 'at' HH:mm:ss";
     private static SimpleDateFormat dayNameFormatter = new SimpleDateFormat(dayNameFormat);
 
@@ -78,6 +77,9 @@ public class DateUtils {
      * @return number of years between dates
      */
     public static int getYearDiff(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            return 0;
+        }
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(date1);
         Calendar calendar2 = Calendar.getInstance();
@@ -94,7 +96,7 @@ public class DateUtils {
     /**
      * Get the number of years between the current and the given date.
      *
-     * @param date Date 2
+     * @param date second date
      * @return number of years between current and given date
      */
     public static int getYearDiff(Date date) {

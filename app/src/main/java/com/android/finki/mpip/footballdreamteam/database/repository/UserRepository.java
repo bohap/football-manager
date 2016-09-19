@@ -2,11 +2,10 @@ package com.android.finki.mpip.footballdreamteam.database.repository;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.VisibleForTesting;
 
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
+import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
@@ -19,14 +18,17 @@ import java.util.Map;
  */
 public class UserRepository extends BaseRepository<User, Integer> {
 
+    private Base64Utils base64Utils;
     private String COLUMN_NAME;
     private String COLUMN_EMAIL;
     private String COLUMN_PASSWORD;
     private String COLUMN_CREATED_AT;
     private String COLUMN_UPDATED_AT;
 
-    public UserRepository(Context context, MainSQLiteOpenHelper dbHelper) {
+    public UserRepository(Context context, MainSQLiteOpenHelper dbHelper,
+                          Base64Utils base64Utils) {
         this.dbHelper = dbHelper;
+        this.base64Utils = base64Utils;
         this.TABLE_NAME = context.getString(R.string.users_table_name);
         this.COLUMN_ID = context.getString(R.string.users_column_id);
         this.COLUMN_NAME = context.getString(R.string.users_column_name);
@@ -34,7 +36,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
         this.COLUMN_PASSWORD = context.getString(R.string.users_column_password);
         this.COLUMN_CREATED_AT = context.getString(R.string.users_column_created_at);
         this.COLUMN_UPDATED_AT = context.getString(R.string.users_column_updated_at);
-        this.COLUMNS = new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL,COLUMN_PASSWORD,
+        this.COLUMNS = new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_PASSWORD,
                 COLUMN_CREATED_AT, COLUMN_UPDATED_AT};
     }
 
@@ -50,7 +52,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
         user.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)));
         user.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
         user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)));
-        user.setPassword(Base64Utils
+        user.setPassword(base64Utils
                 .decode(cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD))));
         user.setCreatedAt(DateUtils.parse(cursor
                 .getString(cursor.getColumnIndex(COLUMN_CREATED_AT))));
@@ -70,7 +72,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
         params.put(COLUMN_ID, user.getId().toString());
         params.put(COLUMN_NAME, user.getName());
         params.put(COLUMN_EMAIL, user.getEmail());
-        params.put(COLUMN_PASSWORD, Base64Utils.encode(user.getPassword()));
+        params.put(COLUMN_PASSWORD, base64Utils.encode(user.getPassword()));
         params.put(COLUMN_CREATED_AT, DateUtils.format(user.getCreatedAt()));
         params.put(COLUMN_UPDATED_AT, DateUtils.format(user.getUpdatedAt()));
         return params;

@@ -9,6 +9,7 @@ import com.android.finki.mpip.footballdreamteam.R;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -23,6 +24,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Borce on 08.08.2016.
  */
+@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)

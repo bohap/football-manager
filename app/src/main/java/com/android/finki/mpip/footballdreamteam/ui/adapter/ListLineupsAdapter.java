@@ -14,11 +14,13 @@ import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
+import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +68,9 @@ public class ListLineupsAdapter extends BaseAdapter {
     @Override
     public Lineup getItem(int i) {
         if (i > lineups.size() - 1) {
-            String message = String.format("can't get lineup, index out of bound, " +
-                    "index-%d, list size-%d", i, lineups.size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't get lineup, index out of bound, index-%d, list size-%d",
+                            i, lineups.size()));
         }
         return lineups.get(i);
     }
@@ -93,9 +94,7 @@ public class ListLineupsAdapter extends BaseAdapter {
     public void add(Lineup lineup) {
         logger.info("add");
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         this.lineups.add(lineup);
         this.deleting.put(lineup.getId(), false);
@@ -108,28 +107,14 @@ public class ListLineupsAdapter extends BaseAdapter {
      * @param lineups List of new lineups
      */
     public void update(List<Lineup> lineups) {
-        logger.info("onUpdateSuccess");
-        if (this.lineups.size() == 0) {
-            for (Lineup lineup : lineups) {
-                this.lineups.add(lineup);
+        logger.info("update");
+        this.lineups = ListUtils.concat(this.lineups, lineups);
+        Collections.sort(this.lineups);
+        for (Lineup lineup : this.lineups) {
+            if (this.deleting.get(lineup.getId()) == null) {
                 this.deleting.put(lineup.getId(), false);
             }
         }
-        List<Lineup> lineupToBeAdded = new ArrayList<>();
-        for (Lineup lineup1 : lineups) {
-            boolean found = false;
-            for (Lineup lineup2 : this.lineups) {
-                if (lineup1.equals(lineup2)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                lineupToBeAdded.add(lineup1);
-                this.deleting.put(lineup1.getId(), false);
-            }
-        }
-        this.lineups.addAll(lineupToBeAdded);
         super.notifyDataSetChanged();
     }
 
@@ -150,15 +135,16 @@ public class ListLineupsAdapter extends BaseAdapter {
      * @param lineup lineup that was deleting
      */
     public void onDeletingFailed(Lineup lineup) {
-        this.deleting.put(lineup.getId(), true);
+        logger.info(String.format("onDeletingFailed, id - %d", lineup.getId()));
+        this.deleting.put(lineup.getId(), false);
         super.notifyDataSetChanged();
     }
 
     /**
      * Bind a view to the element in the list.
      *
-     * @param position element position
-     * @param view element view
+     * @param position  element position
+     * @param view      element view
      * @param viewGroup element view group
      * @return binned view to the element
      */
@@ -236,9 +222,9 @@ public class ListLineupsAdapter extends BaseAdapter {
         /**
          * Handle click on the main content.
          */
-        @OnClick(R.id.lineupsListItem_main)
-        void onMainClick() {
-            logger.info(String.format("onMainClick, position %d", position));
+        @OnClick(R.id.lineupsListItem_lineupPlayers)
+        void onLineupPlayersClick() {
+            logger.info(String.format("onLineupPlayersClick, position %d", position));
             listener.onLineupPlayersSelected(lineup);
         }
 

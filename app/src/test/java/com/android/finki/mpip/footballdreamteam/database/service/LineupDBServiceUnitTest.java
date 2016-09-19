@@ -2,21 +2,19 @@ package com.android.finki.mpip.footballdreamteam.database.service;
 
 import com.android.finki.mpip.footballdreamteam.database.repository.LineupRepository;
 import com.android.finki.mpip.footballdreamteam.exception.ForeignKeyConstraintException;
-import com.android.finki.mpip.footballdreamteam.exception.LikeException;
 import com.android.finki.mpip.footballdreamteam.exception.LineupException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.model.User;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Date;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 02.08.2016.
@@ -32,8 +30,6 @@ public class LineupDBServiceUnitTest {
     private LineupDBService service;
 
     private final int userId = 1;
-    private User user = new User(userId, "User", "user@user.com", null, null, null);
-
     private final int lineupId = 1;
     private Lineup lineup = new Lineup(lineupId, userId, null, null);
 
@@ -124,8 +120,7 @@ public class LineupDBServiceUnitTest {
         when(userDBService.exists(userId)).thenReturn(true);
         when(repository.store(lineup)).thenReturn(true);
         Lineup stored = service.store(lineup);
-        assertNotNull(stored);
-        assertEquals(lineupId, stored.getId().intValue());
+        assertSame(lineup, stored);
     }
 
     /**
@@ -171,8 +166,7 @@ public class LineupDBServiceUnitTest {
         when(repository.get(lineupId)).thenReturn(lineup);
         when(repository.update(lineup)).thenReturn(true);
         Lineup updated = service.update(lineup);
-        assertNotNull(updated);
-        assertEquals(lineupId, updated.getId().intValue());
+        assertSame(lineup, updated);
     }
 
     /**

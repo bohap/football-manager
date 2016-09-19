@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,11 +18,17 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Borce on 01.08.2016.
@@ -34,52 +41,39 @@ public class CommentRepositoryTest {
     private UserRepository userRepository;
     private LineupRepository lineupRepository;
 
-    private final int year = 2016, month = 8, day = 1, hour = 16, minute = 11, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
-
-    private Calendar calendar1 = new GregorianCalendar(year, month - 1, day, hour + 4, minute, second);
-
-    private final int NUMBER_OF_USER_1_COMMENTS = 2;
+    private Calendar calendar = new GregorianCalendar(2016, 8, 1, 16, 11, 10);
+    private Date date = calendar.getTime();
     private final int user1Id = 1;
-    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "pass",
-            calendar1.getTime(), calendar.getTime());
-    private final int NUMBER_OF_USER_2_COMMENTS = 1;
+    private User user1 = new User(user1Id, "User 1", "user@user-1.com", "password", date, date);
     private final int user2Id = 2;
-    private User user2 = new User(user2Id, "User 2", "user@user-2.com", "pass",
-            calendar.getTime(), calendar.getTime());
-
-    private final int NUMBER_OF_LINEUP_1_COMMENTS = 2;
+    private User user2 = new User(user2Id, "User 2", "user@user-2.com", "password", date, date);
     private final int lineup1Id = 1;
-    private Lineup lineup1 = new Lineup(lineup1Id, user1Id,
-            calendar.getTime(), calendar.getTime());
-    private final int NUMBER_OF_LINEUP_2_COMMENTS = 1;
+    private Lineup lineup1 = new Lineup(lineup1Id, user1Id, date, date);
     private final int lineup2Id = 2;
-    private Lineup lineup2 = new Lineup(lineup2Id, user2Id,
-            calendar.getTime(), calendar.getTime());
-
+    private Lineup lineup2 = new Lineup(lineup2Id, user2Id, date, date);
     private final int NUMBER_OF_COMMENTS = 3;
     private final int comment1Id = 1;
-    private Comment comment1 = new Comment(comment1Id, user1Id, lineup1Id,
-            "Comment", calendar.getTime(), calendar.getTime());
+    private Comment comment1 = new Comment(comment1Id, user1Id, lineup1Id, "Comment", date, date);
     private final int comment2Id = 2;
-    private Comment comment2 = new Comment(comment2Id, user2Id, lineup1Id,
-            "Comment", calendar.getTime(), calendar.getTime());
+    private Comment comment2 = new Comment(comment2Id, user2Id, lineup1Id, "Comment", date, date);
     private final int comment3Id = 3;
-    private Comment comment3 = new Comment(comment3Id, user1Id, lineup2Id,
-            "Comment", calendar.getTime(), calendar.getTime());
+    private Comment comment3 = new Comment(comment3Id, user1Id, lineup2Id, "Comment", date, date);
     private final int unExistingCommentId = 4;
-    private Comment unExistingComment = new Comment(unExistingCommentId, user2Id, lineup2Id,
-            "Comment", calendar.getTime(), calendar.getTime());
+    private Comment unExistingComment =
+            new Comment(unExistingCommentId, user2Id, lineup2Id, "Comment", date, date);
+    private List<Comment> user1Comments = Arrays.asList(comment1, comment3);
+    private List<Comment> lineup1Comments = Arrays.asList(comment1, comment2);
 
     /**
      * Create a new instances of the repositories, open the connections and seed the tables.
      */
     @Before
     public void setup() {
+        Base64Utils base64Utils = new Base64Utils();
         Context context = RuntimeEnvironment.application.getBaseContext();
         MainSQLiteOpenHelper dbHelper = new MainSQLiteOpenHelper(context);
         repository = new CommentRepository(context, dbHelper);
-        userRepository = new UserRepository(context, dbHelper);
+        userRepository = new UserRepository(context, dbHelper, base64Utils);
         lineupRepository = new LineupRepository(context, dbHelper);
         userRepository.open();
         lineupRepository.open();
@@ -106,39 +100,34 @@ public class CommentRepositoryTest {
     /**
      * Assert theat the given array of comments is valid.
      *
-     * @param number expected number of comments
-     * @param comments List of comments
-     * @param checkUser whatever the comment user should be asserted
+     * @param expectedList expected list of comments
+     * @param actualList   actual list of comments
+     * @param checkUser    whatever the comment user should be asserted
      */
-    private void assertComments(int number, List<Comment> comments, boolean checkUser) {
-        assertNotNull(comments);
-        assertEquals(number, comments.size());
+    private void assertList(List<Comment> expectedList, List<Comment> actualList,
+                            boolean checkUser) {
+        assertEquals(expectedList.size(), actualList.size());
         int count = 0;
-        for (Comment comment : comments) {
-            if (comment.getId().equals(comment1Id)) {
-                this.assertComment(comment1, comment, checkUser);
-                count++;
-            } else if (comment.getId().equals(comment2Id)) {
-                this.assertComment(comment2, comment, checkUser);
-                count++;
-            } else if (comment.getId().equals(comment3Id)) {
-                this.assertComment(comment3, comment, checkUser);
-                count++;
+        for (Comment expected : expectedList) {
+            for (Comment actual : actualList) {
+                if (expected.equals(actual)) {
+                    this.assertComment(expected, actual, checkUser);
+                    count++;
+                }
             }
         }
-        assertEquals(number, count);
+        assertEquals(expectedList.size(), count);
     }
 
     /**
      * Assert that the given comment data is valid.
      *
-     * @param compare actual comment
-     * @param comment Comment to be compared
+     * @param compare   actual comment
+     * @param comment   Comment to be compared
      * @param checkUser whatever the user should be asserted
      */
     private void assertComment(Comment compare, Comment comment, boolean checkUser) {
-        assertNotNull(comment);
-        assertEquals(comment.getId(), comment.getId());
+        assertTrue(comment.same(comment));
         if (checkUser) {
             User user = comment.getUser();
             assertNotNull(user);
@@ -152,7 +141,7 @@ public class CommentRepositoryTest {
     @Test
     public void testGetAll() {
         List<Comment> comments = repository.getAll();
-        this.assertComments(NUMBER_OF_COMMENTS, comments, true);
+        this.assertList(Arrays.asList(comment1, comment2, comment3), comments, true);
     }
 
     /**
@@ -213,7 +202,6 @@ public class CommentRepositoryTest {
         assertEquals(NUMBER_OF_COMMENTS, repository.count());
         Comment comment = repository.get(comment1Id);
         this.assertComment(comment1, comment, false);
-        assertEquals(body, comment.getBody());
     }
 
     /**
@@ -251,7 +239,7 @@ public class CommentRepositoryTest {
     @Test
     public void testGetUserComments() {
         List<Comment> comments = repository.getUserComments(user1Id);
-        this.assertComments(NUMBER_OF_USER_1_COMMENTS, comments, false);
+        this.assertList(user1Comments, comments, false);
     }
 
     /**
@@ -260,6 +248,6 @@ public class CommentRepositoryTest {
     @Test
     public void testGetLineupComments() {
         List<Comment> comments = repository.getLineupComments(lineup1Id);
-        this.assertComments(NUMBER_OF_LINEUP_1_COMMENTS, comments, true);
+        this.assertList(lineup1Comments, comments, true);
     }
 }

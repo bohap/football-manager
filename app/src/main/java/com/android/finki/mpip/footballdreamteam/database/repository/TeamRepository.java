@@ -6,7 +6,6 @@ import android.database.Cursor;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.model.Team;
-import com.android.finki.mpip.footballdreamteam.model.User;
 
 import java.util.HashMap;
 import java.util.List;

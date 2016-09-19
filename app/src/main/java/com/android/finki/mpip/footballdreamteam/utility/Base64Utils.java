@@ -15,7 +15,10 @@ public class Base64Utils {
      * @param data string to be encoded
      * @return encoded string
      */
-    public static String encode(String data) {
+    public String encode(String data) {
+        if (data == null) {
+            return "";
+        }
         byte[] bytes;
         try {
             bytes = data.getBytes("UTF-8");
@@ -32,7 +35,10 @@ public class Base64Utils {
      * @param data string to be decoded
      * @return decoded string
      */
-    public static String decode(String data) {
+    public String decode(String data) {
+        if (data == null) {
+            return "";
+        }
         byte[] bytes;
         try {
             bytes = data.getBytes("UTF-8");

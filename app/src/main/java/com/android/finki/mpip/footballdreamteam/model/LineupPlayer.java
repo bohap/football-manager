@@ -1,8 +1,5 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
-import android.support.annotation.NonNull;
-
-import com.android.finki.mpip.footballdreamteam.rest.model.LineupLike;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -11,7 +8,7 @@ import java.util.Date;
 /**
  * Created by Borce on 29.07.2016.
  */
-public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
+public class LineupPlayer extends BaseModel implements Serializable {
 
     @SerializedName("lineup_id")
     private int lineupId;
@@ -64,6 +61,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
     }
 
     public int getLineupId() {
+        if (lineupId < 1 && lineup != null) {
+            return lineup.getId();
+        }
         return lineupId;
     }
 
@@ -72,6 +72,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
     }
 
     public int getPlayerId() {
+        if (playerId < 1 && player != null) {
+            return player.getId();
+        }
         return playerId;
     }
 
@@ -80,6 +83,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
     }
 
     public int getPositionId() {
+        if (positionId < 1 && position != null) {
+            return position.getId();
+        }
         return positionId;
     }
 
@@ -105,6 +111,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
 
     public void setLineup(Lineup lineup) {
         this.lineup = lineup;
+        if (lineup != null) {
+            this.lineupId = lineup.getId();
+        }
     }
 
     public Lineup getLineup() {
@@ -113,6 +122,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
 
     public void setPlayer(Player player) {
         this.player = player;
+        if (player != null) {
+            this.playerId = player.getId();
+        }
     }
 
     public Player getPlayer() {
@@ -121,6 +133,9 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
 
     public void setPosition(Position position) {
         this.position = position;
+        if (position != null) {
+            this.positionId = position.getId();
+        }
     }
 
     public Position getPosition() {
@@ -132,17 +147,28 @@ public class LineupPlayer implements Serializable, Comparable<LineupPlayer> {
         if (!(o instanceof LineupPlayer)) {
             return false;
         }
-        LineupPlayer lineupPlayer = (LineupPlayer)o;
-        return this.lineupId == lineupPlayer.lineupId && this.playerId == lineupPlayer.playerId
-                && this.positionId == lineupPlayer.positionId;
+        LineupPlayer lineupPlayer = (LineupPlayer) o;
+        return this.lineupId == lineupPlayer.getLineupId() &&
+                this.playerId == lineupPlayer.getPlayerId() &&
+                this.positionId == lineupPlayer.getPositionId();
     }
 
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the models are same
+     */
     @Override
-    public int compareTo(@NonNull LineupPlayer lineupPlayer) {
-        if (this.lineupId == lineupPlayer.getLineupId() &&
-                this.playerId == lineupPlayer.getPlayerId()) {
-            return 0;
+    public boolean same(BaseModel model) {
+        if (!(model instanceof LineupPlayer)) {
+            return false;
         }
-        return 1;
+        LineupPlayer lineupPlayer = (LineupPlayer) model;
+        return this.lineupId == lineupPlayer.getLineupId() &&
+                this.playerId == lineupPlayer.getPlayerId() &&
+                this.positionId == lineupPlayer.getPositionId() &&
+                super.equalsFields(this.createdAt, lineupPlayer.getCreatedAt()) &&
+                super.equalsFields(this.updatedAt, lineupPlayer.getUpdatedAt());
     }
 }

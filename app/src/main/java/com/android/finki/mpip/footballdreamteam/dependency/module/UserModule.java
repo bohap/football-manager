@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.database.repository.UserReposito
 import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
 import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
 import com.android.finki.mpip.footballdreamteam.utility.AuthUserUtils;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -30,12 +31,14 @@ public class UserModule {
      *
      * @param context  base application context
      * @param dbHelper application SQLiteOpenHelper
+     * @param base64Utils instance of Base64 utils
      * @return new instance of UserDBService
      */
     @Provides
     @Singleton
-    UserDBService provideUserDbService(Context context, MainSQLiteOpenHelper dbHelper) {
-        UserRepository repository = new UserRepository(context, dbHelper);
+    UserDBService provideUserDbService(Context context, MainSQLiteOpenHelper dbHelper,
+                                       Base64Utils base64Utils) {
+        UserRepository repository = new UserRepository(context, dbHelper, base64Utils);
         return new UserDBService(repository);
     }
 

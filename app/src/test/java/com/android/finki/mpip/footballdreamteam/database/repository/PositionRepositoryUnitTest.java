@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -36,7 +37,6 @@ public class PositionRepositoryUnitTest {
 
     private String COLUMN_ID = "id";
     private String COLUMN_NAME = "name";
-    private final int NUMBER_OF_COLUMNS = 2;
     private Position position = new Position(1, "Position");
 
     @Before
@@ -72,9 +72,7 @@ public class PositionRepositoryUnitTest {
     public void testMapCursor() {
         this.initCursor();
         Position mapped = repository.mapCursor(cursor);
-        assertNotNull(mapped);
-        assertEquals(position.getId(), mapped.getId());
-        assertEquals(position.getName(), mapped.getName());
+        assertTrue(position.same(mapped));
     }
 
     /**
@@ -84,7 +82,6 @@ public class PositionRepositoryUnitTest {
     public void testPutValues() {
         Map<String, String> map = repository.putValues(position);
         assertNotNull(map);
-        assertEquals(NUMBER_OF_COLUMNS, map.size());
         assertEquals(position.getId().toString(), map.get(COLUMN_ID));
         assertEquals(position.getName(), map.get(COLUMN_NAME));
     }

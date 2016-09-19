@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -37,8 +38,8 @@ public class CommentRepositoryUnitTest {
 
     private CommentRepository repository;
 
-    private int year = 2016, month = 8, day = 1, hour = 15, minute = 30, second = 0;
-    private Calendar calendar = new GregorianCalendar(year, month, day, hour, minute, second);
+    private Calendar calendar = new GregorianCalendar(2016, 7, 1, 15, 30, 0);
+    private Date date = calendar.getTime();
     String sDate = DateUtils.format(calendar.getTime());
     private String COLUMN_ID = "id";
     private String COLUMN_USER_ID = "user_id";
@@ -47,11 +48,10 @@ public class CommentRepositoryUnitTest {
     private String COLUMN_CREATED_AT = "created_at";
     private String COLUMN_UPDATED_AT = "updated_at";
     private String USERS_TABLE_NAME = "users";
-    private String USERS_COLUMN_ID = "id";
     private String USERS_COLUMN_NAME = "name";
     private final int userId = 1;
     private User user = new User(userId, "User");
-    private Comment comment = new Comment(1, userId, 1, "BOdy", calendar.getTime(), calendar.getTime());
+    private Comment comment = new Comment(1, userId, 1, "Body", date, date);
 
     @Before
     public void setup() {
@@ -75,7 +75,7 @@ public class CommentRepositoryUnitTest {
         when(context.getString(R.string.lineups_comments_column_updated_at))
                 .thenReturn(COLUMN_UPDATED_AT);
         when(context.getString(R.string.users_table_name)).thenReturn(USERS_TABLE_NAME);
-        when(context.getString(R.string.users_column_id)).thenReturn(USERS_COLUMN_ID);
+        when(context.getString(R.string.users_column_id)).thenReturn("id");
         when(context.getString(R.string.users_column_name)).thenReturn(USERS_COLUMN_NAME);
     }
 
@@ -84,7 +84,8 @@ public class CommentRepositoryUnitTest {
      */
     private void initCursor() {
         when(cursor.getColumnIndex(COLUMN_ID)).thenReturn(0);
-        when(cursor.getInt(cursor.getColumnIndex(COLUMN_ID))).thenReturn(comment.getId());
+        when(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)))
+                .thenReturn(comment.getId());
         when(cursor.getColumnIndex(COLUMN_USER_ID)).thenReturn(1);
         when(cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID)))
                 .thenReturn(comment.getUserId());
@@ -92,14 +93,18 @@ public class CommentRepositoryUnitTest {
         when(cursor.getInt(cursor.getColumnIndex(COLUMN_LINEUP_ID)))
                 .thenReturn(comment.getLineupId());
         when(cursor.getColumnIndex(COLUMN_BODY)).thenReturn(3);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_BODY))).thenReturn(comment.getBody());
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_BODY)))
+                .thenReturn(comment.getBody());
         when(cursor.getColumnIndex(COLUMN_CREATED_AT)).thenReturn(4);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT))).thenReturn(sDate);
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT)))
+                .thenReturn(sDate);
         when(cursor.getColumnIndex(COLUMN_UPDATED_AT)).thenReturn(5);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_UPDATED_AT))).thenReturn(sDate);
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_UPDATED_AT)))
+                .thenReturn(sDate);
         String column = String.format("%s_%s", USERS_TABLE_NAME, USERS_COLUMN_NAME);
         when(cursor.getColumnIndex(column)).thenReturn(6);
-        when(cursor.getString(cursor.getColumnIndex(column))).thenReturn(user.getName());
+        when(cursor.getString(cursor.getColumnIndex(column)))
+                .thenReturn(user.getName());
     }
 
     /**
@@ -110,16 +115,9 @@ public class CommentRepositoryUnitTest {
         this.initCursor();
         Comment mapped = repository.mapCursor(cursor);
         assertNotNull(mapped);
-        assertEquals(comment.getId(), mapped.getId());
-        assertEquals(comment.getUserId(), mapped.getUserId());
-        assertEquals(comment.getLineupId(), mapped.getLineupId());
-        assertEquals(comment.getBody(), mapped.getBody());
-        assertEquals(sDate, DateUtils.format(mapped.getCreatedAt()));
-        assertEquals(sDate, DateUtils.format(mapped.getUpdatedAt()));
-        User user = mapped.getUser();
-        assertNotNull(user);
-        assertEquals(userId, user.getId().intValue());
-        assertEquals(this.user.getName(), user.getName());
+        assertTrue(comment.same(mapped));
+        User mUser = mapped.getUser();
+        assertTrue(user.same(mUser));
     }
 
     /**

@@ -62,24 +62,16 @@ public class PositionDBService {
      */
     private void validateData(Position position) {
         if (position == null) {
-            String message = "position can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position can't be null");
         }
         if (position.getId() == null) {
-            String message = "position id can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position id can't be null");
         }
         if (position.getId() < 1) {
-            String message = "position id must be greater then 0";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position id must be greater then 0");
         }
         if (position.getName() == null) {
-            String message = "position name can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position name can't be null");
         }
     }
 
@@ -139,9 +131,7 @@ public class PositionDBService {
      */
     public boolean exists(Position position) {
         if (position == null) {
-            String message = "position can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position can't be null");
         }
         return this.exists(position.getId());
     }
@@ -155,22 +145,18 @@ public class PositionDBService {
     public Position store(Position position) {
         this.validateData(position);
         if (this.exists(position.getId())) {
-            String message = String.format("can't save position, position with " +
-                    "id %d already exists", position.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save position, position with id %d already exists",
+                            position.getId()));
         }
         if (this.getByName(position.getName()) != null) {
-            String message = String.format("can't save position, position with name " +
-                    "%s already exists", position.getName());
-            logger.error(message);
-            throw new UniqueFieldConstraintException(message);
+            throw new UniqueFieldConstraintException(String
+                    .format("can't save position, position with name %s already exists",
+                            position.getName()));
         }
         boolean result = repository.store(position);
         if (! result) {
-            String message = "error occurred while saving the position";
-            logger.error(message);
-            throw new PositionException(message);
+            throw new PositionException("error occurred while saving the position");
         }
         return position;
     }
@@ -184,16 +170,13 @@ public class PositionDBService {
     public Position update(Position position) {
         this.validateData(position);
         if (! this.exists(position.getId())) {
-            String message = String.format("can't onUpdateSuccess position, position with " +
-                    "id %d don't exists", position.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess position, position with id %d don't exists",
+                            position.getId()));
         }
         boolean result = repository.update(position);
         if (! result) {
-            String message = "error occurred while updating the position";
-            logger.error(message);
-            throw new PositionException(message);
+            throw new PositionException("error occurred while updating the position");
         }
         return position;
     }
@@ -205,16 +188,12 @@ public class PositionDBService {
      */
     public void delete(int id) {
         if (! this.exists(id)) {
-            String message = String.format("can't delete position, position with " +
-                    "id %d don't exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't delete position, position with id %d don't exists", id));
         }
         boolean result = repository.delete(id);
         if (! result) {
-            String message = "error occurred while deleting the position";
-            logger.error(message);
-            throw new PositionException(message);
+            throw new PositionException("error occurred while deleting the position");
         }
     }
 
@@ -225,9 +204,7 @@ public class PositionDBService {
      */
     public void delete(Position position) {
         if (position == null) {
-            String message = "position can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position can't be null");
         }
         this.delete(position.getId());
     }
@@ -241,9 +218,7 @@ public class PositionDBService {
     private int getId(String name) {
         Position position = repository.getByName(name);
         if (position == null) {
-            String message = String.format("can't find position %s", name);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("can't find position %s", name));
         }
         return position.getId();
     }
@@ -395,7 +370,6 @@ public class PositionDBService {
      * @return mapped positions
      */
     public Map<PositionUtils.POSITION, Integer> mapPositions() {
-        //TODO change the key to be android resource id (some key will have the same value?)
         Map<PositionUtils.POSITION, Integer> result = new HashMap<>();
         result.put(PositionUtils.POSITION.KEEPER, this.getGoalkeeperId());
         result.put(PositionUtils.POSITION.CENTRE_BACK, this.getCentreBackId());

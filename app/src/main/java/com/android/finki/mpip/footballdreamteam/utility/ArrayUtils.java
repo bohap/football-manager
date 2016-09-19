@@ -22,21 +22,6 @@ public class ArrayUtils {
     }
 
     /**
-     * Convert the array of Integers to array of ints.
-     *
-     * @param values array of Integer values
-     * @return array if ints
-     */
-    public static int[] toInt(Integer[] values) {
-        int[] result = new int[values.length];
-        int i = 0;
-        for (Integer value : values) {
-            result[i++] = value;
-        }
-        return result;
-    }
-
-    /**
      * Convert the List of Integers to array of ints.
      *
      * @param values List of Integers

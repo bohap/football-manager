@@ -25,7 +25,6 @@ public class LikeRepository extends Repository<LineupLike> {
     private String USERS_COLUMN_ID;
     private String USERS_COLUMN_NAME;
 
-
     public LikeRepository(Context context, MainSQLiteOpenHelper dbHelper) {
         this.dbHelper = dbHelper;
         this.TABLE_NAME = context.getString(R.string.lineups_likes_table_name);
@@ -50,7 +49,6 @@ public class LikeRepository extends Repository<LineupLike> {
         like.setLineupId(cursor.getInt(cursor.getColumnIndex(COLUMN_LINEUP_ID)));
         like.setCreatedAt(DateUtils.parse(cursor
                 .getString(cursor.getColumnIndex(COLUMN_CREATED_AT))));
-
         String column = String.format("%s_%s", USERS_TABLE_NAME, USERS_COLUMN_NAME);
         int index = cursor.getColumnIndex(column);
         if (index != -1) {

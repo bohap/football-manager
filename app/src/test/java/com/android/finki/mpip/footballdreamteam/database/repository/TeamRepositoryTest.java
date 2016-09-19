@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,9 +39,6 @@ public class TeamRepositoryTest {
     private Team team3 = new Team(team3Id, "Team 3", "TM3", "40000$");
     private Team unExistingTeam = new Team(unExistingTeamId, "Team 4", "TM4", "40000$");
 
-    /**
-     * Create a new insance of the TeamRepository, open the connection and seed the table.
-     */
     @Before
     public void setup() {
         Application application = RuntimeEnvironment.application;
@@ -52,23 +50,9 @@ public class TeamRepositoryTest {
         repository.store(team3);
     }
 
-    /**
-     * Close the database conenction.
-     */
     @After
     public void close() {
         repository.close();
-    }
-
-    /**
-     * Assert that the given team data is valid.
-     *
-     * @param compare actual team
-     * @param team Team to be compared
-     */
-    private void assertTeam(Team compare, Team team) {
-        assertNotNull(team);
-        assertEquals(compare.getId(), team.getId());
     }
 
     /**
@@ -80,10 +64,12 @@ public class TeamRepositoryTest {
         assertNotNull(teams);
         assertEquals(NUMBER_OF_TEAMS, teams.size());
         int count = 0;
-        for (Team team : teams) {
-            if (team.getId().equals(team1Id) || team.getId().equals(team2Id)
-                    || team.getId().equals(team3Id)) {
-                count++;
+        for (Team expected : Arrays.asList(team1, team2, team3)) {
+            for (Team actual : teams) {
+                if (expected.equals(actual)) {
+                    assertTrue(expected.same(actual));
+                    count++;
+                }
             }
         }
         assertEquals(NUMBER_OF_TEAMS, count);
@@ -95,7 +81,7 @@ public class TeamRepositoryTest {
     @Test
     public void testGet() {
         Team team = repository.get(team1Id);
-        this.assertTeam(team1, team);
+        assertTrue(team1.same(team));
     }
 
     /**
@@ -112,10 +98,9 @@ public class TeamRepositoryTest {
      */
     @Test
     public void testGetByName() {
-        String name = team1.getName();
+        String name = team2.getName();
         Team team = repository.getByName(name);
-        this.assertTeam(team1, team);
-        assertEquals(name, team.getName());
+        assertTrue(team2.same(team));
     }
 
     /**
@@ -144,7 +129,7 @@ public class TeamRepositoryTest {
         assertTrue(result);
         assertEquals(NUMBER_OF_TEAMS + 1, repository.count());
         Team team = repository.get(unExistingTeamId);
-        this.assertTeam(unExistingTeam, team);
+        assertTrue(unExistingTeam.same(team));
     }
 
     /**
@@ -161,14 +146,13 @@ public class TeamRepositoryTest {
      */
     @Test
     public void testUpdate() {
-        String name = "Team onUpdateSuccess";
-        team1.setName(name);
-        boolean result = repository.update(team1);
+        String name = "Team updated";
+        team3.setName(name);
+        boolean result = repository.update(team3);
         assertTrue(result);
         assertEquals(NUMBER_OF_TEAMS, repository.count());
-        Team team = repository.get(team1Id);
-        this.assertTeam(team1, team);
-        assertEquals(name, team.getName());
+        Team team = repository.get(team3Id);
+        assertTrue(team3.same(team));
     }
 
     /**

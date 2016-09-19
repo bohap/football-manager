@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Borce on 27.07.2016.
  */
-public class Team extends BaseModel<Integer> implements Serializable {
+public class Team extends IdModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -95,5 +95,29 @@ public class Team extends BaseModel<Integer> implements Serializable {
 
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Team && this.id == ((Team) o).getId();
+    }
+
+    /**
+     * Check if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the model are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof Team)) {
+            return false;
+        }
+        Team team = (Team) model;
+        return this.id == team.getId() &&
+                super.equalsFields(this.name, team.getName()) &&
+                super.equalsFields(this.shortName, team.getShortName()) &&
+                super.equalsFields(this.squadMarketValue, team.getSquadMarketValue());
+
     }
 }

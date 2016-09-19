@@ -59,24 +59,16 @@ public class TeamDBService {
      */
     private void validateData(Team team) {
         if (team == null) {
-            String message = "user can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user can't be null");
         }
         if (team.getId() == null) {
-            String message = "user id can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user id can't be null");
         }
         if (team.getId() < 1) {
-            String message = "user id must be greater then 1";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user id must be greater then 1");
         }
         if (team.getName() == null) {
-            String message = "user name can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user name can't be null");
         }
     }
 
@@ -136,9 +128,7 @@ public class TeamDBService {
      */
     public boolean exists(Team team) {
         if (team == null) {
-            String message = "team can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("team can't be null");
         }
         return this.exists(team.getId());
     }
@@ -152,22 +142,16 @@ public class TeamDBService {
     public Team store(Team team) {
         this.validateData(team);
         if (this.exists(team)) {
-            String message = String.format("can't save team, team with id " +
-                    "%d already exists", team.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save team, team with id %d already exists", team.getId()));
         }
         if (this.getByName(team.getName()) != null) {
-            String message = String.format("can't save team, team with name " +
-                    "%s already exists", team.getName());
-            logger.error(message);
-            throw new UniqueFieldConstraintException(message);
+            throw new UniqueFieldConstraintException(String
+                    .format("can't save team, team with name %s already exists", team.getName()));
         }
         boolean result = repository.store(team);
         if (! result) {
-            String message = "error occurred while saving the team";
-            logger.error(message);
-            throw new TeamException(message);
+            throw new TeamException("error occurred while saving the team");
         }
         return team;
     }
@@ -181,16 +165,13 @@ public class TeamDBService {
     public Team update(Team team) {
         this.validateData(team);
         if (! this.exists(team)) {
-            String message = String.format("can't onUpdateSuccess team, team with " +
-                    "id %d already exists", team.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess team, team with id %d already exists",
+                            team.getId()));
         }
         boolean result = repository.update(team);
         if (! result) {
-            String message = "error occurred while updating the team";
-            logger.error(message);
-            throw new TeamException(message);
+            throw new TeamException("error occurred while updating the team");
         }
         return team;
     }
@@ -202,16 +183,12 @@ public class TeamDBService {
      */
     public void delete(int id) {
         if (! this.exists(id)) {
-            String message = String.format("can't delete team, team with " +
-                    "id %d already exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't delete team, team with id %d already exists", id));
         }
         boolean result = repository.delete(id);
         if (! result) {
-            String message = "error occurred while deleting the team";
-            logger.error(message);
-            throw new TeamException(message);
+            throw new TeamException("error occurred while deleting the team");
         }
     }
 
@@ -222,9 +199,7 @@ public class TeamDBService {
      */
     public void delete(Team team) {
         if (team == null) {
-            String message = "team can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("team can't be null");
         }
         this.delete(team.getId());
     }

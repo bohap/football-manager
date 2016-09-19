@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by Borce on 29.07.2016.
  */
-public class LineupLike implements Serializable {
+public class LineupLike extends BaseModel implements Serializable {
 
     @SerializedName("user_id")
     private int userId;
@@ -51,6 +51,9 @@ public class LineupLike implements Serializable {
     }
 
     public int getUserId() {
+        if (userId < 1 && user != null) {
+            return user.getId();
+        }
         return userId;
     }
 
@@ -59,6 +62,9 @@ public class LineupLike implements Serializable {
     }
 
     public int getLineupId() {
+        if (lineupId < 1 && lineup != null) {
+            return lineup.getId();
+        }
         return lineupId;
     }
 
@@ -80,6 +86,7 @@ public class LineupLike implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+        this.userId = user.getId();
     }
 
     public Lineup getLineup() {
@@ -88,5 +95,32 @@ public class LineupLike implements Serializable {
 
     public void setLineup(Lineup lineup) {
         this.lineup = lineup;
+        this.lineupId = lineup.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof LineupLike)) {
+            return false;
+        }
+        LineupLike like = (LineupLike) o;
+        return this.userId == like.getUserId() && this.lineupId == like.getLineupId();
+    }
+
+    /**
+     * Checks if ita same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the model are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof LineupLike)) {
+            return false;
+        }
+        LineupLike like = (LineupLike) model;
+        return this.userId == like.getUserId() &&
+                this.lineupId == like.getLineupId() &&
+                super.equalsFields(this.createdAt, like.getCreatedAt());
     }
 }

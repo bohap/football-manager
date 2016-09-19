@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Borce on 25.07.2016.
  */
+@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class InfoDialogTest {

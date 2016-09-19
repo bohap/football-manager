@@ -2,12 +2,14 @@ package com.android.finki.mpip.footballdreamteam.utility;
 
 import com.android.finki.mpip.footballdreamteam.model.Player;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  * Created by Borce on 12.08.2016.
  */
+@Ignore
 public class PlayerUtilsTest {
 
     private PlayerUtils utils = new PlayerUtils();

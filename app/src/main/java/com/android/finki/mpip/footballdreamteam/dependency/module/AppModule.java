@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.utility.AlarmManagerUtils;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,5 +108,16 @@ public class AppModule {
     @Singleton
     AlarmManagerUtils provideAlarmMangerUtils(Context context, AlarmManager manager) {
         return new AlarmManagerUtils(context, manager);
+    }
+
+    /**
+     * Provides instance of the Base64 utils.
+     *
+     * @return instance of Base64 utils
+     */
+    @Provides
+    @Singleton
+    Base64Utils provideBase64Utils() {
+        return new Base64Utils();
     }
 }

@@ -1,9 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.dependency.component;
 
-import android.app.Application;
-
 import com.android.finki.mpip.footballdreamteam.MainApplication;
-import com.android.finki.mpip.footballdreamteam.dependency.component.ui.BaseViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LoginViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.RegisterViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashViewComponent;
@@ -30,8 +27,6 @@ public interface AppComponent {
     void inject(MainApplication application);
 
     void inject(ApplicationBootReceiver receiver);
-
-    BaseViewComponent plus();
 
     SplashViewComponent plus(SplashViewModule module);
 

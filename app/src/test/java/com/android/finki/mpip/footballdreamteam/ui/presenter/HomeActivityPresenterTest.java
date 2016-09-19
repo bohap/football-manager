@@ -18,6 +18,7 @@ import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
 import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 09.08.2016.
  */
+@Ignore
 public class HomeActivityPresenterTest {
 
     @Mock

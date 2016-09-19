@@ -64,19 +64,13 @@ public class LineupDBService {
      */
     private void validateData(Lineup lineup) {
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         if (lineup.getId() == null) {
-            String message = "lineup id can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup id can't be null");
         }
         if (lineup.getId() < 1) {
-            String message = "lineup id must be greater than 0";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup id must be greater than 0");
         }
     }
 
@@ -126,9 +120,7 @@ public class LineupDBService {
      */
     public boolean exists(Lineup lineup) {
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         return this.exists(lineup.getId());
     }
@@ -142,27 +134,19 @@ public class LineupDBService {
     public Lineup store(Lineup lineup) {
         this.validateData(lineup);
         if (this.exists(lineup)) {
-            String message = String.format("can't save lineup, lineup with " +
-                    "id %d already exists", lineup.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
-        }
-        /* Check if the user id exists */
-        if (lineup.getUserId() < 1 && lineup.getUser() != null) {
-            lineup.setUserId(lineup.getUser().getId());
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save lineup, lineup with id %d already exists",
+                            lineup.getId()));
         }
         if (!userDBService.exists(lineup.getUserId())) {
-            String message = String.format("can't save lineup, lineup user " +
-                    "id %d don't exists", lineup.getUserId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save lineup, lineup user id %d don't exists",
+                            lineup.getUserId()));
         }
 
         boolean result = repository.store(lineup);
         if (!result) {
-            String message = "error occurred while saving the lineup";
-            logger.error(message);
-            throw new LineupException(message);
+            throw new LineupException("error occurred while saving the lineup");
         }
         return lineup;
     }
@@ -176,16 +160,13 @@ public class LineupDBService {
     public Lineup update(Lineup lineup) {
         this.validateData(lineup);
         if (!this.exists(lineup)) {
-            String message = String.format("can't onUpdateSuccess lineup, lineup with id " +
-                    "%d don't exists", lineup.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess lineup, lineup with id %d don't exists",
+                            lineup.getId()));
         }
         boolean result = repository.update(lineup);
         if (!result) {
-            String message = "error occurred while updating the lineup";
-            logger.error(message);
-            throw new LineupException(message);
+            throw new LineupException("error occurred while updating the lineup");
         }
         return lineup;
     }
@@ -197,16 +178,12 @@ public class LineupDBService {
      */
     public void delete(int id) {
         if (!this.exists(id)) {
-            String message = String.format("can't delete lineup, lineup with " +
-                    "id %d con't exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't delete lineup, lineup with id %d con't exists", id));
         }
         boolean result = repository.delete(id);
         if (!result) {
-            String message = "error occurred while deleting the lineup";
-            logger.error(message);
-            throw new LineupException(message);
+            throw new LineupException("error occurred while deleting the lineup");
         }
     }
 
@@ -217,9 +194,7 @@ public class LineupDBService {
      */
     public void delete(Lineup lineup) {
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         this.delete(lineup.getId());
     }
@@ -242,9 +217,7 @@ public class LineupDBService {
      */
     public List<Lineup> getUserLineups(User user) {
         if (user == null) {
-            String message = "user can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user can't be null");
         }
         return this.getUserLineups(user.getId());
     }

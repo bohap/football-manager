@@ -5,16 +5,16 @@ import com.android.finki.mpip.footballdreamteam.exception.CommentException;
 import com.android.finki.mpip.footballdreamteam.exception.ForeignKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
-import com.android.finki.mpip.footballdreamteam.model.Lineup;
-import com.android.finki.mpip.footballdreamteam.model.User;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 02.08.2016.
@@ -34,9 +34,7 @@ public class CommentDBServiceUnitTest {
     private CommentDBService service;
 
     private final int userId = 1;
-    private User user = new User(userId, "User", "user@user.co", null, null, null);
     private final int lineupId = 1;
-    private Lineup lineup = new Lineup(lineupId, userId, null, null);
     private final int commentId = 1;
     private Comment comment = new Comment(commentId, userId, lineupId, "Comment body", null, null);
 
@@ -148,10 +146,7 @@ public class CommentDBServiceUnitTest {
         when(lineupDBService.exists(lineupId)).thenReturn(true);
         when(repository.store(comment)).thenReturn(true);
         Comment stored = service.store(comment);
-        assertNotNull(stored);
-        assertEquals(commentId, stored.getId().intValue());
-        assertEquals(userId, stored.getUserId());
-        assertEquals(lineupId, stored.getLineupId());
+        assertSame(comment, stored);
     }
 
     /**
@@ -205,8 +200,7 @@ public class CommentDBServiceUnitTest {
         when(repository.get(commentId)).thenReturn(comment);
         when(repository.update(comment)).thenReturn(true);
         Comment updated = service.update(comment);
-        assertNotNull(updated);
-        assertEquals(commentId, updated.getId().intValue());
+        assertSame(comment, updated);
     }
 
     /**

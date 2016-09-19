@@ -10,6 +10,7 @@ import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.model.Team;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
     private String POSITIONS_TABLE_NAME;
     private String POSITIONS_COLUMN_ID;
     private String POSITIONS_COLUMN_NAME;
-
 
     public PlayerRepository(Context context, MainSQLiteOpenHelper dbHelper) {
         this.dbHelper = dbHelper;
@@ -67,7 +67,6 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
         player.setNationality(cursor.getString(cursor.getColumnIndex(COLUMN_NATIONALITY)));
         player.setDateOfBirth(DateUtils.parse(cursor
                 .getString(cursor.getColumnIndex(COLUMN_DATE_OF_BIRTH))));
-
         String column = String.format("%s_%s", TEAMS_TABLE_NAME, TEAMS_COLUMN_NAME);
         int index = cursor.getColumnIndex(column);
         if (index != -1) {
@@ -214,20 +213,13 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
     /**
      * Get all players that have a position id tha that is in the given array of positions ids.
      *
-     * @param positionsIds array of positions id
+     * @param positionId array of positions id
      * @return List of Players
      */
-    public List<Player> getPositionPlayers(Integer... positionsIds) {
-        StringBuilder where = new StringBuilder();
-        String[] whereArgs = new String[positionsIds.length];
-        for (int i = 0; i < positionsIds.length; i++) {
-            if (i > 0) {
-                where.append(" or ");
-            }
-            where.append(String.format("%s.%s = ?", TABLE_NAME, COLUMN_POSITION_ID));
-            whereArgs[i] = String.valueOf(positionsIds[i]);
-        }
-        return super.getMultiple(this.getQuery(true, false), where.toString(), whereArgs);
+    public List<Player> getPositionsPlayers(int positionId) {
+        String where = String.format("%s.%s = ?", TABLE_NAME, COLUMN_POSITION_ID);
+        String[] whereArgs = {String.valueOf(positionId)};
+        return super.getMultiple(this.getQuery(true, false), where, whereArgs);
     }
 
     /**
@@ -238,8 +230,10 @@ public class PlayerRepository extends BaseRepository<Player, Integer> {
      * @param positionsIds     array of positions ids
      * @return List if Players
      */
-    public List<Player> getPositionPlayers(int[] playersToExclude, Integer... positionsIds) {
-        //TODO change test
+    public List<Player> getPositionsPlayers(int[] playersToExclude, Integer... positionsIds) {
+        if (positionsIds.length == 0) {
+            return new ArrayList<>();
+        }
         StringBuilder where = new StringBuilder();
         String[] whereArgs = new String[playersToExclude.length + positionsIds.length];
         int argsCount = 0;

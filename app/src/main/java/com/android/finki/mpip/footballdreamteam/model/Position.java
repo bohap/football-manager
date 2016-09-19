@@ -1,6 +1,5 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
-import com.android.finki.mpip.footballdreamteam.R;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * Created by Borce on 27.07.2016.
  */
-public class Position extends BaseModel<Integer> implements Serializable {
+public class Position extends IdModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -61,5 +60,26 @@ public class Position extends BaseModel<Integer> implements Serializable {
 
     public void setPlayersCount(int playersCount) {
         this.playersCount = playersCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Position && this.id == ((Position) o).getId();
+    }
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the models are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof Position)) {
+            return false;
+        }
+        Position position = (Position) model;
+        return this.id == position.getId() &&
+                super.equalsFields(this.name, position.getName());
     }
 }

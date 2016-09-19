@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupLike;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +18,9 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -38,37 +41,33 @@ public class LikeRepositoryTest {
     private UserRepository userRepository;
     private LineupRepository lineupRepository;
 
-    private final int year = 2016, month = 8, day = 5, hour = 9, minute = 20, second = 0;
-    private Calendar calendar = new GregorianCalendar(year, month, day, hour, minute, second);
-
-    private final int NUMBER_OF_USER_1_LIKES = 2;
+    private Calendar calendar = new GregorianCalendar(2016, 7, 5, 9, 20, 0);
+    private Date date = calendar.getTime();
     private final int user1Id = 124;
-    private User user1 = new User(user1Id, "User 1");
-    private final int NUMBER_OF_USER_2_LIKES = 1;
+    private User user1 = new User(user1Id, "User 1", "user@user.com", "password", date, date);
     private final int user2Id = 45;
-    private User user2 = new User(user2Id, "User 2");
-
-    private final int NUMBER_OF_LINEUP_1_LIKES = 1;
+    private User user2 = new User(user2Id, "User 2", "user2@user.com", "password", date, date);
     private final int lineup1Id = 324;
     private Lineup lineup1 = new Lineup(lineup1Id, user1Id);
-    private final int NUMBER_OF_LINEUP_2_LIKES = 2;
     private final int lineup2Id = 24;
     private Lineup lineup2 = new Lineup(lineup2Id, user1Id);
-
     private final int NUMBER_OF_LIKES = 3;
-    private LineupLike like1 = new LineupLike(user1, lineup1, calendar.getTime());
-    private LineupLike like2 = new LineupLike(user1, lineup2, calendar.getTime());
-    private LineupLike like3 = new LineupLike(user2, lineup2, calendar.getTime());
+    private LineupLike like1 = new LineupLike(user1, lineup1, date);
+    private LineupLike like2 = new LineupLike(user1, lineup2, date);
+    private LineupLike like3 = new LineupLike(user2, lineup2, date);
     private LineupLike unExistingLike = new LineupLike(user2, lineup1, calendar.getTime());
+    private List<LineupLike> user1likes = Arrays.asList(like1, like2);
+    private List<LineupLike> line2Likes = Arrays.asList(like2, like3);
 
     /**
      * Initialize the repositories, open the connection and seed the tables.
      */
     @Before
     public void setup() {
+        Base64Utils base64Utils = new Base64Utils();
         Context context = RuntimeEnvironment.application.getBaseContext();
         MainSQLiteOpenHelper dbHelper = new MainSQLiteOpenHelper(context);
-        userRepository = new UserRepository(context, dbHelper);
+        userRepository = new UserRepository(context, dbHelper, base64Utils);
         lineupRepository = new LineupRepository(context, dbHelper);
         repository = new LikeRepository(context, dbHelper);
         /* Open the connections */
@@ -96,31 +95,25 @@ public class LikeRepositoryTest {
     }
 
     /**
-     * Assert that the given List of likes is valid.
+     * Assert that the list are same.
      *
-     * @param number    expected number of likes
-     * @param likes     List of LineupLike
-     * @param checkUser whatever the like user should be checked
+     * @param expectedList expected list of likes
+     * @param actualList   actual list of likes
+     * @param checkUser    whatever the like user should be checked
      */
-    private void assertLikes(int number, List<LineupLike> likes, boolean checkUser) {
-        assertNotNull(likes);
-        assertEquals(number, likes.size());
+    private void assertList(List<LineupLike> expectedList, List<LineupLike> actualList,
+                            boolean checkUser) {
+        assertEquals(expectedList.size(), actualList.size());
         int count = 0;
-        for (LineupLike like : likes) {
-            int userId = like.getUserId();
-            int lineupId = like.getLineupId();
-            if (like1.getUserId() == userId && like1.getLineupId() == lineupId) {
-                this.assertLike(like1, like, checkUser);
-                count++;
-            } else if (like2.getUserId() == userId && like2.getLineupId() == lineupId) {
-                this.assertLike(like2, like, checkUser);
-                count++;
-            } else if (like3.getUserId() == userId && like3.getLineupId() == lineupId) {
-                this.assertLike(like3, like, checkUser);
-                count++;
+        for (LineupLike expected : expectedList) {
+            for (LineupLike actual : actualList) {
+                if (expected.equals(actual)) {
+                    this.assertLike(expected, actual, checkUser);
+                    count++;
+                }
             }
         }
-        assertEquals(number, count);
+        assertEquals(expectedList.size(), count);
     }
 
     /**
@@ -131,9 +124,7 @@ public class LikeRepositoryTest {
      * @param checkUser whatever the user should be checked
      */
     private void assertLike(LineupLike compare, LineupLike like, boolean checkUser) {
-        assertNotNull(like);
-        assertEquals(compare.getLineupId(), like.getLineupId());
-        assertEquals(compare.getUserId(), like.getUserId());
+        assertTrue(compare.same(like));
         if (checkUser) {
             User user = like.getUser();
             assertNotNull(user);
@@ -148,7 +139,7 @@ public class LikeRepositoryTest {
     @Test
     public void testGetAll() {
         List<LineupLike> likes = repository.getAll();
-        this.assertLikes(NUMBER_OF_LIKES, likes, true);
+        this.assertList(Arrays.asList(like1, like2, like3), likes, true);
     }
 
     /**
@@ -223,7 +214,7 @@ public class LikeRepositoryTest {
     @Test
     public void getLineupLikes() {
         List<LineupLike> likes = repository.getLineupLikes(lineup2Id);
-        this.assertLikes(NUMBER_OF_LINEUP_2_LIKES, likes, true);
+        this.assertList(line2Likes, likes, true);
     }
 
     /**
@@ -232,6 +223,6 @@ public class LikeRepositoryTest {
     @Test
     public void getUserLikes() {
         List<LineupLike> likes = repository.getUserLikes(user1Id);
-        this.assertLikes(NUMBER_OF_USER_1_LIKES, likes, false);
+        this.assertList(user1likes, likes, false);
     }
 }

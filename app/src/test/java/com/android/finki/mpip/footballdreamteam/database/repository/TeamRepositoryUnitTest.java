@@ -81,11 +81,7 @@ public class TeamRepositoryUnitTest {
     public void testMapCursor() {
         this.initCursor();
         Team mapped = repository.mapCursor(cursor);
-        assertNotNull(mapped);
-        assertEquals(team.getId(), mapped.getId());
-        assertEquals(team.getName(), mapped.getName());
-        assertEquals(team.getShortName(), mapped.getShortName());
-        assertEquals(team.getSquadMarketValue(), mapped.getSquadMarketValue());
+        assertTrue(team.same(mapped));
     }
 
     /**

@@ -94,22 +94,14 @@ public class ListPositionPlayersAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        Player player = this.getItem(position);
-        holder.txtName.setText(player.getName());
-        holder.txtAge.setText(String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth())));
-        if (player.getTeam() != null) {
-            holder.txtTeam.setText(player.getTeam().getName());
-        }
-        if (player.getPosition() != null) {
-            holder.txtPosition.setText(utils.getShortName(player.getPosition()));
-        }
+        holder.setPositions(position);
         return view;
     }
 
     /**
      * Class holder for the adapter items view.
      */
-    static class ViewHolder {
+    public class ViewHolder {
 
         @BindView(R.id.positionPlayerLayout_txtName)
         TextView txtName;
@@ -125,6 +117,23 @@ public class ListPositionPlayersAdapter extends BaseAdapter {
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
+        }
+
+        /**
+         * Set the holder position in the adapter.
+         *
+         * @param position holder position
+         */
+        public void setPositions(int position) {
+            Player player = players.get(position);
+            txtName.setText(player.getName());
+            txtAge.setText(String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth())));
+            if (player.getTeam() != null) {
+                txtTeam.setText(player.getTeam().getName());
+            }
+            if (player.getPosition() != null) {
+                txtPosition.setText(utils.getShortName(player.getPosition()));
+            }
         }
     }
 }

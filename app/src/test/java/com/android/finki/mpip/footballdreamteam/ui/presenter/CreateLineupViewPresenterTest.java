@@ -14,6 +14,7 @@ import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by Borce on 25.08.2016.
  */
+@Ignore
 public class CreateLineupViewPresenterTest {
 
     @Mock

@@ -15,6 +15,7 @@ import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LikeFragment;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 26.08.2016.
  */
+@Ignore
 public class LikeFragmentPresenterTest {
 
     @Mock

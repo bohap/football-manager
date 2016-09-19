@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
-import com.android.finki.mpip.footballdreamteam.model.BaseModel;
 
 import java.util.ArrayList;
 import java.util.List;

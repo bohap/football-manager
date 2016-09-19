@@ -2,7 +2,6 @@ package com.android.finki.mpip.footballdreamteam.database.repository;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
@@ -101,7 +100,7 @@ public class LineupPlayerRepository extends Repository<LineupPlayer> {
     /**
      * Get the query that will also take player name and position name with every select.
      *
-     * @param player whatever the player should be taken
+     * @param player   whatever the player should be taken
      * @param position whatever the position should be taken
      * @return sql query
      */
@@ -208,7 +207,7 @@ public class LineupPlayerRepository extends Repository<LineupPlayer> {
     }
 
     /**
-     * Get all lineups that the given player is put.
+     * Get all lineups in which the given player is put.
      *
      * @param playerId player id
      * @return List of LineupPlayer that contains the player id

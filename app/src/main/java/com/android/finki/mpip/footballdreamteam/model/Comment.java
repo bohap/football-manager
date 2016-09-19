@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by Borce on 27.07.2016.
  */
-public class Comment extends BaseModel<Integer> implements Serializable {
+public class Comment extends IdModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -76,6 +76,9 @@ public class Comment extends BaseModel<Integer> implements Serializable {
     }
 
     public int getUserId() {
+        if (userId < 1 && user != null) {
+            return user.getId();
+        }
         return userId;
     }
 
@@ -84,6 +87,9 @@ public class Comment extends BaseModel<Integer> implements Serializable {
     }
 
     public int getLineupId() {
+        if (lineupId < 1 && lineup != null) {
+            return lineup.getId();
+        }
         return lineupId;
     }
 
@@ -121,6 +127,9 @@ public class Comment extends BaseModel<Integer> implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userId = user.getId();
+        }
     }
 
     public Lineup getLineup() {
@@ -129,10 +138,33 @@ public class Comment extends BaseModel<Integer> implements Serializable {
 
     public void setLineup(Lineup lineup) {
         this.lineup = lineup;
+        if (lineup != null) {
+            this.lineupId = lineup.getId();
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         return o instanceof Comment && this.id == ((Comment) o).getId();
+    }
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the model are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof Comment)) {
+            return false;
+        }
+        Comment comment = (Comment) model;
+        return this.id == comment.getId() &&
+                this.userId == comment.getUserId() &&
+                this.lineupId == comment.getLineupId() &&
+                super.equalsFields(this.body, comment.getBody()) &&
+                super.equalsFields(this.createdAt, comment.getCreatedAt()) &&
+                super.equalsFields(this.updatedAt, comment.getUpdatedAt());
     }
 }

@@ -70,24 +70,16 @@ public class CommentDBService {
      */
     private void validateData(Comment comment) {
         if (comment == null) {
-            String message = "comment can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment can't be null");
         }
         if (comment.getId() == null) {
-            String message = "comment id ca't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment id ca't be null");
         }
         if (comment.getId() < 1) {
-            String message = "comment id must be greater than 0";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment id must be greater than 0");
         }
         if (comment.getBody() == null) {
-            String message = "comment body can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment body can't be null");
         }
     }
 
@@ -137,9 +129,7 @@ public class CommentDBService {
      */
     public boolean exists(Comment comment) {
         if (comment == null) {
-            String message = "comment can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment can't be null");
         }
         return this.exists(comment.getId());
     }
@@ -153,37 +143,24 @@ public class CommentDBService {
     public Comment store(Comment comment) {
         this.validateData(comment);
         if (this.exists(comment.getId())) {
-            String message = String.format("can't save comment, comment with " +
-                    "id %d already exists", comment.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
-        }
-        /* Check if the user id exists */
-        if (comment.getUserId() < 1 && comment.getUser() != null) {
-            comment.setUserId(comment.getUser().getId());
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save comment, comment with id %d already exists",
+                            comment.getId()));
         }
         if (!userDBService.exists(comment.getUserId())) {
-            String message = String.format("can't save comment, comment user with " +
-                    "id %d don't exists", comment.getUserId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
-        }
-        /* Check if the lineup id exists */
-        if (comment.getLineupId() < 1 && comment.getLineup() != null) {
-            comment.setLineupId(comment.getLineup().getId());
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save comment, comment user with id %d don't exists",
+                            comment.getUserId()));
         }
         if (!lineupDBService.exists(comment.getLineupId())) {
-            String message = String.format("can't save comment, comment lineup with " +
-                    "id %d don't exists", comment.getLineupId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save comment, comment lineup with id %d don't exists",
+                            comment.getLineupId()));
         }
 
         boolean result = repository.store(comment);
         if (!result) {
-            String message = "error occurred while saving the comment";
-            logger.error(message);
-            throw new CommentException(message);
+            throw new CommentException("error occurred while saving the comment");
         }
         return comment;
     }
@@ -197,16 +174,13 @@ public class CommentDBService {
     public Comment update(Comment comment) {
         this.validateData(comment);
         if (!this.exists(comment.getId())) {
-            String message = String.format("can't onUpdateSuccess comment, comment with " +
-                    "id %d don't exists", comment.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess comment, comment with id %d don't exists",
+                            comment.getId()));
         }
         boolean result = repository.update(comment);
         if (!result) {
-            String message = "error occurred while updating the comment";
-            logger.error(message);
-            throw new CommentException(message);
+            throw new CommentException("error occurred while updating the comment");
         }
         return comment;
     }
@@ -218,16 +192,12 @@ public class CommentDBService {
      */
     public void delete(int id) {
         if (!this.exists(id)) {
-            String message = String.format("can't delete comment, comment with " +
-                    "id %d don't exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't delete comment, comment with id %d don't exists", id));
         }
         boolean result = repository.delete(id);
         if (!result) {
-            String message = "error occurred while deleting the comment";
-            logger.error(message);
-            throw new CommentException(message);
+            throw new CommentException("error occurred while deleting the comment");
         }
     }
 
@@ -238,9 +208,7 @@ public class CommentDBService {
      */
     public void delete(Comment comment) {
         if (comment == null) {
-            String message = "comment can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("comment can't be null");
         }
         this.delete(comment.getId());
     }
@@ -263,9 +231,7 @@ public class CommentDBService {
      */
     public List<Comment> getUserComments(User user) {
         if (user == null) {
-            String message = "user can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user can't be null");
         }
         return this.getUserComments(user.getId());
     }
@@ -288,9 +254,7 @@ public class CommentDBService {
      */
     public List<Comment> getLineupComments(Lineup lineup) {
         if (lineup == null) {
-            String message = "lineup can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineup can't be null");
         }
         return this.getLineupComments(lineup.getId());
     }

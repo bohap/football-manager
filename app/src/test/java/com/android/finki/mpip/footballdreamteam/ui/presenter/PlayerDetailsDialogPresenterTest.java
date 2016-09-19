@@ -10,6 +10,7 @@ import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 20.08.2016.
  */
+@Ignore
 public class PlayerDetailsDialogPresenterTest {
 
     @Mock

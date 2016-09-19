@@ -6,7 +6,6 @@ import com.android.finki.mpip.footballdreamteam.exception.LineupPlayerException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
-import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +76,7 @@ public class LineupPlayerDBService {
      */
     private void validateData(LineupPlayer lineupPlayer) {
         if (lineupPlayer == null) {
-            String message = "lineupPlayer can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineupPlayer can't be null");
         }
     }
 
@@ -122,9 +119,7 @@ public class LineupPlayerDBService {
      */
     public boolean exists(LineupPlayer lineupPlayer) {
         if (lineupPlayer == null) {
-            String message = "lineupPlayer can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineupPlayer can't be null");
         }
         return this.exists(lineupPlayer.getLineupId(), lineupPlayer.getPlayerId());
     }
@@ -137,51 +132,31 @@ public class LineupPlayerDBService {
      */
     public LineupPlayer store(LineupPlayer lineupPlayer) {
         this.validateData(lineupPlayer);
-        /* Check is lineup id exists */
-        if (lineupPlayer.getLineupId() < 1 && lineupPlayer.getLineup() != null) {
-            lineupPlayer.setLineupId(lineupPlayer.getLineup().getId());
-        }
-        int lineupId = lineupPlayer.getLineupId();
         if (!lineupDBService.exists(lineupPlayer.getLineupId())) {
-            String message = String.format("can't save lineup player, lineup with " +
-                    "id %d don't exists", lineupId);
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save lineup player, lineup with id %d don't exists",
+                            lineupPlayer.getLineupId()));
         }
-        /* Check if player id exists */
-        if (lineupPlayer.getPlayerId() < 1 && lineupPlayer.getPlayer() != null) {
-            lineupPlayer.setPlayerId(lineupPlayer.getPlayer().getId());
+        if (!playerDBService.exists(lineupPlayer.getPlayerId())) {
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save lineup player, player with id %d don't exists",
+                            lineupPlayer.getPlayerId()));
         }
-        int playerId = lineupPlayer.getPlayerId();
-        if (!playerDBService.exists(playerId)) {
-            String message = String.format("can't save lineup player, player with " +
-                    "id %d don't exists", playerId);
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
-        }
-        /* Check if position id exists */
-        if (lineupPlayer.getPositionId() < 1 && lineupPlayer.getPosition() != null) {
-            lineupPlayer.setPositionId(lineupPlayer.getPositionId());
-        }
-        int positionId = lineupPlayer.getPositionId();
-        if (!positionDBService.exists(positionId)) {
-            String message = String.format("can't save lineup player, player with " +
-                    "id %d don't exists", positionId);
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+        if (!positionDBService.exists(lineupPlayer.getPositionId())) {
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save lineup player, player with id %d don't exists",
+                            lineupPlayer.getPositionId()));
         }
         if (this.exists(lineupPlayer)) {
-            String message = String.format("can't addLike player in the lineup, lineup with " +
-                    "id %d already has the player with id %d", lineupId, playerId);
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't add player in the lineup, lineup with id %d already " +
+                                    "has the player with id %d", lineupPlayer.getLineupId(),
+                            lineupPlayer.getPlayerId()));
         }
 
         boolean result = repository.store(lineupPlayer);
         if (!result) {
-            String message = "error occurred while saving the lineup player";
-            logger.error(message);
-            throw new LineupPlayerException(message);
+            throw new LineupPlayerException("error occurred while saving the lineup player");
         }
         return lineupPlayer;
     }
@@ -193,18 +168,15 @@ public class LineupPlayerDBService {
      * @return setChanged LineupPlayer
      */
     public LineupPlayer update(LineupPlayer lineupPlayer) {
-        if (! this.exists(lineupPlayer)) {
-            String message = String.format("can't onUpdateSuccess, lineupPlayer with " +
-                            "lineup id %d and player id %d don't exists", lineupPlayer.getLineupId(),
-                    lineupPlayer.getPlayerId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+        if (!this.exists(lineupPlayer)) {
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess, lineupPlayer with lineup id %d and player " +
+                                    "id %d don't exists", lineupPlayer.getLineupId(),
+                            lineupPlayer.getPlayerId()));
         }
         boolean result = repository.update(lineupPlayer);
         if (!result) {
-            String message = "error occurred while updating the lineup player";
-            logger.error(message);
-            throw new LineupPlayerException(message);
+            throw new LineupPlayerException("error occurred while updating the lineup player");
         }
         return lineupPlayer;
     }
@@ -217,16 +189,13 @@ public class LineupPlayerDBService {
      */
     public void delete(int lineupId, int playerId) {
         if (!this.exists(lineupId, playerId)) {
-            String message = String.format("lineup player can't delete, lineupPlayer " +
-                    "with lineup id %d and player with id %d don't exists", lineupId, playerId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("lineup player can't delete, lineupPlayer with lineup id %d and " +
+                            "player with id %d don't exists", lineupId, playerId));
         }
         boolean result = repository.delete(lineupId, playerId);
         if (!result) {
-            String message = "error occurred while deleting the lineup";
-            logger.error(message);
-            throw new LineupPlayerException(message);
+            throw new LineupPlayerException("error occurred while deleting the lineup");
         }
     }
 
@@ -237,15 +206,13 @@ public class LineupPlayerDBService {
      */
     public void delete(LineupPlayer lineupPlayer) {
         if (lineupPlayer == null) {
-            String message = "lineupPlayer can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("lineupPlayer can't be null");
         }
         this.delete(lineupPlayer.getLineupId(), lineupPlayer.getPlayerId());
     }
 
     /**
-     * Add multiple players in the lineup.
+     * Store all lineup players in the list.
      *
      * @param lineupPlayers ListPlayers to be added
      * @return success if the operation
@@ -256,8 +223,7 @@ public class LineupPlayerDBService {
             try {
                 LineupPlayer store = this.store(lineupPlayer);
                 stored.add(store);
-            } catch (PrimaryKeyConstraintException | ForeignKeyConstraintException
-                    | LineupPlayerException exp) {
+            } catch (RuntimeException exp) {
                 exp.printStackTrace();
                 this.deletePlayers(stored);
                 return false;
@@ -267,17 +233,34 @@ public class LineupPlayerDBService {
     }
 
     /**
-     * Update the data about the lineup players.
+     * Update all lineup players in the list.
      *
      * @param lineupPlayers List of players in the lineup
      * @return whatever the onUpdateSuccess is successful
      */
-    private boolean updatePlayers(List<LineupPlayer> lineupPlayers) {
+    public boolean updatePlayers(List<LineupPlayer> lineupPlayers) {
         for (LineupPlayer lineupPlayer : lineupPlayers) {
             try {
                 this.update(lineupPlayer);
             } catch (RuntimeException exp) {
-                logger.error("error occurred while updating the players");
+                exp.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Delete all lineup players in the list.
+     *
+     * @param lineupPlayers LineupPlayers to be deleted
+     */
+    public boolean deletePlayers(List<LineupPlayer> lineupPlayers) {
+        for (LineupPlayer lineupPlayer : lineupPlayers) {
+            try {
+                this.delete(lineupPlayer);
+            } catch (RuntimeException exp) {
+                exp.printStackTrace();
                 return false;
             }
         }
@@ -287,45 +270,26 @@ public class LineupPlayerDBService {
     /**
      * Update the players for the given lineup.
      *
-     * @param lineupId lineup id
+     * @param lineupId      lineup id
      * @param lineupPlayers List of players in the lineup
      * @return whatever the operation is successful
      */
-    public boolean updatePlayers(int lineupId, List<LineupPlayer> lineupPlayers) {
+    public boolean syncPlayers(int lineupId, List<LineupPlayer> lineupPlayers) {
         if (!lineupDBService.exists(lineupId)) {
-            String message = "updatePlayers called with un existing lineup";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("syncPlayers called with un existing lineup");
         }
         List<LineupPlayer> currentLineupPlayers = repository.getLineupPlayers(lineupId);
-        List<LineupPlayer> playersToStore = ListUtils
-                .notInTheList(lineupPlayers, currentLineupPlayers);
-        List<LineupPlayer> playersToUpdate = ListUtils
-                .inTheList(lineupPlayers, currentLineupPlayers);
-        List<LineupPlayer> playersToDelete = ListUtils
-                .notInTheList(currentLineupPlayers, lineupPlayers);
+        List<LineupPlayer> playersToStore =
+                ListUtils.notInTheList(lineupPlayers, currentLineupPlayers);
+        List<LineupPlayer> playersToUpdate =
+                ListUtils.inTheList(lineupPlayers, currentLineupPlayers);
+        List<LineupPlayer> playersToDelete =
+                ListUtils.notInTheList(currentLineupPlayers, lineupPlayers);
         boolean result = this.storePlayers(playersToStore);
         if (!result) {
             return false;
         }
         result = this.updatePlayers(playersToUpdate);
         return result && this.deletePlayers(playersToDelete);
-    }
-
-    /**
-     * Delete multiple players from the lineup.
-     *
-     * @param lineupPlayers LineupPlayers to be deleted
-     */
-    public boolean deletePlayers(List<LineupPlayer> lineupPlayers) {
-        for (LineupPlayer lineupPlayer : lineupPlayers) {
-            try {
-                this.delete(lineupPlayer);
-            } catch (IllegalArgumentException | LineupPlayerException exp) {
-                exp.printStackTrace();
-                return false;
-            }
-        }
-        return true;
     }
 }

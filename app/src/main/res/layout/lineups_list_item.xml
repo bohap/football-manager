@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <RelativeLayout
-            android:id="@+id/lineupsListItem_main"
+            android:id="@+id/lineupsListItem_lineupPlayers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true">
@@ -69,7 +69,7 @@
         </RelativeLayout>
         <LinearLayout
             android:id="@+id/lineupsListItem_likes"
-            android:layout_below="@+id/lineupsListItem_main"
+            android:layout_below="@+id/lineupsListItem_lineupPlayers"
             android:layout_toLeftOf="@+id/lineupsListItem_comments"
             android:layout_marginTop="@dimen/small_verticalMargin"
             android:layout_toStartOf="@+id/lineupsListItem_comments"

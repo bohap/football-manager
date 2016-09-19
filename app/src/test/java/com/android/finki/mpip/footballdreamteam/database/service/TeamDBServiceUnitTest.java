@@ -122,9 +122,7 @@ public class TeamDBServiceUnitTest {
         when(repository.getByName(team.getName())).thenReturn(null);
         when(repository.store(team)).thenReturn(true);
         Team stored = service.store(team);
-        assertNotNull(stored);
-        assertEquals(teamId, stored.getId().intValue());
-        assertEquals(team.getName(), stored.getName());
+        assertTrue(team.same(stored));
     }
 
     /**
@@ -178,9 +176,7 @@ public class TeamDBServiceUnitTest {
         when(repository.get(teamId)).thenReturn(team);
         when(repository.update(team)).thenReturn(true);
         Team updated = service.update(team);
-        assertNotNull(updated);
-        assertEquals(teamId, updated.getId().intValue());
-        assertEquals(team.getName(), updated.getName());
+        assertTrue(team.same(updated));
     }
 
     /**

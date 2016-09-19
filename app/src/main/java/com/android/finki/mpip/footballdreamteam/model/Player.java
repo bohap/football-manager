@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Borce on 27.07.2016.
  */
-public class Player extends BaseModel<Integer> implements Serializable {
+public class Player extends IdModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -69,6 +69,12 @@ public class Player extends BaseModel<Integer> implements Serializable {
                 playersCount, team, position, null);
     }
 
+    public Player(int id, Team team, Position position, String name,
+                  String nationality, Date dateOfBirth) {
+        this(id, team.getId(), position.getId(), name, nationality, dateOfBirth,
+                0, team, position, null);
+    }
+
     public Player(int id, int teamId, int positionId, String name,
                   String nationality, Date dateOfBirth) {
         this(id, teamId, positionId, name, nationality, dateOfBirth, 0, null, null, null);
@@ -97,6 +103,9 @@ public class Player extends BaseModel<Integer> implements Serializable {
     }
 
     public int getTeamId() {
+        if (teamId < 1 && team != null) {
+            return team.getId();
+        }
         return teamId;
     }
 
@@ -105,6 +114,9 @@ public class Player extends BaseModel<Integer> implements Serializable {
     }
 
     public int getPositionId() {
+        if (positionId < 1 && position != null) {
+            return position.getId();
+        }
         return positionId;
     }
 
@@ -150,6 +162,9 @@ public class Player extends BaseModel<Integer> implements Serializable {
 
     public void setTeam(Team team) {
         this.team = team;
+        if (team != null) {
+            this.teamId = team.getId();
+        }
     }
 
     public Position getPosition() {
@@ -158,6 +173,9 @@ public class Player extends BaseModel<Integer> implements Serializable {
 
     public void setPosition(Position position) {
         this.position = position;
+        if (position != null) {
+            this.positionId = position.getId();
+        }
     }
 
     public List<Lineup> getLineups() {
@@ -177,10 +195,10 @@ public class Player extends BaseModel<Integer> implements Serializable {
     }
 
     public int getLineupId() {
-        if (lineupPlayer == null) {
-            return 0;
+        if (lineupPlayer != null) {
+            return lineupPlayer.getLineupId();
         }
-        return lineupPlayer.getLineupId();
+        return 0;
     }
 
     public int getLineupPositionId() {
@@ -188,5 +206,30 @@ public class Player extends BaseModel<Integer> implements Serializable {
             return 0;
         }
         return lineupPlayer.getPositionId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Player && this.id == ((Player) o).getId();
+    }
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the models are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof Player)) {
+            return false;
+        }
+        Player player = (Player) model;
+        return this.id == player.getId() &&
+                this.teamId == player.getTeamId() &&
+                this.positionId == player.getPositionId() &&
+                super.equalsFields(this.name, player.getName()) &&
+                super.equalsFields(this.nationality, player.getNationality()) &&
+                super.equalsFields(this.dateOfBirth, player.getDateOfBirth());
     }
 }

@@ -9,6 +9,7 @@ import com.android.finki.mpip.footballdreamteam.exception.TeamException;
 import com.android.finki.mpip.footballdreamteam.model.Team;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 30.08.2016.
  */
+@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)

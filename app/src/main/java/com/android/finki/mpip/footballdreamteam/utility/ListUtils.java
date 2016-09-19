@@ -1,8 +1,10 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Borce on 07.08.2016.
@@ -46,7 +48,7 @@ public class ListUtils {
     }
 
     /**
-     * Get all records int the list 1 that are not in the list 2.
+     * Get all records in the list 1 that are not in the list 2.
      *
      * @param list1 first List
      * @param list2 second List
@@ -56,10 +58,27 @@ public class ListUtils {
     public static  <T> List<T> notInTheList(List<T> list1, List<T> list2) {
         List<T> result = new ArrayList<>();
         for (T record : list1) {
-            if (! list2.contains(record)) {
+            if (!list2.contains(record)) {
                 result.add(record);
             }
         }
         return result;
+    }
+
+    /**
+     * Merge the two lists without adding duplicates.
+     *
+     * @param list1 first list
+     * @param list2 second list
+     * @param <T> list type
+     * @return merged list
+     */
+    public static <T> List<T> concat(List<T> list1, List<T> list2) {
+        if (list1 == null || list2 == null) {
+            return new ArrayList<>();
+        }
+        Set<T> result = new LinkedHashSet<>(list1);
+        result.addAll(list2);
+        return new ArrayList<>(result);
     }
 }

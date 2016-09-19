@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Borce on 30.07.2016.
@@ -18,6 +19,8 @@ public class DateUtilsTest {
     private int year = 2016, month = 8, day = 10, hour = 9, minute = 6, second = 3;
     private String sDate = String.format("%02d-%02d-%01d %02d:%02d:%02d",
             year, month, day, hour, minute, second);
+    private String sDayNameDate = String.format("%02d.%02d.%02d at %02d:%02d:%02d", day,
+            month, year % 100, hour, minute, second);
     private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
 
     /**
@@ -63,58 +66,85 @@ public class DateUtilsTest {
     }
 
     /**
-     * Test that getYearDiff works when param 1 date year and month is bigger than
-     * param 2 date year and month.
+     * Test the behavior on dayNameFormat called with null param.
      */
     @Test
-    public void testGetYearDiffOnDate1YearAndMonthBiggerThanDate2YearAndMonth() {
-        Calendar cal1 = new GregorianCalendar(2016, 8, 31);
-        Calendar cal2 = new GregorianCalendar(2012, 7, 20);
-        int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
-        assertEquals(4, diff);
+    public void testDayNameFormatOnNull() {
+        assertNull(DateUtils.dayNameFormat(null));
     }
 
     /**
-     * Test that getYearDiff works when param 2 date month is bigger than param 1 date month.
+     * Test that dayNameFormat returns the correct string for the given date.
      */
     @Test
-    public void testGetYearDiffOnDate2MonthBiggerThanDadte1Month() {
-        Calendar cal1 = new GregorianCalendar(2016, 8, 31);
-        Calendar cal2 = new GregorianCalendar(2012, 9, 20);
-        int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
-        assertEquals(3, diff);
+    public void testDayNameFormat() {
+        String result = DateUtils.dayNameFormat(calendar.getTime());
+        assertNotNull(result);
+        assertTrue(result.contains(sDayNameDate));
     }
 
     /**
-     * Test the getYearDiff works when dates months are equal
-     * and date 2 day is bigger date 1 day.
+     * Test the behavior on getYearDiff called with null prams.
      */
     @Test
-    public void testGetYearDiffOnEqualMonthAndDate2DayBiggerThanDate1Date() {
+    public void testGetYearDiffCalledWithNullParams() {
+        assertEquals(0, DateUtils.getYearDiff(null, null));
+    }
+
+    /**
+     * Test the result on getYearDiff when date 1 month is bigger than date 2 month.
+     */
+    @Test
+    public void testGetYearDiffOnDate1MonthIsBiggerThanDate2Month() {
         Calendar cal1 = new GregorianCalendar(2016, 8, 20);
-        Calendar cal2 = new GregorianCalendar(2012, 8, 30);
+        Calendar cal2 = new GregorianCalendar(2013, 7, 23);
         int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
         assertEquals(3, diff);
     }
 
     /**
-     * Test that getYearDiff works when date 2 year is bigger that date 1 year.
+     * Test the result on getYearDiff when date 2 month is bigger than date 1 month.
      */
     @Test
-    public void testGetYearDIffWhenDate2YearIsBiggerThanDate1Year() {
-        Calendar cal1 = new GregorianCalendar(2012, 7, 20);
-        Calendar cal2 = new GregorianCalendar(2016, 8, 31);
+    public void testGetYearDiffOnDate2MonthBiggerThanDate1Month() {
+        Calendar cal1 = new GregorianCalendar(2016, 8, 20);
+        Calendar cal2 = new GregorianCalendar(2013, 9, 23);
         int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
-        assertEquals(-5, diff);
+        assertEquals(2, diff);
     }
 
     /**
-     * Test that getYearDiff works called with only one data param.
+     * Test the result on getYearDiff when date months are equal and date 1 day is
+     * bigger that date 2 day.
      */
     @Test
-    public void testGetYearDiffOnCurrentDate() {
-        Calendar cal = new GregorianCalendar(2012, 6, 20);
-        int diff = DateUtils.getYearDiff(cal.getTime());
-        assertEquals(4, diff);
+    public void testGetYearDiffOnEqualMonthAndDate1DayBiggerThanDate2Date() {
+        Calendar cal1 = new GregorianCalendar(2016, 8, 20);
+        Calendar cal2 = new GregorianCalendar(2013, 8, 19);
+        int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
+        assertEquals(3, diff);
+    }
+
+    /**
+     * Test the result on getYearDiff when months are equal and date 2 day is bigger
+     * that date 1 date..
+     */
+    @Test
+    public void testGetYearDIffOnEqualMonthsAndDay2DayBiggerThenDay1Day() {
+        Calendar cal1 = new GregorianCalendar(2016, 8, 20);
+        Calendar cal2 = new GregorianCalendar(2013, 8, 23);
+        int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
+        assertEquals(2, diff);
+    }
+
+    /**
+     * Test the result on getYearDiff when date 2 is bigger then date 1.
+     */
+    @Test
+    public void testGetYearDiffOnDate2BiggerThenDate1() {
+        Calendar cal1 = new GregorianCalendar(2013, 10, 10);
+        Calendar cal2 = new GregorianCalendar(2016, 9, 10);
+        int diff = DateUtils.getYearDiff(cal1.getTime(), cal2.getTime());
+        assertEquals(-3, diff);
     }
 }

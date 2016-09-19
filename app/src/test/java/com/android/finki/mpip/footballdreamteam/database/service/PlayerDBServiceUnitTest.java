@@ -4,19 +4,19 @@ import com.android.finki.mpip.footballdreamteam.database.repository.PlayerReposi
 import com.android.finki.mpip.footballdreamteam.exception.ForeignKeyConstraintException;
 import com.android.finki.mpip.footballdreamteam.exception.PlayerException;
 import com.android.finki.mpip.footballdreamteam.exception.PrimaryKeyConstraintException;
-import com.android.finki.mpip.footballdreamteam.exception.UniqueFieldConstraintException;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.model.Team;
-import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 01.08.2016.
@@ -39,8 +39,7 @@ public class PlayerDBServiceUnitTest {
     private final int positionId = 1;
     private Position position = new Position(positionId, "Position 1");
     private final int playerId = 1;
-    private Player player = new Player(playerId, 0, 0, "Player 1",
-            null, null, 0, team, position, null);
+    private Player player = new Player(playerId, team, position, "Player", "Nationality", null);
 
     @Before
     public void setup() {
@@ -150,8 +149,7 @@ public class PlayerDBServiceUnitTest {
         when(positionDBService.exists(positionId)).thenReturn(true);
         when(repository.store(player)).thenReturn(true);
         Player stored = service.store(player);
-        assertNotNull(stored);
-        assertEquals(playerId, stored.getId().intValue());
+        assertSame(player, stored);
     }
 
     /**
@@ -205,8 +203,7 @@ public class PlayerDBServiceUnitTest {
         when(repository.get(playerId)).thenReturn(player);
         when(repository.update(player)).thenReturn(true);
         Player updated = service.update(player);
-        assertNotNull(updated);
-        assertEquals(playerId, updated.getId().intValue());
+        assertSame(player, updated);
     }
 
     /**
@@ -255,7 +252,7 @@ public class PlayerDBServiceUnitTest {
     }
 
     /**
-     * Test the behavior on getPositionPlayers method called with null param.
+     * Test the behavior on getPositionsPlayers method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPositionPlayers() {

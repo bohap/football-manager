@@ -19,6 +19,7 @@ import com.android.finki.mpip.footballdreamteam.ui.adapter.LikesAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LikeViewPresenter;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by Borce on 25.08.2016.
  */
+@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)

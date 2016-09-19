@@ -11,11 +11,13 @@ import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -43,15 +45,14 @@ public class LikeRepositoryUnitTest {
     private String COLUMN_CREATED_AT = "created_at";
     private String USERS_TABLE_NAME = "users";
     private String USERS_COLUMN_NAME = "name";
-
-    private final int year = 2016, month = 8, day = 5, hour = 9, minute = 3, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
-
+    private Calendar calendar = new GregorianCalendar(2016, 7, 5, 9, 3, 10);
+    private Date date = calendar.getTime();
+    private String sDate = DateUtils.format(date);
     private final int userId = 1;
     private User user = new User(userId, "User");
     private final int lineupId = 1;
     private Lineup lineup = new Lineup(lineupId, userId);
-    private LineupLike like = new LineupLike(user, lineup, calendar.getTime());
+    private LineupLike like = new LineupLike(user, lineup, date);
 
     @Before
     public void setup() {
@@ -80,8 +81,7 @@ public class LikeRepositoryUnitTest {
         when(cursor.getColumnIndex(COLUMN_LINEUP_ID)).thenReturn(1);
         when(cursor.getInt(cursor.getColumnIndex(COLUMN_LINEUP_ID))).thenReturn(lineupId);
         when(cursor.getColumnIndex(COLUMN_CREATED_AT)).thenReturn(2);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT)))
-                .thenReturn(DateUtils.format(like.getCreatedAt()));
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT))).thenReturn(sDate);
         String column = String.format("%s_%s", USERS_TABLE_NAME, USERS_COLUMN_NAME);
         when(cursor.getColumnIndex(column)).thenReturn(3);
         when(cursor.getString(cursor.getColumnIndex(column))).thenReturn(user.getName());
@@ -94,14 +94,9 @@ public class LikeRepositoryUnitTest {
     public void testMapCursor() {
         this.initCursor();
         LineupLike mapped = repository.mapCursor(cursor);
-        assertNotNull(mapped);
-        assertEquals(userId, mapped.getUserId());
-        assertEquals(lineupId, mapped.getLineupId());
-        assertEquals(calendar.getTime(), mapped.getCreatedAt());
+        assertTrue(like.same(mapped));
         User mUser = mapped.getUser();
-        assertNotNull(mUser);
-        assertEquals(userId, mUser.getId().intValue());
-        assertEquals(user.getName(), mUser.getName());
+        assertTrue(user.same(mUser));
     }
 
     /**
@@ -113,6 +108,6 @@ public class LikeRepositoryUnitTest {
         assertNotNull(map);
         assertEquals(String.valueOf(userId), map.get(COLUMN_USER_ID));
         assertEquals(String.valueOf(lineupId), map.get(COLUMN_LINEUP_ID));
-        assertEquals(DateUtils.format(like.getCreatedAt()), map.get(COLUMN_CREATED_AT));
+        assertEquals(sDate, map.get(COLUMN_CREATED_AT));
     }
 }

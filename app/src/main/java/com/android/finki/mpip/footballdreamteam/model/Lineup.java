@@ -1,15 +1,18 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Borce on 27.07.2016.
  */
-public class Lineup extends BaseModel<Integer> implements Serializable {
+public class Lineup extends IdModel<Integer> implements Serializable, Comparable<Lineup> {
 
     @SerializedName("id")
     private int id;
@@ -72,6 +75,10 @@ public class Lineup extends BaseModel<Integer> implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public Lineup(int id, User user, Date createdAt, Date updatedAt) {
+        this(id, user.getId(), createdAt, updatedAt, 0, 0, user);
+    }
+
     public Lineup(int id, User user) {
         this(id, null, null, 0, 0, user);
     }
@@ -91,6 +98,9 @@ public class Lineup extends BaseModel<Integer> implements Serializable {
     }
 
     public int getUserId() {
+        if (userId < 1 && user != null) {
+            return user.getId();
+        }
         return userId;
     }
 
@@ -136,6 +146,9 @@ public class Lineup extends BaseModel<Integer> implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userId = user.getId();
+        }
     }
 
     public List<Player> getPlayers() {
@@ -172,11 +185,46 @@ public class Lineup extends BaseModel<Integer> implements Serializable {
 
     @Override
     public int hashCode() {
-        return new Integer(id).hashCode();
+        return Integer.valueOf(id).hashCode();
     }
 
     @Override
     public boolean equals(Object o) {
         return o instanceof Lineup && this.id == ((Lineup) o).getId();
+    }
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the model are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof Lineup)) {
+            return false;
+        }
+        Lineup lineup = (Lineup) model;
+        return this.id == lineup.getId() &&
+                this.userId == lineup.getUserId() &&
+                super.equalsFields(this.createdAt, lineup.getCreatedAt()) &&
+                super.equalsFields(this.updatedAt, lineup.getUpdatedAt());
+    }
+
+    /**
+     * Compare with the given lineup by the update at time.
+     *
+     * @param lineup lineup with which is compared
+     * @return the  result of the comparison
+     */
+    @Override
+    public int compareTo(@NonNull Lineup lineup) {
+        if (this.updatedAt.after(lineup.getUpdatedAt())) {
+            return -1;
+        }
+        if (this.updatedAt.equals(lineup.getUpdatedAt())) {
+            return 0;
+        }
+        return 1;
     }
 }

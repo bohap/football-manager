@@ -15,6 +15,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -61,33 +62,23 @@ public class PositionRepositoryTest {
     }
 
     /**
-     * Assert that the given position of players is valid.
+     * Assert that the givne lists are same.
      *
-     * @param number expected number of positions
-     * @param positions List of Position
+     * @param expectedList expected list of positions
+     * @param actualList actual list of positions
      */
-    private void assertPositions(int number, List<Position> positions) {
-        assertEquals(number, positions.size());
-        assertEquals(number, positions.size());
+    private void assertList(List<Position> expectedList, List<Position> actualList) {
+        assertEquals(expectedList.size(), actualList.size());
         int count = 0;
-        for (Position position : positions) {
-            if (position.getId().equals(position1Id) || position.getId().equals(position2Id)
-                    || position.getId().equals(position3Id)) {
-                count++;
+        for (Position expected : expectedList) {
+            for (Position actual : actualList) {
+                if (expected.equals(actual)) {
+                    assertTrue(expected.same(actual));
+                    count++;
+                }
             }
         }
-        assertEquals(number, count);
-    }
-
-    /**
-     * Assert that the given position data is valid.
-     *
-     * @param compare actual position
-     * @param position Position to be compared
-     */
-    private void assertPosition(Position compare, Position position) {
-        assertNotNull(position);
-        assertEquals(compare.getId(), position.getId());
+        assertEquals(expectedList.size(), count);
     }
 
     /**
@@ -97,7 +88,7 @@ public class PositionRepositoryTest {
     public void testGetAll() {
         List<Position> positions = repository.getAll();
         assertNotNull(positions);
-        this.assertPositions(NUMBER_OF_POSITIONS, positions);
+        this.assertList(Arrays.asList(position1, position2, position3), positions);
     }
 
     /**
@@ -106,7 +97,7 @@ public class PositionRepositoryTest {
     @Test
     public void testGet() {
         Position position = repository.get(position1Id);
-        this.assertPosition(position1, position);
+        assertTrue(position1.same(position));
     }
 
     /**
@@ -122,10 +113,9 @@ public class PositionRepositoryTest {
      */
     @Test
     public void testGetByName() {
-        String name = position1.getName();
+        String name = position2.getName();
         Position position = repository.getByName(name);
-        this.assertPosition(position1, position);
-        assertEquals(name, position.getName());
+        assertTrue(position2.same(position));
     }
 
     /**
@@ -133,7 +123,7 @@ public class PositionRepositoryTest {
      */
     @Test
     public void testGetByNameWIllNotMakeDifferenceOnLetterType() {
-        String name = position1.getName();
+        String name = position3.getName();
         String testName = "";
         for (char c : name.toCharArray()) {
             if ((int) c % 2 == 0) {
@@ -143,8 +133,7 @@ public class PositionRepositoryTest {
             }
         }
         Position position = repository.getByName(testName);
-        this.assertPosition(position1, position);
-        assertEquals(name, position.getName());
+        assertTrue(position3.same(position));
     }
 
     /**
@@ -172,7 +161,7 @@ public class PositionRepositoryTest {
         assertTrue(result);
         assertEquals(NUMBER_OF_POSITIONS + 1, repository.count());
         Position position = repository.get(unExistingPositionId);
-        this.assertPosition(unExistingPosition, position);
+        assertTrue(unExistingPosition.same(position));
     }
 
     /**
@@ -189,14 +178,13 @@ public class PositionRepositoryTest {
      */
     @Test
     public void testUpdate() {
-        String name = "Position Updated";
+        String name = unExistingPosition.getName();
         position1.setName(name);
         boolean result = repository.update(position1);
         assertTrue(result);
         assertEquals(NUMBER_OF_POSITIONS, repository.count());
         Position position = repository.get(position1Id);
-        this.assertPosition(position1, position);
-        assertEquals(name, position.getName());
+        assertTrue(position1.same(position));
     }
 
     /**
@@ -237,7 +225,7 @@ public class PositionRepositoryTest {
     public void testSearchByName() {
         String name = "Position";
         List<Position> positions = repository.searchByName(name);
-        this.assertPositions(NUMBER_OF_POSITIONS, positions);
+        this.assertList(Arrays.asList(position1, position2, position3), positions);
     }
 
     /**
@@ -247,7 +235,7 @@ public class PositionRepositoryTest {
     public void testSearchByNameWillNotMakeDifferenceOnLetterType() {
         String name = "positioN";
         List<Position> positions = repository.searchByName(name);
-        this.assertPositions(NUMBER_OF_POSITIONS, positions);
+        this.assertList(Arrays.asList(position1, position2, position3), positions);
     }
 
     /**
@@ -261,7 +249,7 @@ public class PositionRepositoryTest {
         assertTrue(store);
         assertEquals(NUMBER_OF_POSITIONS + 1, repository.count());
         List<Position> positions = repository.searchByName("position", "test");
-        assertEquals(NUMBER_OF_POSITIONS + 1, positions.size());
+        this.assertList(Arrays.asList(position1, position2, position3, position), positions);
     }
 
     /**
@@ -275,7 +263,7 @@ public class PositionRepositoryTest {
         assertTrue(store);
         assertEquals(NUMBER_OF_POSITIONS + 1, repository.count());
         List<Position> positions = repository.searchByName("position");
-        this.assertPositions(NUMBER_OF_POSITIONS, positions);
+        this.assertList(Arrays.asList(position1, position2, position3), positions);
     }
 
     /**

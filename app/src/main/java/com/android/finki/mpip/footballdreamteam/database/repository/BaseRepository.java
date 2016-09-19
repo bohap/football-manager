@@ -1,20 +1,13 @@
 package com.android.finki.mpip.footballdreamteam.database.repository;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
+import com.android.finki.mpip.footballdreamteam.model.IdModel;
 
-import com.android.finki.mpip.footballdreamteam.model.BaseModel;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Borce on 29.07.2016.
  */
-abstract class BaseRepository<T extends BaseModel<K>, K> extends Repository<T> {
+abstract class BaseRepository<T extends IdModel<K>, K> extends Repository<T> {
 
     String COLUMN_ID;
 

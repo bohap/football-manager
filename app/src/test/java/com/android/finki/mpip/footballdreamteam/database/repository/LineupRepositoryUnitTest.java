@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -36,15 +37,14 @@ public class LineupRepositoryUnitTest {
 
     private LineupRepository repository;
 
-    private int year = 2016, month = 8, day = 1, hour = 14, minute = 15, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
-    private String sDate = String.format("%02d-%02d-%02d %02d:%02d:%02d",
-            year, month, day, hour, minute, second);
+    private Calendar calendar = new GregorianCalendar(2016, 7, 1, 14, 15, 10);
+    private Date date = calendar.getTime();
+    private String sDate = DateUtils.format(date);
     private String COLUMN_ID = "id";
     private String COLUMN_USER_ID = "user_id";
     private String COLUMNS_CREATED_AT = "created_at";
     private String COLUMN_UPDATED_AT = "updated_at";
-    private Lineup lineup = new Lineup(1, 1, calendar.getTime(), calendar.getTime());
+    private Lineup lineup = new Lineup(1, 1, date, date);
 
     @Before
     public void setup() {
@@ -84,11 +84,7 @@ public class LineupRepositoryUnitTest {
     public void testMapCursor() {
         this.initCursor();
         Lineup mapped = repository.mapCursor(cursor);
-        assertNotNull(mapped);
-        assertEquals(lineup.getId(), mapped.getId());
-        assertEquals(lineup.getUser(), mapped.getUser());
-        assertEquals(sDate, DateUtils.format(mapped.getCreatedAt()));
-        assertEquals(sDate, DateUtils.format(mapped.getUpdatedAt()));
+        assertTrue(lineup.same(mapped));
     }
 
     /**

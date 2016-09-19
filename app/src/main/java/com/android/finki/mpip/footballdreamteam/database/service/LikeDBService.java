@@ -68,9 +68,7 @@ public class LikeDBService {
      */
     private void validateData(LineupLike like) {
         if (like == null) {
-            String message = "like can;t be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("like can't be null");
         }
     }
 
@@ -122,9 +120,7 @@ public class LikeDBService {
      */
     public boolean exists(LineupLike like) {
         if (like == null) {
-            String message = "like can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("like can't be null");
         }
         return this.exists(like.getUserId(), like.getLineupId());
     }
@@ -137,37 +133,23 @@ public class LikeDBService {
      */
     public LineupLike store(LineupLike like) {
         this.validateData(like);
-        /* Check if the user id exists */
-        if (like.getUserId() < 1 && like.getUser() != null) {
-            like.setUserId(like.getUser().getId());
-        }
         if (!userDBService.exists(like.getUserId())) {
-            String message = String.format("user with id %d don't exists", like.getUserId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
-        }
-        /* CHeck if the lineup id exists */
-        if (like.getLineupId() < 1 && like.getLineup() != null) {
-            like.setLineupId(like.getLineup().getId());
+            throw new ForeignKeyConstraintException(String
+                    .format("user with id %d don't exists", like.getUserId()));
         }
         if (!lineupDBService.exists(like.getLineupId())) {
-            String message = String.format("lineup with id %d don;t exists", like.getLineupId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+            throw new ForeignKeyConstraintException(String
+                    .format("lineup with id %d don;t exists", like.getLineupId()));
         }
         if (this.exists(like)) {
-            String message = String
+            throw new PrimaryKeyConstraintException(String
                     .format("like from user %d on lineup with id %d already exists",
-                            like.getUserId(), like.getLineupId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+                            like.getUserId(), like.getLineupId()));
         }
 
         boolean result = repository.store(like);
         if (!result) {
-            String message = "error occurred while saving the like";
-            logger.error(message);
-            throw new LikeException(message);
+            throw new LikeException("error occurred while saving the like");
         }
         return like;
     }
@@ -180,16 +162,13 @@ public class LikeDBService {
      */
     public void delete(int userId, int lineupId) {
         if (!this.exists(userId, lineupId)) {
-            String message = String.format("like from user with id %d on lineup %d don;t exists",
-                    userId, lineupId);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("like from user with id %d on lineup %d don;t exists",
+                            userId, lineupId));
         }
         boolean result = repository.delete(userId, lineupId);
         if (!result) {
-            String message = "error occurred while deleting the like";
-            logger.error(message);
-            throw new LikeException(message);
+            throw new LikeException("error occurred while deleting the like");
         }
     }
 
@@ -200,9 +179,7 @@ public class LikeDBService {
      */
     public void delete(LineupLike like) {
         if (like == null) {
-            String message = "like can;t be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("like can;t be null");
         }
     }
 }

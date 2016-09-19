@@ -52,10 +52,8 @@ public class LikesAdapter extends BaseAdapter {
     @Override
     public UserLike getItem(int position) {
         if (position > likes.size() - 1) {
-            String message = String.format("invalid position, i=%d, list size=%d",
-                    position, likes.size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("invalid position, i-%d, list size-%d", position, likes.size()));
         }
         return likes.get(position);
     }
@@ -91,11 +89,7 @@ public class LikesAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-        UserLike userLike = this.getItem(i);
-        holder.user.setText(userLike.getName());
-        if (userLike.getPivot() != null && userLike.getPivot().getCreatedAt() != null) {
-            holder.createdAt.setText(DateUtils.dayNameFormat(userLike.getPivot().getCreatedAt()));
-        }
+        holder.setPositions(i);
         return view;
     }
 
@@ -105,6 +99,7 @@ public class LikesAdapter extends BaseAdapter {
      * @param userLike like to be added
      */
     public void addLike(UserLike userLike) {
+        logger.info("addLike");
         likes.add(0, userLike);
         super.notifyDataSetChanged();
     }
@@ -115,6 +110,7 @@ public class LikesAdapter extends BaseAdapter {
      * @param userLike like to be removed
      */
     public void removeLike(UserLike userLike) {
+        logger.info("removeLike");
         likes.remove(userLike);
         super.notifyDataSetChanged();
     }
@@ -122,7 +118,7 @@ public class LikesAdapter extends BaseAdapter {
     /**
      * Class holder for the adapter views.
      */
-    public static class ViewHolder {
+    public class ViewHolder {
 
         @BindView(R.id.likesListItem_user)
         TextView user;
@@ -132,6 +128,19 @@ public class LikesAdapter extends BaseAdapter {
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
+        }
+
+        /**
+         * Set the positions for the view holder.
+         *
+         * @param position view holder position
+         */
+        public void setPositions(int position) {
+            UserLike userLike = likes.get(position);
+            user.setText(userLike.getName());
+            if (userLike.getPivot() != null && userLike.getPivot().getCreatedAt() != null) {
+                createdAt.setText(DateUtils.dayNameFormat(userLike.getPivot().getCreatedAt()));
+            }
         }
     }
 }

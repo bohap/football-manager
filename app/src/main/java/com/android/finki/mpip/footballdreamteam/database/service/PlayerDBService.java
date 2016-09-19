@@ -71,24 +71,16 @@ public class PlayerDBService {
      */
     private void validateData(Player player) {
         if (player == null) {
-            String message = "player can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player can't be null");
         }
         if (player.getId() == null) {
-            String message = "player id can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player id can't be null");
         }
         if (player.getId() < 1) {
-            String message = "player id must be greater then 0";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player id must be greater then 0");
         }
         if (player.getName() == null) {
-            String message = "player name can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player name can't be null");
         }
     }
 
@@ -148,9 +140,7 @@ public class PlayerDBService {
      */
     public boolean exists(Player player) {
         if (player == null) {
-            String message = "player can'e be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player can'e be null");
         }
         return this.exists(player.getId());
     }
@@ -164,37 +154,22 @@ public class PlayerDBService {
     public Player store(Player player) {
         this.validateData(player);
         if (this.exists(player)) {
-            String message = String.format("can't save player, " +
-                    "id %d already exists", player.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save player, id %d already exists", player.getId()));
         }
-        /* Check if the team id exists */
-        if (player.getTeamId() < 1 && player.getTeam() != null) {
-            player.setTeamId(player.getTeam().getId());
-        }
-        if (! teamDBService.exists(player.getTeamId())) {
-            String message = String.format("can't save player, team with " +
-                    "id %d don't exists", player.getTeamId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
-        }
-        /* Check if the position id exists */
-        if (player.getPositionId() < 1 && player.getPosition() != null) {
-            player.setPositionId(player.getPosition().getId());
+        if (!teamDBService.exists(player.getTeamId())) {
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save player, team with id %d don't exists",
+                            player.getTeamId()));
         }
         if (! positionDBService.exists(player.getPositionId())) {
-            String message = String.format("can't save player, position with " +
-                    "id %d don't exists", player.getPositionId());
-            logger.error(message);
-            throw new ForeignKeyConstraintException(message);
+            throw new ForeignKeyConstraintException(String
+                    .format("can't save player, position with id %d don't exists",
+                            player.getPositionId()));
         }
-
         boolean result = repository.store(player);
-        if (! result) {
-            String message = "error occurred while storing the player";
-            logger.error(message);
-            throw new PlayerException(message);
+        if (!result) {
+            throw new PlayerException("error occurred while storing the player");
         }
         return player;
     }
@@ -208,16 +183,13 @@ public class PlayerDBService {
     public Player update(Player player) {
         this.validateData(player);
         if (! this.exists(player)) {
-            String message = String.format("can't onUpdateSuccess player, player with " +
-                    "id %d don't exists", player.getId());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't onUpdateSuccess player, player with id %d don't exists",
+                            player.getId()));
         }
         boolean result = repository.update(player);
         if (! result) {
-            String message = "error occurred while updating the player";
-            logger.error(message);
-            throw new PlayerException(message);
+            throw new PlayerException("error occurred while updating the player");
         }
         return player;
     }
@@ -229,16 +201,12 @@ public class PlayerDBService {
      */
     public void delete(int id) {
         if (! this.exists(id)) {
-            String message = String.format("can't delete player, player " +
-                    "with id %d don;t exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("can't delete player, player with id %d don't exists", id));
         }
         boolean result = repository.delete(id);
         if (! result) {
-            String message = "error occurred while deleting the player";
-            logger.error(message);
-            throw new PlayerException(message);
+            throw new PlayerException("error occurred while deleting the player");
         }
     }
 
@@ -249,9 +217,7 @@ public class PlayerDBService {
      */
     public void delete(Player player) {
         if (player == null) {
-            String message = "player can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player can't be null");
         }
         this.delete(player.getId());
     }
@@ -274,9 +240,7 @@ public class PlayerDBService {
      */
     public List<Player> getTeamPlayers(Team team) {
         if (team == null) {
-            String message = "team can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("team can't be null");
         }
         return this.getTeamPlayers(team.getId());
     }
@@ -288,7 +252,7 @@ public class PlayerDBService {
      * @return List of players that plays on the given position
      */
     public List<Player> getPositionPlayers(int positionId) {
-        return repository.getPositionPlayers(positionId);
+        return repository.getPositionsPlayers(positionId);
     }
 
     /**
@@ -299,9 +263,7 @@ public class PlayerDBService {
      */
     public List<Player> getPositionPlayers(Position position) {
         if (position == null) {
-            String message = "position can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("position can't be null");
         }
         return this.getPositionPlayers(position.getId());
     }
@@ -314,7 +276,7 @@ public class PlayerDBService {
      */
     public List<Player> getGoalkeepers(int[] playersToExclude) {
         int positionId = positionDBService.getGoalkeeperId();
-        return repository.getPositionPlayers(playersToExclude, positionId);
+        return repository.getPositionsPlayers(playersToExclude, positionId);
     }
 
     /**
@@ -325,7 +287,7 @@ public class PlayerDBService {
      */
     public List<Player> getDefenders(int[] playersToExclude) {
         int[] positionsIds = positionDBService.getDefendersIds();
-        return repository.getPositionPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
+        return repository.getPositionsPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
     }
 
     /**
@@ -336,7 +298,7 @@ public class PlayerDBService {
      */
     public List<Player> getMidfielders(int[] playersToExclude) {
         int[] positionsIds = positionDBService.getMidfieldersIds();
-        return repository.getPositionPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
+        return repository.getPositionsPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
     }
 
     /**
@@ -347,6 +309,6 @@ public class PlayerDBService {
      */
     public List<Player> getAttackers(int[] playersToExclude) {
         int[] positionsIds = positionDBService.getAttackersIds();
-        return repository.getPositionPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
+        return repository.getPositionsPlayers(playersToExclude, ArrayUtils.toInteger(positionsIds));
     }
 }

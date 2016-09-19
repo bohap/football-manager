@@ -1,19 +1,15 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
-import android.support.annotation.NonNull;
-
-import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Borce on 27.07.2016.
  */
-public class User extends BaseModel<Integer> implements Serializable {
+public class User extends IdModel<Integer> implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -174,4 +170,24 @@ public class User extends BaseModel<Integer> implements Serializable {
     public boolean equals(Object o) {
         return o instanceof User && this.id == ((User) o).getId();
     }
-}
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model model to be checked
+     * @return whatever the models are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof User)) {
+            return false;
+        }
+        User user = (User) model;
+        return this.id == user.getId() &&
+                super.equalsFields(this.name, user.getName()) &&
+                super.equalsFields(this.email, user.getEmail()) &&
+                super.equalsFields(this.password, user.getPassword()) &&
+                super.equalsFields(this.createdAt, user.getCreatedAt()) &&
+                super.equalsFields(this.updatedAt, user.getUpdatedAt());
+    }
+ }

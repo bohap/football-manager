@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 10.08.2016.
  */
+@Ignore
 public class LineupUtilsTest {
 
     @Mock

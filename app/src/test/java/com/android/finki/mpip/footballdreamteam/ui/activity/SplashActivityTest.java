@@ -12,6 +12,7 @@ import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,6 +36,7 @@ import static org.robolectric.Shadows.shadowOf;
 /**
  * Created by Borce on 06.08.2016.
  */
+@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)

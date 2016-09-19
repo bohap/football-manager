@@ -2,6 +2,7 @@ package com.android.finki.mpip.footballdreamteam.utility.validator;
 
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Borce on 04.08.2016.
  */
+@Ignore
 public class LineupPlayerValidatorTest {
 
     private LineupPlayerValidator validator = new LineupPlayerValidator();

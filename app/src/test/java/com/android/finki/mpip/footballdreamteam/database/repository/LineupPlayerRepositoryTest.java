@@ -11,7 +11,7 @@ import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.model.Team;
 import com.android.finki.mpip.footballdreamteam.model.User;
-import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
+import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,12 +21,18 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Borce on 04.08.2016.
@@ -42,54 +48,43 @@ public class LineupPlayerRepositoryTest {
     private PlayerRepository playerRepository;
     private LineupPlayerRepository repository;
 
-    private final int year = 2016, month = 8, day = 4, hour= 12, minute = 7, second = 10;
-    private Calendar calendar = new GregorianCalendar(year, month, day, hour, minute, second);
-
+    private Calendar calendar = new GregorianCalendar(2016, 7, 4, 12, 7, 10);
+    private Date date = calendar.getTime();
     private final int userId = 1;
-    private User user = new User(userId, "User");
-
+    private User user = new User(userId, "User", "user@user.com", "pass", date, date);
     private final int teamId = 1;
     private Team team = new Team(teamId, "Team 1");
-
-    private final int NUMBER_OF_POSITION_1_LINEUP_PLAYERS = 2;
-    private final int NUMBER_OF_POSITION_2_LINEUP_PLAYERS = 1;
     private final int position1Id = 1;
     private final int position2Id = 2;
     private Position position1 = new Position(position1Id, "Position 1");
     private Position position2 = new Position(position2Id, "Position 2");
-
-    private final int NUMBER_OF_PLAYER_1_LINEUP_PLAYERS = 1;
-    private final int NUMBER_OF_PLAYER_2_LINEUP_PLAYERS = 2;
     private final int player1Id = 1;
     private final int player2Id = 2;
     private Player player1 = new Player(player1Id, team, position1, null, null, null, 0);
     private Player player2 = new Player(player2Id, team, position2, null, null, null, 0);
-
-    private final int NUMBER_OF_LINEUP_1_LINEUP_PLAYERS = 2;
-    private final int NUMBER_OF_LINEUP_2_LINEUP_PLAYERS = 1;
     private final int lineup1Id = 1;
     private final int lineup2Id = 2;
     private Lineup lineup1 = new Lineup(lineup1Id, userId);
     private Lineup lineup2 = new Lineup(lineup2Id, userId);
-
     private final int NUMBER_OF_LINEUPS_PLAYERS = 3;
-    private LineupPlayer lineupPlayer1 = new LineupPlayer(lineup1, player1, position2,
-            calendar.getTime(), calendar.getTime());
-    private LineupPlayer lineupPlayer2 = new LineupPlayer(lineup2, player2, position1,
-            calendar.getTime(), calendar.getTime());
-    private LineupPlayer lineupPlayer3 = new LineupPlayer(lineup1, player2, position1,
-            calendar.getTime(), calendar.getTime());
-    private LineupPlayer unExistingLineupPlayer = new LineupPlayer(lineup2, player1, position2,
-            calendar.getTime(), calendar.getTime());
+    private LineupPlayer lineupPlayer1 = new LineupPlayer(lineup1, player1, position2, date, date);
+    private LineupPlayer lineupPlayer2 = new LineupPlayer(lineup2, player2, position1, date, date);
+    private LineupPlayer lineupPlayer3 = new LineupPlayer(lineup1, player2, position1, date, date);
+    private LineupPlayer unExistingLineupPlayer =
+            new LineupPlayer(lineup2, player1, position2, date, date);
+    private List<LineupPlayer> lineup1Players = Arrays.asList(lineupPlayer1, lineupPlayer3);
+    private List<LineupPlayer> player1Lineups = Collections.singletonList(lineupPlayer1);
+    private List<LineupPlayer> positions1Lineups = Arrays.asList(lineupPlayer2, lineupPlayer3);
 
     /**
      * Create a new instances, open the connection and seed the tables.
      */
     @Before
     public void setup() {
+        Base64Utils base64Utils = new Base64Utils();
         Context context = RuntimeEnvironment.application.getBaseContext();
         MainSQLiteOpenHelper dbHelper = new MainSQLiteOpenHelper(context);
-        userRepository = new UserRepository(context, dbHelper);
+        userRepository = new UserRepository(context, dbHelper, base64Utils);
         teamRepository = new TeamRepository(context, dbHelper);
         positionRepository = new PositionRepository(context, dbHelper);
         playerRepository = new PlayerRepository(context, dbHelper);
@@ -130,58 +125,39 @@ public class LineupPlayerRepositoryTest {
     }
 
     /**
-     * Assert that the given List of LineupPlayers is valid.
+     * Assert that the list are the same.
      *
-     * @param number expected number of records
-     * @param lineupPlayers List of LineupPlayer
-     * @param checkPlayer whatever the LineupPLayer player should be checked
-     * @param checkPosition whatever the LineupPlayer position should be checked
+     * @param expectedList expected list of lineup players
+     * @param actualList actual list of lineup players
+     * @param checkPlayer whatever the player should be checked
+     * @param checkPosition whatever the positions should be checked
      */
-    private void assertLineupPlayers(int number, List<LineupPlayer> lineupPlayers,
-                                     boolean checkPlayer, boolean checkPosition) {
-        assertNotNull(lineupPlayers);
-        assertEquals(number, lineupPlayers.size());
+    private void assertList(List<LineupPlayer> expectedList, List<LineupPlayer> actualList,
+                            boolean checkPlayer, boolean checkPosition) {
+        assertEquals(expectedList.size(), actualList.size());
         int count = 0;
-        for (LineupPlayer lineupPlayer : lineupPlayers) {
-            int lineupId = lineupPlayer.getLineupId();
-            int playerId = lineupPlayer.getPlayerId();
-            int positionId = lineupPlayer.getPositionId();
-
-            if (lineupPlayer1.getLineupId() == lineupId && lineupPlayer1.getPlayerId() == playerId
-                    && lineupPlayer1.getPositionId() == positionId)  {
-                this.assertLineupPlayer(lineupPlayer1, lineupPlayer, checkPlayer, checkPosition);
-                count++;
-            }
-            if (lineupPlayer2.getLineupId() == lineupId && lineupPlayer2.getPlayerId() == playerId
-                    && lineupPlayer2.getPositionId() == positionId)  {
-                this.assertLineupPlayer(lineupPlayer2, lineupPlayer, checkPlayer, checkPosition);
-                count++;
-            }
-            if (lineupPlayer3.getLineupId() == lineupId && lineupPlayer3.getPlayerId() == playerId
-                    && lineupPlayer3.getPositionId() == positionId)  {
-                this.assertLineupPlayer(lineupPlayer3, lineupPlayer, checkPlayer, checkPosition);
-                count++;
+        for (LineupPlayer expected : expectedList) {
+            for (LineupPlayer actual : actualList) {
+                if (expected.equals(actual)) {
+                    this.assertLineupPlayer(expected, actual, checkPlayer, checkPosition);
+                    count++;
+                }
             }
         }
-        assertEquals(number, count);
+        assertEquals(expectedList.size(), count);
     }
 
     /**
      * Assert that the LineupPlayer data is valid.
      *
-     * @param compare actual LineupPlayer
-     * @param lineupPlayer LineupPlayer ot be compared
-     * @param checkPlayer whatever the LineupPlayer player should be checked
+     * @param compare       actual LineupPlayer
+     * @param lineupPlayer  LineupPlayer ot be compared
+     * @param checkPlayer   whatever the LineupPlayer player should be checked
      * @param checkPosition whatever the LineupPlayer position should be checked
      */
     private void assertLineupPlayer(LineupPlayer compare, LineupPlayer lineupPlayer,
                                     boolean checkPlayer, boolean checkPosition) {
-        assertNotNull(lineupPlayer);
-        assertEquals(compare.getLineupId(), lineupPlayer.getLineupId());
-        assertEquals(compare.getPlayerId(), lineupPlayer.getPlayerId());
-        assertEquals(compare.getPositionId(), lineupPlayer.getPositionId());
-        assertEquals(compare.getCreatedAt(), lineupPlayer.getCreatedAt());
-        assertEquals(compare.getUpdatedAt(), lineupPlayer.getUpdatedAt());
+        assertTrue(compare.same(lineupPlayer));
         if (checkPlayer) {
             Player player = lineupPlayer.getPlayer();
             assertNotNull(player);
@@ -200,7 +176,8 @@ public class LineupPlayerRepositoryTest {
     @Test
     public void testGetAll() {
         List<LineupPlayer> lineupPlayers = repository.getAll();
-        this.assertLineupPlayers(NUMBER_OF_LINEUPS_PLAYERS, lineupPlayers, true, true);
+        this.assertList(Arrays.asList(lineupPlayer1, lineupPlayer2, lineupPlayer3),
+                lineupPlayers, true, true);
     }
 
     /**
@@ -239,8 +216,8 @@ public class LineupPlayerRepositoryTest {
         boolean result = repository.store(unExistingLineupPlayer);
         assertTrue(result);
         assertEquals(NUMBER_OF_LINEUPS_PLAYERS + 1, repository.count());
-        LineupPlayer lineupPlayer = repository.get(unExistingLineupPlayer.getLineupId(),
-                unExistingLineupPlayer.getPlayerId());
+        LineupPlayer lineupPlayer = repository
+                .get(unExistingLineupPlayer.getLineupId(), unExistingLineupPlayer.getPlayerId());
         this.assertLineupPlayer(unExistingLineupPlayer, lineupPlayer, true, true);
     }
 
@@ -260,15 +237,13 @@ public class LineupPlayerRepositoryTest {
     @Test
     public void testUpdate() {
         calendar.add(Calendar.HOUR, 1);
-        Date date = calendar.getTime();
-        lineupPlayer1.setUpdatedAt(date);
+        lineupPlayer1.setUpdatedAt(calendar.getTime());
         boolean result = repository.update(lineupPlayer1);
         assertTrue(result);
         assertEquals(NUMBER_OF_LINEUPS_PLAYERS, repository.count());
         LineupPlayer lineupPlayer = repository.get(lineupPlayer1.getLineupId(),
                 lineupPlayer1.getPlayerId());
         this.assertLineupPlayer(lineupPlayer1, lineupPlayer, true, true);
-        assertEquals(DateUtils.format(date), DateUtils.format(lineupPlayer.getUpdatedAt()));
     }
 
     /**
@@ -310,9 +285,8 @@ public class LineupPlayerRepositoryTest {
      */
     @Test
     public void testGetLineupPlayers() {
-        int lineupId = lineupPlayer1.getLineupId();
-        List<LineupPlayer> lineupPlayers = repository.getLineupPlayers(lineupId);
-        this.assertLineupPlayers(NUMBER_OF_LINEUP_1_LINEUP_PLAYERS, lineupPlayers, true, true);
+        List<LineupPlayer> lineupPlayers = repository.getLineupPlayers(lineup1Id);
+        this.assertList(lineup1Players, lineupPlayers, true, true);
     }
 
     /**
@@ -320,18 +294,17 @@ public class LineupPlayerRepositoryTest {
      */
     @Test
     public void testGetPlayerLineup() {
-        int playerId = player1.getId();
-        List<LineupPlayer> lineupPlayers = repository.getPlayerLineups(playerId);
-        this.assertLineupPlayers(NUMBER_OF_PLAYER_1_LINEUP_PLAYERS, lineupPlayers, false, true);
+        List<LineupPlayer> lineupPlayers = repository.getPlayerLineups(player1Id);
+        this.assertList(player1Lineups, lineupPlayers, false, true);
     }
 
     /**
-     * Test that getPositionLineups will return all player that in a lineup have the given position.
+     * Test that getPositionLineups will return all player that in a lineup
+     * have the given position.
      */
     @Test
     public void testGetPositionLineups() {
-        int positionId = position2.getId();
-        List<LineupPlayer> lineupPlayers = repository.getPositionLineups(positionId);
-        this.assertLineupPlayers(NUMBER_OF_POSITION_2_LINEUP_PLAYERS, lineupPlayers, true, false);
+        List<LineupPlayer> lineupPlayers = repository.getPositionLineups(position1Id);
+        this.assertList(positions1Lineups, lineupPlayers, true, false);
     }
 }

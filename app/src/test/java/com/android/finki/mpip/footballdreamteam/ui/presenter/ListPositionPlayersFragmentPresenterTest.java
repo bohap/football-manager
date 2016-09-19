@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersF
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by Borce on 19.08.2016.
  */
+@Ignore
 public class ListPositionPlayersFragmentPresenterTest {
 
     @Mock

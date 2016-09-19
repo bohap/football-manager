@@ -134,6 +134,7 @@ public class CommentsAdapter extends BaseAdapter {
         comments.set(comments.indexOf(comment), newComment);
         items.get(comment.getId()).setEditing(false);
         items.get(comment.getId()).setSending(false);
+        items.get(comment.getId()).setEditedBody(null);
         super.notifyDataSetChanged();
     }
 
@@ -191,10 +192,10 @@ public class CommentsAdapter extends BaseAdapter {
         TextView txtUser;
 
         @BindView(R.id.commentListItem_body)
-        TextView body;
+        TextView txtBody;
 
         @BindView(R.id.commentListItem_txtBody)
-        EditText txtBody;
+        EditText edBody;
 
         @BindView(R.id.commentListItem_btnEdit)
         Button btnEdit;
@@ -220,14 +221,14 @@ public class CommentsAdapter extends BaseAdapter {
         public void setPosition(int position) {
             this.position = position;
             this.comment = comments.get(position);
+            this.showRequestSending(items.get(comment.getId()).isSending());
             if (comment.getUser() != null) {
                 this.txtUser.setText(comment.getUser().getName());
             }
-            this.body.setText(comment.getBody());
+            this.txtBody.setText(comment.getBody());
             String editedBody = items.get(comment.getId()).getEditedBody();
-            this.txtBody.setText(editedBody != null ? editedBody : comment.getBody());
+            this.edBody.setText(editedBody != null ? editedBody : comment.getBody());
             this.showEditing(items.get(comment.getId()).isEditing());
-            this.showRequestSending(items.get(comment.getId()).isSending());
         }
 
         /**
@@ -236,14 +237,10 @@ public class CommentsAdapter extends BaseAdapter {
          * @param editing whatever the comment is editing or not
          */
         private void showEditing(boolean editing) {
-            int commentUserId = comment.getUserId();
-            if (commentUserId == 0 && comment.getUser() != null) {
-                commentUserId = comment.getUser().getId();
-            }
-            boolean canEdit = commentUserId == user.getId();
-            body.setVisibility(editing ? View.GONE : View.VISIBLE);
-            txtBody.setVisibility(editing ? View.VISIBLE : View.GONE);
-            boolean equalBody = txtBody.getText().toString().equals(comment.getBody());
+            boolean canEdit = comment.getUserId() == user.getId();
+            txtBody.setVisibility(editing ? View.GONE : View.VISIBLE);
+            edBody.setVisibility(editing ? View.VISIBLE : View.GONE);
+            boolean equalBody = edBody.getText().toString().equals(comment.getBody());
             btnUpdate.setVisibility(editing && !equalBody ? View.VISIBLE : View.GONE);
             btnUpdateCancel.setVisibility(editing ? View.VISIBLE : View.GONE);
             btnEdit.setVisibility(editing ? View.GONE : View.VISIBLE);
@@ -251,10 +248,12 @@ public class CommentsAdapter extends BaseAdapter {
             if (!canEdit) {
                 btnEdit.setVisibility(View.GONE);
                 btnRemove.setVisibility(View.GONE);
+                btnUpdate.setVisibility(View.GONE);
+                btnUpdate.setVisibility(View.GONE);
             }
             if (!editing) {
                 ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(txtBody.getWindowToken(), 0);
+                        .hideSoftInputFromWindow(edBody.getWindowToken(), 0);
             }
         }
 
@@ -267,19 +266,19 @@ public class CommentsAdapter extends BaseAdapter {
             spinner.setVisibility(sending ? View.VISIBLE : View.GONE);
             content.setVisibility(sending ? View.GONE : View.VISIBLE);
             ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(txtBody.getWindowToken(), 0);
+                    .hideSoftInputFromWindow(edBody.getWindowToken(), 0);
         }
 
         /**
-         * Handle click on the comment body.
+         * Handle click on the comment txtBody.
          */
         @OnClick(R.id.commentListItem_body)
         void onBodyClick() {
             logger.info(String.format("onBodyClick, position %d", position));
-            if (body.getLineCount() > 2) {
-                body.setMaxLines(2);
+            if (txtBody.getLineCount() > 2) {
+                txtBody.setMaxLines(2);
             } else {
-                body.setMaxLines(Integer.MAX_VALUE);
+                txtBody.setMaxLines(Integer.MAX_VALUE);
             }
         }
 
@@ -294,11 +293,11 @@ public class CommentsAdapter extends BaseAdapter {
         }
 
         /**
-         * Handle changing the content on the body edit text.
+         * Handle changing the content on the txtBody edit text.
          */
         @OnTextChanged(R.id.commentListItem_txtBody)
         void onTxtBodyChanged() {
-            String content = txtBody.getText().toString();
+            String content = edBody.getText().toString();
             if (content.equals(comment.getBody())) {
                 btnUpdate.setVisibility(View.GONE);
                 items.get(comment.getId()).setEditedBody(null);
@@ -326,7 +325,7 @@ public class CommentsAdapter extends BaseAdapter {
             logger.info(String.format("onBtnUpdateClick, position %d", position));
             items.get(comment.getId()).setEditing(false);
             items.get(comment.getId()).setSending(true);
-            listener.updateComment(position, txtBody.getText().toString());
+            listener.updateComment(position, edBody.getText().toString());
             this.showEditing(false);
             this.showRequestSending(true);
         }

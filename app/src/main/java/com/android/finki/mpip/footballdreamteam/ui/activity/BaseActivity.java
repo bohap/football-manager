@@ -1,7 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -16,33 +15,18 @@ import com.android.finki.mpip.footballdreamteam.ui.dialog.InfoDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-
 /**
  * Created by Borce on 07.08.2016.
  */
 public class BaseActivity extends AppCompatActivity implements BaseView {
 
     private Logger logger = LoggerFactory.getLogger(BaseActivity.class);
-    private SharedPreferences preferences;
     private String internalServerErrorDialogTitle;
     private String internalServerErrorDialogMessage;
     private String socketTimeoutDialogTitle;
     private String socketTimeoutDialogMessage;
     private String noInternetConnectionDialogTitle;
     private String noInternetConnectionDialogMessage;
-    private String AUTH_USER_KEY;
-    private String JWT_TOKEN;
-
-    /**
-     * Set the application shared preferences.
-     *
-     * @param preferences application shared preferences
-     */
-    @Inject
-    public void setPreferences(SharedPreferences preferences) {
-        this.preferences = preferences;
-    }
 
     /**
      * Called when the activity is ready to be created.
@@ -53,16 +37,12 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
-        ((MainApplication) this.getApplication()).getAppComponent().plus().inject(this);
-
         internalServerErrorDialogTitle = this.getString(R.string.internalServerError_title);
         internalServerErrorDialogMessage = this.getString(R.string.internalServerError_message);
         socketTimeoutDialogTitle = this.getString(R.string.socketTimeout_title);
         socketTimeoutDialogMessage = this.getString(R.string.socketTimeout_message);
         noInternetConnectionDialogTitle = this.getString(R.string.noInternetConnection_title);
         noInternetConnectionDialogMessage = this.getString(R.string.noInternetConnection_message);
-        this.AUTH_USER_KEY = this.getString(R.string.preference_auth_user_id_key);
-        this.JWT_TOKEN = this.getString(R.string.preference_jwt_token_key);
     }
 
     /**

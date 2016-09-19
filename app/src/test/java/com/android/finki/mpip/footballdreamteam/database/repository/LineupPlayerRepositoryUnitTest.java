@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -39,29 +40,22 @@ public class LineupPlayerRepositoryUnitTest {
 
     private LineupPlayerRepository repository;
 
-    private int year = 2016, month = 8, day = 4, hour = 10, minute = 37, second = 10;
-    Calendar calendar = new GregorianCalendar(year, month - 1, day, hour, minute, second);
-    String sDate = DateUtils.format(calendar.getTime());
-
-    private String TABLE_NAME = "lineup_palyers";
+    private Calendar calendar = new GregorianCalendar(2016, 7, 4, 10, 37, 10);
+    private Date date = calendar.getTime();
+    private String sDate = DateUtils.format(date);
     private String COLUMN_LINEUP_ID = "lineup_id";
     private String COLUMN_PLAYER_ID = "player_id";
     private String COLUMN_POSITION_ID = "position_id";
     private String COLUMN_CREATED_AT = "created_at";
     private String COLUMN_UPDATED_AT = "updated_at";
     private String PLAYERS_TABLE_NAME = "players";
-    private String PLAYERS_COLUMN_ID = "id";
     private String PLAYERS_COLUMN_NAME = "name";
     private String POSITIONS_TABLE_NAME = "positions";
-    private String POSITIONS_COLUMN_ID = "id";
     private String POSITIONS_COLUMN_NAME = "name";
-
     private Lineup lineup = new Lineup(1, 1);
-    private Player player = new Player(2, 1, 1, "Player", null, null);
+    private Player player = new Player(1, "Player");
     private Position position = new Position(3, "Position");
-
-    private LineupPlayer lineupPlayer = new LineupPlayer(lineup, player, position,
-            calendar.getTime(), calendar.getTime());
+    private LineupPlayer lineupPlayer = new LineupPlayer(lineup, player, position, date, date);
 
     @Before
     public void setup() {
@@ -86,10 +80,10 @@ public class LineupPlayerRepositoryUnitTest {
                 .thenReturn(COLUMN_UPDATED_AT);
         when(context.getString(R.string.players_table_name)).thenReturn(PLAYERS_TABLE_NAME);
         when(context.getString(R.string.players_table_name)).thenReturn(PLAYERS_TABLE_NAME);
-        when(context.getString(R.string.players_column_id)).thenReturn(PLAYERS_COLUMN_ID);
+        when(context.getString(R.string.players_column_id)).thenReturn("id");
         when(context.getString(R.string.players_column_name)).thenReturn(PLAYERS_COLUMN_NAME);
         when(context.getString(R.string.positions_table_name)).thenReturn(POSITIONS_TABLE_NAME);
-        when(context.getString(R.string.positions_column_id)).thenReturn(POSITIONS_COLUMN_ID);
+        when(context.getString(R.string.positions_column_id)).thenReturn("id");
         when(context.getString(R.string.positions_column_name)).thenReturn(POSITIONS_COLUMN_NAME);
     }
 
@@ -107,17 +101,19 @@ public class LineupPlayerRepositoryUnitTest {
         when(cursor.getInt(cursor.getColumnIndex(COLUMN_POSITION_ID)))
                 .thenReturn(lineupPlayer.getPositionId());
         when(cursor.getColumnIndex(COLUMN_CREATED_AT)).thenReturn(3);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT))).thenReturn(sDate);
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT)))
+                .thenReturn(sDate);
         when(cursor.getColumnIndex(COLUMN_UPDATED_AT)).thenReturn(4);
-        when(cursor.getString(cursor.getColumnIndex(COLUMN_UPDATED_AT))).thenReturn(sDate);
-
+        when(cursor.getString(cursor.getColumnIndex(COLUMN_UPDATED_AT)))
+                .thenReturn(sDate);
         String column = String.format("%s_%s", PLAYERS_TABLE_NAME, PLAYERS_COLUMN_NAME);
         when(cursor.getColumnIndex(column)).thenReturn(5);
-        when(cursor.getString(cursor.getColumnIndex(column))).thenReturn(player.getName());
-
+        when(cursor.getString(cursor.getColumnIndex(column)))
+                .thenReturn(player.getName());
         column = String.format("%s_%s", POSITIONS_TABLE_NAME, POSITIONS_COLUMN_NAME);
         when(cursor.getColumnIndex(column)).thenReturn(6);
-        when(cursor.getString(cursor.getColumnIndex(column))).thenReturn(position.getName());
+        when(cursor.getString(cursor.getColumnIndex(column)))
+                .thenReturn(position.getName());
     }
 
     /**
@@ -128,19 +124,11 @@ public class LineupPlayerRepositoryUnitTest {
         this.initCursor();
         LineupPlayer mapped = repository.mapCursor(cursor);
         assertNotNull(mapped);
-        assertEquals(lineupPlayer.getLineupId(), mapped.getLineupId());
-        assertEquals(lineupPlayer.getPlayerId(), mapped.getPlayerId());
-        assertEquals(lineupPlayer.getPositionId(), mapped.getPositionId());
-        assertEquals(sDate, DateUtils.format(mapped.getCreatedAt()));
-        assertEquals(sDate, DateUtils.format(mapped.getUpdatedAt()));
+        assertTrue(lineupPlayer.same(mapped));
         Player mPlayer = mapped.getPlayer();
-        assertNotNull(mPlayer);
-        assertEquals(player.getId(), mPlayer.getId());
-        assertEquals(player.getName(), mPlayer.getName());
+        assertTrue(player.same(mPlayer));
         Position mPosition = mapped.getPosition();
-        assertNotNull(mPosition);
-        assertEquals(position.getId(), mPosition.getId());
-        assertEquals(position.getName(), mPosition.getName());
+        assertTrue(position.same(mPosition));
     }
 
     /**

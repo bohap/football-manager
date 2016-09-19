@@ -59,29 +59,22 @@ public class UserDBService {
      */
     private void validateData(User user) {
         if (user == null) {
-            String message = "user can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user can't be null");
         }
         if (user.getId() == null) {
-            String message = "user id can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user id can't be null");
         }
         if (user.getId() < 1) {
-            String message = "user id must be greater that 0";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user id must be greater that 0");
         }
         if (user.getName() == null) {
-            String message = "user name can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user name can't be null");
         }
         if (user.getEmail() == null) {
-            String message = "user email can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("user email can't be null");
+        }
+        if (user.getPassword() == null) {
+            throw new IllegalArgumentException("user password can't be null");
         }
     }
 
@@ -157,23 +150,17 @@ public class UserDBService {
     public User store(User user) {
         this.validateData(user);
         if (this.exists(user)) {
-            String message = String.format("can't save user, user with " +
-                    "id %d already exists", user.getId());
-            logger.error(message);
-            throw new PrimaryKeyConstraintException(message);
+            throw new PrimaryKeyConstraintException(String
+                    .format("can't save user, user with id %d already exists", user.getId()));
         }
         if (this.getByEmail(user.getEmail()) != null) {
-            String message = String.format("can't save user, user with a email " +
-                    "%s already exists", user.getEmail());
-            logger.error(message);
-            throw new UniqueFieldConstraintException(message);
+            throw new UniqueFieldConstraintException(String
+                    .format("can't save user, user with a email %s already exists",
+                            user.getEmail()));
         }
-
         boolean result = repository.store(user);
-        if (! result) {
-            String message = "error occurred while saving the user";
-            logger.error(message);
-            throw new UserException(message);
+        if (!result) {
+            throw new UserException("error occurred while saving the user");
         }
         return user;
     }
@@ -186,14 +173,14 @@ public class UserDBService {
      */
     public User update(User user) {
         this.validateData(user);
-        if (! this.exists(user)) {
+        if (!this.exists(user)) {
             String message = String.format("can't onUpdateSuccess user, user with id " +
                     "%d don't exists", user.getId());
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
         boolean result = repository.update(user);
-        if (! result) {
+        if (!result) {
             String message = "error occurred while updating the user";
             logger.error(message);
             throw new UserException(message);
@@ -207,13 +194,13 @@ public class UserDBService {
      * @param id User id
      */
     public void delete(int id) {
-        if (! this.exists(id)) {
+        if (!this.exists(id)) {
             String message = String.format("can;t delete user, user with id %d don't exists", id);
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
         boolean result = repository.delete(id);
-        if (! result) {
+        if (!result) {
             String message = "error occurred while deleting the user";
             logger.error(message);
             throw new UserException(message);

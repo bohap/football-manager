@@ -1,13 +1,19 @@
 package com.android.finki.mpip.footballdreamteam.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Created by Borce on 29.07.2016.
+ * Created by Borce on 17.09.2016.
  */
-public abstract class BaseModel <T> {
+public abstract class BaseModel {
 
-    public abstract T getId();
+    public abstract boolean same(BaseModel model);
 
-    public abstract void setId(T id);
+    /**
+     * Check if the given field are equal.
+     *
+     * @return whatever the field are equal
+     */
+    protected boolean equalsFields(Object field1, Object field2) {
+        return (field1 == null && field2 == null) ||
+                field1 != null && field1.equals(field2);
+    }
 }

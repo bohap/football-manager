@@ -24,13 +24,13 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -39,17 +39,17 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
-public class ListPositionPayersAdapterTest {
+public class ListPositionPlayersAdapterTest {
 
     @Mock
     private PositionUtils utils;
 
     private ListPositionPlayersAdapter adapter;
-    private int NUMBER_OF_PLAYERS = 11;
+    private int NUMBER_OF_PLAYERS = 20;
     private List<Player> players;
-    private final int year = 1991, month = 3, day = 11;
-    private Calendar calendar = new GregorianCalendar(year, month, day);
-    private final String positionShortName = "Position";
+    private Calendar calendar = new GregorianCalendar(1991, 3, 11);
+    private Date date = calendar.getTime();
+    private final String positionShortName = "SP";
 
     @Before
     public void setup() {
@@ -57,8 +57,10 @@ public class ListPositionPayersAdapterTest {
         Context context = RuntimeEnvironment.application.getBaseContext();
         players = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
-            players.add(new Player(i + 1, new Team(i, "Team " + i), new Position(),
-                    "Player " + (i + 1), null, calendar.getTime(), 0));
+            Team team = new Team(i + 1, String.format("Team %d", i + 1));
+            Position position = new Position(i + 1, String.format("Positions %d", i + 1));
+            String name = String.format("Players %d", i + 1);
+            players.add(new Player(i + 1, team, position, name, null, date));
         }
         adapter = new ListPositionPlayersAdapter(context, players, utils);
     }
@@ -84,9 +86,9 @@ public class ListPositionPayersAdapterTest {
      */
     @Test
     public void testGetItem() {
-        int position = 7;
-        Player player = adapter.getItem(position);
-        assertSame(players.get(position), player);
+        int index = 7;
+        Player player = adapter.getItem(index);
+        assertSame(players.get(index), player);
     }
 
     /**
@@ -163,8 +165,7 @@ public class ListPositionPayersAdapterTest {
     public void testGetViewOnRecycledView() {
         View recycledView = View.inflate(RuntimeEnvironment.application,
                 R.layout.position_players_list_item, null);
-        ListPositionPlayersAdapter.ViewHolder holder =
-                new ListPositionPlayersAdapter.ViewHolder(recycledView);
+        ListPositionPlayersAdapter.ViewHolder holder = adapter.new ViewHolder(recycledView);
         recycledView.setTag(holder);
         View view = adapter.getView(0, recycledView, null);
         assertSame(recycledView, view);
