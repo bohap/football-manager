@@ -11,9 +11,6 @@ import com.android.finki.mpip.footballdreamteam.database.MainSQLiteOpenHelper;
 import com.android.finki.mpip.footballdreamteam.utility.AlarmManagerUtils;
 import com.android.finki.mpip.footballdreamteam.utility.Base64Utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -100,14 +97,16 @@ public class AppModule {
     /**
      * Provides instance of the AlarmManagerUtils.
      *
-     * @param context application context
-     * @param manager application alarm manager
+     * @param context     application context
+     * @param manager     application alarm manager
+     * @param preferences application shared preferences
      * @return instance of the AlarmManagerUtils
      */
     @Provides
     @Singleton
-    AlarmManagerUtils provideAlarmMangerUtils(Context context, AlarmManager manager) {
-        return new AlarmManagerUtils(context, manager);
+    AlarmManagerUtils provideAlarmMangerUtils(Context context, AlarmManager manager,
+                                              SharedPreferences preferences) {
+        return new AlarmManagerUtils(context, manager, preferences);
     }
 
     /**

@@ -4,8 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 
+import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.service.UserStatisticService;
 
 import org.slf4j.Logger;
@@ -17,14 +19,20 @@ import org.slf4j.LoggerFactory;
 public class AlarmManagerUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AlarmManagerUtils.class);
-    private static final int USER_STATISTIC_SERVICE_REQUEST_CODE = 0;
-    private static final int USER_STATISTIC_SERVICE_REPEATING_MILLS = 10 * 60 * 1000;
+    public static final int USER_STATISTIC_SERVICE_REQUEST_CODE = 0;
+    public static final int USER_STATISTIC_SERVICE_REPEATING_MILLS =  10 * 60 * 1000;
     private Context context;
     private AlarmManager manager;
+    private SharedPreferences preferences;
+    private String userStatisticLastCheckedKey;
 
-    public AlarmManagerUtils(Context context, AlarmManager manager) {
+    public AlarmManagerUtils(Context context, AlarmManager manager,
+                             SharedPreferences preferences) {
         this.context = context;
         this.manager = manager;
+        this.preferences = preferences;
+        this.userStatisticLastCheckedKey =
+                context.getString(R.string.preference_user_statistic_service_last_check_mills);
     }
 
     /**
@@ -39,20 +47,27 @@ public class AlarmManagerUtils {
 
     /**
      * Setup the alarm with pending intent for the UserStatisticService.
-     *
      * @see UserStatisticService
      */
     public void setupUserStatisticRepeatingService() {
         logger.info("setupUserStatisticRepeatingService");
-        long triggerAtMills = SystemClock.elapsedRealtime() + 10000;
-        manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMills,
-                USER_STATISTIC_SERVICE_REPEATING_MILLS,
-                this.getUserStatisticServicePendingIntent());
+        long currentTimeMills = System.currentTimeMillis();
+        long lastChecked = preferences.getLong(userStatisticLastCheckedKey, 0);
+        logger.info(String.format("current time mills - %d", currentTimeMills));
+        logger.info(String.format("last checked mills - %d", lastChecked));
+        if (currentTimeMills - lastChecked > 2 * USER_STATISTIC_SERVICE_REPEATING_MILLS) {
+            logger.info("starting repeating alarm for the user statistic service");
+            long triggerAtMills = SystemClock.elapsedRealtime() + 10000;
+            manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMills,
+                    USER_STATISTIC_SERVICE_REPEATING_MILLS,
+                    this.getUserStatisticServicePendingIntent());
+        } else {
+            logger.info("repeating alarm for the user statistic service already started");
+        }
     }
 
     /**
      * Cancel the repeating alarm for the UserStatisticService.
-     *
      * @see UserStatisticService
      */
     public void cancelUserStatisticRepeatingService() {

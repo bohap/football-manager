@@ -1,4 +1,5 @@
-package com.android.finki.mpip.footballdreamteam;
+
+ package com.android.finki.mpip.footballdreamteam;
 
 import android.app.Application;
 
@@ -133,7 +134,8 @@ public class MainApplication extends Application {
         if (authComponent == null) {
             User user = authUserUtils.authenticate();
             if (user == null) {
-                throw new IllegalArgumentException("auth user not set");
+                logger.info("auth user data not valid ");
+                System.exit(0);
             }
             logger.info(String.format("Creating AuthComponent for user with id %d.", user.getId()));
             authComponent = appComponent.plus(getAuthModule(user));
