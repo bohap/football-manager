@@ -11,6 +11,9 @@ public class UnProcessableEntityException extends IOException {
 
     private Response response;
 
+    public UnProcessableEntityException() {
+    }
+
     public UnProcessableEntityException(Response response) {
         this.response = response;
     }

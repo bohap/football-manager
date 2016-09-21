@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LoginViewModule;
-import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.component.LoginView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LoginViewPresenter;
 
@@ -107,27 +106,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     /**
-     * Call the login method on the presenter when the login btn is clicked.
-     */
-    @OnClick(R.id.loginLayout_btnLogin)
-    void login() {
-        logger.info("btn 'Login' clicked");
-        String username = txtEmail.getText().toString();
-        String password = txtPassword.getText().toString();
-        presenter.login(username, password);
-    }
-
-    /**
-     * Show the onBtnRegisterClick activity when the onBtnRegisterClick button is clicked.
-     */
-    @OnClick(R.id.loginLayout_btnRegister)
-    void onBtnRegisterClick() {
-        logger.info("btn 'Register' clicked");
-        this.startActivity(new Intent(this, RegisterActivity.class));
-        this.overridePendingTransition(R.anim.enter_from_left, R.anim.hold);
-    }
-
-    /**
      * Change the edit text background depending on whatever he has a error.
      *
      * @param txtEdit EditText
@@ -189,34 +167,46 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     /**
+     * Call the onBtnLoginClick method on the presenter when the onBtnLoginClick btn is clicked.
+     */
+    @OnClick(R.id.loginLayout_btnLogin)
+    void onBtnLoginClick() {
+        logger.info("btn 'Login' clicked");
+        String username = txtEmail.getText().toString();
+        String password = txtPassword.getText().toString();
+        presenter.login(username, password);
+    }
+
+    /**
      * Show a spinner indicating that the app is waiting for a response from the server.
      */
     @Override
     public void showLogging() {
         logger.info("showLogging");
         this.toggleVisibility(spinner, true);
+        this.toggleVisibility(errorsContainer, false);
     }
 
     /**
-     * Called when the login is successful.
+     * Called when the onBtnLoginClick is successful.
      */
     @Override
-    public void showLoginSuccessful() {
-        logger.info("showLoginSuccessful");
+    public void showLoggingSuccess() {
+        logger.info("showLoggingSuccess");
         ((MainApplication) this.getApplication()).createAuthComponent();
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
 
     /**
-     * Called when the login failed and the server responded with body containing error messages.
+     * Called when the onBtnLoginClick failed and the server responded with body containing error messages.
      *
-     * @param errors login errors
+     * @param errors onBtnLoginClick errors
      */
     @SuppressWarnings("deprecation")
     @Override
-    public void showLoginFailed(List<String> errors) {
-        logger.info("showLoginFailed with messages");
+    public void showLoggingFailed(List<String> errors) {
+        logger.info("showLoggingFailed with messages");
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, true);
         errorsContainer.removeAllViews();
@@ -233,12 +223,22 @@ public class LoginActivity extends BaseActivity implements LoginView {
     }
 
     /**
-     * Called when the login failed and the server returned body containing no messages.
+     * Called when the onBtnLoginClick failed and the server returned body containing no messages.
      */
     @Override
-    public void showLoginFailed() {
-        logger.info("showLoginFailed with no messages");
+    public void showLoggingFailed() {
+        logger.info("showLoggingFailed with no messages");
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(errorsContainer, false);
+    }
+
+    /**
+     * Show the onBtnRegisterClick activity when the onBtnRegisterClick button is clicked.
+     */
+    @OnClick(R.id.loginLayout_btnRegister)
+    void onBtnRegisterClick() {
+        logger.info("btn 'Register' clicked");
+        this.startActivity(new Intent(this, RegisterActivity.class));
+        this.overridePendingTransition(R.anim.enter_from_left, R.anim.hold);
     }
 }

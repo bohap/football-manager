@@ -51,11 +51,8 @@ public class AlarmManagerUtils {
      */
     public void setupUserStatisticRepeatingService() {
         logger.info("setupUserStatisticRepeatingService");
-        long currentTimeMills = System.currentTimeMillis();
         long lastChecked = preferences.getLong(userStatisticLastCheckedKey, 0);
-        logger.info(String.format("current time mills - %d", currentTimeMills));
-        logger.info(String.format("last checked mills - %d", lastChecked));
-        if (currentTimeMills - lastChecked > 2 * USER_STATISTIC_SERVICE_REPEATING_MILLS) {
+        if (System.currentTimeMillis() - lastChecked > 2 * USER_STATISTIC_SERVICE_REPEATING_MILLS) {
             logger.info("starting repeating alarm for the user statistic service");
             long triggerAtMills = SystemClock.elapsedRealtime() + 10000;
             manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMills,

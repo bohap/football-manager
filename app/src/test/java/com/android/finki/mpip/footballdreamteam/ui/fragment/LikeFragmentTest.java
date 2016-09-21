@@ -76,7 +76,7 @@ public class LikeFragmentTest {
         likes.add(new UserLike(2, "User 2", null));
         likes.add(new UserLike(3, "User 3", null));
         MockApplication application = (MockApplication) RuntimeEnvironment.application;
-        application.setLikeFragmentComponent(component);
+        application.setLikeViewComponent(component);
     }
 
     /**

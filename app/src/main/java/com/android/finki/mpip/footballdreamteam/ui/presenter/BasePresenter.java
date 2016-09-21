@@ -51,9 +51,13 @@ public class BasePresenter {
         if (t instanceof NotAuthenticatedException && !(view instanceof LoginView)) {
             view.showNotAuthenticated();
         } else if (t instanceof InternalServerErrorException) {
-            String message = this
-                    .getResponseMessage(((InternalServerErrorException) t).getResponse());
-            view.showInternalServerError(message);
+            Response response = ((InternalServerErrorException) t).getResponse();
+            String message = this.getResponseMessage(response);
+            if (message == null) {
+                view.showInternalServerError();
+            } else {
+                view.showInternalServerError(message);
+            }
         } else if (t instanceof SocketTimeoutException) {
             view.showSocketTimeout();
         } else if (t instanceof UnknownHostException) {

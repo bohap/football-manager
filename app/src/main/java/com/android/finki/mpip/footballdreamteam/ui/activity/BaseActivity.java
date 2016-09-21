@@ -61,7 +61,7 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
 
     /**
      * Called when the user token has expired or some other has occurred and the
-     * user need to login again.
+     * user need to onBtnLoginClick again.
      */
     @Override
     public void showNotAuthenticated() {

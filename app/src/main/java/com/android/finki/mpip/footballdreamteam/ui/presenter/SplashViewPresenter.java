@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.database.service.UserDBService;
-import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;
 
 import org.slf4j.Logger;
@@ -19,16 +17,12 @@ public class SplashViewPresenter {
     private Logger logger = LoggerFactory.getLogger(SplashViewPresenter.class);
     private SplashView view;
     private SharedPreferences preferences;
-    private UserDBService userDBService;
     private String firstTimeKey;
     private String authUserIdKey;
 
-    public SplashViewPresenter(SplashView view, Context context,
-                               SharedPreferences preferences, UserDBService dbService) {
+    public SplashViewPresenter(SplashView view, Context context, SharedPreferences preferences) {
         this.view = view;
         this.preferences = preferences;
-        this.userDBService = dbService;
-
         this.firstTimeKey = context.getString(R.string.preference_first_time_key);
         this.authUserIdKey = context.getString(R.string.preference_auth_user_id_key);
     }
@@ -37,7 +31,9 @@ public class SplashViewPresenter {
      * Called when the view is visible to the user.
      */
     public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
         if (isFirstTime()) {
+            logger.info("app start for first time");
             view.showInfoDialog();
         } else {
             this.checkIfUserIsAuthenticated();
@@ -50,8 +46,10 @@ public class SplashViewPresenter {
     public void checkIfUserIsAuthenticated() {
         int userId = getAuthUserId();
         if (userId == -1) {
+            logger.info("user not authenticated");
             view.showLoginView();
         } else {
+            logger.info("user authenticated");
             view.showHomeView();
         }
     }

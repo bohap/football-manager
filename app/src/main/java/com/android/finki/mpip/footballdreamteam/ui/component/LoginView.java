@@ -24,9 +24,9 @@ public interface LoginView extends BaseView {
 
     void showLogging();
 
-    void showLoginSuccessful();
+    void showLoggingSuccess();
 
-    void showLoginFailed(List<String> errors);
+    void showLoggingFailed(List<String> errors);
 
-    void showLoginFailed();
+    void showLoggingFailed();
 }

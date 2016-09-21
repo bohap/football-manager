@@ -14,6 +14,7 @@ import com.android.finki.mpip.footballdreamteam.rest.web.AuthApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.RegisterView;
 import com.android.finki.mpip.footballdreamteam.utility.StringUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,8 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
     private static final Logger logger = LoggerFactory.getLogger(RegisterViewPresenter.class);
     private RegisterView view;
     private SharedPreferences preferences;
-    private String key;
+    private String authUserIdKey;
+    private String jwtTokenKey;
     private UserDBService dbService;
     private AuthApi api;
     private Call<RegisterUserResponse> call;
@@ -49,7 +51,8 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
     public RegisterViewPresenter(RegisterView view, SharedPreferences preferences, Context context,
                                  UserDBService dbService, AuthApi api) {
         this.view = view;
-        this.key = context.getString(R.string.preference_auth_user_id_key);
+        this.authUserIdKey = context.getString(R.string.preference_auth_user_id_key);
+        this.jwtTokenKey = context.getString(R.string.preference_jwt_token_key);
         this.preferences = preferences;
         this.dbService = dbService;
         this.api = api;
@@ -61,26 +64,31 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
     public void onViewLayoutCreated() {
         logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
-        if (requestSending) {
-            view.showRegistering();
-        }
     }
 
     /**
-     * Called when the view layout is destroyed.
+     * Register the user with the given credentials.
+     *
+     * @param name           user name
+     * @param email          user email
+     * @param password       user password
+     * @param repeatPassword repeat password
      */
-    public void onViewLayoutDestroyed() {
-        logger.info("onViewLayoutDestroyed");
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Called when the view is destroyed.
-     */
-    public void onViewDestroyed() {
-        logger.info("onViewDestroyed");
-        if (call != null) {
-            call.cancel();
+    public void register(String name, String email, String password, String repeatPassword) {
+        if (viewLayoutCreated && !requestSending) {
+            boolean valid = this.validateName(name);
+            valid = validateEmail(email) && valid;
+            valid = validatePassword(password, repeatPassword) && valid;
+            if (valid) {
+                logger.info("sending register request");
+                requestSending = true;
+                this.name = name;
+                this.email = email;
+                this.password = password;
+                view.showRegistering();
+                call = api.register(new RegisterUserRequest(name, email, password, repeatPassword));
+                call.enqueue(this);
+            }
         }
     }
 
@@ -138,6 +146,7 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
             return false;
         }
         if (passwordError) {
+            view.showRepeatPasswordOk();
             return false;
         }
         if (!repeatPassword.equals(password)) {
@@ -146,34 +155,6 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
         }
         view.showRepeatPasswordOk();
         return true;
-    }
-
-    /**
-     * Register the user with the given credentials.
-     *
-     * @param name           user name
-     * @param email          user email
-     * @param password       user password
-     * @param repeatPassword repeat password
-     */
-    public void register(String name, String email, String password, String repeatPassword) {
-        if (!requestSending) {
-            boolean valid = this.validateName(name);
-            valid = validateEmail(email) && valid;
-            valid = validatePassword(password, repeatPassword) && valid;
-            if (valid) {
-                logger.info("sending register request");
-                requestSending = true;
-                this.name = name;
-                this.email = email;
-                this.password = password;
-                if (viewLayoutCreated) {
-                    view.showRegistering();
-                }
-                call = api.register(new RegisterUserRequest(name, email, password, repeatPassword));
-                call.enqueue(this);
-            }
-        }
     }
 
     /**
@@ -201,9 +182,12 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
                 password, new Date(), new Date());
         dbService.open();
         try {
+            if (dbService.getByEmail(user.getEmail()) != null) {
+                dbService.delete(user.getId());
+            }
             dbService.store(user);
         } catch (RuntimeException exp) {
-            logger.info("error occurred while saving the user in the daatabase");
+            logger.info("error occurred while saving the user in the database");
             exp.printStackTrace();
             if (viewLayoutCreated) {
                 view.showRegisteringFailed();
@@ -213,8 +197,13 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
             return;
         }
         dbService.close();
-        preferences.edit().putString(key, response.getToken()).apply();
-        view.showRegisteringSuccess();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(authUserIdKey, user.getId());
+        editor.putString(jwtTokenKey, response.getToken());
+        editor.apply();
+        if (viewLayoutCreated) {
+            view.showRegisteringSuccess();
+        }
     }
 
     /**
@@ -249,20 +238,43 @@ public class RegisterViewPresenter extends BasePresenter implements Callback<Reg
      * @param response server response
      */
     private void registrationFailed(okhttp3.Response response) {
-        Gson gson = new Gson();
-        try {
-            UnProcessableEntityResponse unProcessableEntityResponse = gson
-                    .fromJson(response.body().string(), UnProcessableEntityResponse.class);
-            Map<String, List<String>> errors = unProcessableEntityResponse.getErrors();
-            List<String> result = new ArrayList<>();
-            for (Map.Entry<String, List<String>> entry : errors.entrySet()) {
-                result.addAll(entry.getValue());
+        if (response != null) {
+            Gson gson = new Gson();
+            try {
+                UnProcessableEntityResponse unProcessableEntityResponse = gson
+                        .fromJson(response.body().string(), UnProcessableEntityResponse.class);
+                Map<String, List<String>> errors = unProcessableEntityResponse.getErrors();
+                List<String> result = new ArrayList<>();
+                for (Map.Entry<String, List<String>> entry : errors.entrySet()) {
+                    result.addAll(entry.getValue());
+                }
+                view.showRegisteringFailed(result);
+            } catch (IOException | JsonSyntaxException exp) {
+                exp.printStackTrace();
+                view.showRegisteringFailed();
+                view.showInternalServerError();
             }
-            view.showRegisteringFailed(result);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
             view.showRegisteringFailed();
             view.showInternalServerError();
+        }
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (call != null) {
+            call.cancel();
         }
     }
 }

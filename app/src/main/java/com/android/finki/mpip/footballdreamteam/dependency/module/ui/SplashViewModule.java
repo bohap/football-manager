@@ -28,13 +28,12 @@ public class SplashViewModule {
      *
      * @param context application base context
      * @param preferences application SharedPreferences
-     * @param service instance of UserDBService
      * @return instance of SplashActivity presenter
      */
     @Provides
     @ViewScope
     SplashViewPresenter provideSplashActivityPresenter(Context context,
-                                                       SharedPreferences preferences, UserDBService service) {
-        return new SplashViewPresenter(view, context, preferences, service);
+                                                       SharedPreferences preferences) {
+        return new SplashViewPresenter(view, context, preferences);
     }
 }

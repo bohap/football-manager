@@ -51,7 +51,6 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
         this.preferences = preferences;
         this.userDBService = userDBService;
         this.authApi = authApi;
-
         this.AUTH_USER_ID_KEY = context.getString(R.string.preference_auth_user_id_key);
         this.JWT_TOKEN_KEY = context.getString(R.string.preference_jwt_token_key);
     }
@@ -62,23 +61,29 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     public void onViewLayoutCreated() {
         logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
+
     }
 
     /**
-     * Called when the view is not anymore visible.
+     * Login the user.
+     *
+     * @param email    user email
+     * @param password user password
      */
-    public void onViewLayoutDestroyed() {
-        logger.info("onViewLayoutDestroyed");
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Called when the view is being destroyed.
-     */
-    public void onViewDestroyed() {
-        logger.info("onViewDestroyed");
-        if (this.call != null) {
-            this.call.cancel();
+    public void login(String email, String password) {
+        if (viewLayoutCreated && !requestSending) {
+            boolean valid = this.isEmailValid(email);
+            valid = this.isPasswordValid(password) && valid;
+            if (valid) {
+                requestSending = true;
+                logger.info("sending login request");
+                view.showLogging();
+                this.email = email;
+                this.password = password;
+                AuthenticateUserRequest request = new AuthenticateUserRequest(email, password);
+                call = authApi.login(request);
+                call.enqueue(this);
+            }
         }
     }
 
@@ -117,29 +122,6 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
     }
 
     /**
-     * Login the user.
-     *
-     * @param email    user email
-     * @param password user password
-     */
-    public void login(String email, String password) {
-        boolean valid = this.isEmailValid(email);
-        valid = this.isPasswordValid(password) && valid;
-        if (valid && !requestSending) {
-            requestSending = true;
-            logger.info("sending login request");
-            if (viewLayoutCreated) {
-                view.showLogging();
-            }
-            this.email = email;
-            this.password = password;
-            AuthenticateUserRequest request = new AuthenticateUserRequest(email, password);
-            call = authApi.login(request);
-            call.enqueue(this);
-        }
-    }
-
-    /**
      * Called when the login request is successful.
      *
      * @param call     retrofit call
@@ -172,7 +154,7 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
                 if (t instanceof NotAuthenticatedException) {
                     this.authenticationFailed(((NotAuthenticatedException) t).getResponse());
                 } else {
-                    view.showLoginFailed();
+                    view.showLoggingFailed();
                     super.onRequestFailed(view, t);
                 }
             }
@@ -199,18 +181,19 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             logger.info("user saving/updating failed");
             exp.printStackTrace();
             if (viewLayoutCreated) {
-                view.showLoginFailed();
+                view.showLoggingFailed();
                 view.showInternalServerError();
             }
             userDBService.close();
             return;
         }
+        userDBService.close();
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(AUTH_USER_ID_KEY, user.getId());
         editor.putString(JWT_TOKEN_KEY, body.getJwtToken());
         editor.apply();
         if (viewLayoutCreated) {
-            view.showLoginSuccessful();
+            view.showLoggingSuccess();
         }
     }
 
@@ -225,12 +208,33 @@ public class LoginViewPresenter extends BasePresenter implements Callback<Authen
             try {
                 AuthenticationFailedResponse error = gson.fromJson(response.body().string(),
                         AuthenticationFailedResponse.class);
-                view.showLoginFailed(error.getErrors());
+                view.showLoggingFailed(error.getErrors());
             } catch (IOException | JsonSyntaxException exp) {
                 exp.printStackTrace();
-                view.showLoginFailed();
+                view.showLoggingFailed();
                 view.showInternalServerError();
             }
+        } else {
+            view.showLoggingFailed();
+            view.showInternalServerError();
+        }
+    }
+
+    /**
+     * Called when the view is not anymore visible.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is being destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (this.call != null) {
+            this.call.cancel();
         }
     }
 }

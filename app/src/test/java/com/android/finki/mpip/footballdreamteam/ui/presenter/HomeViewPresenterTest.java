@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
  * Created by Borce on 09.08.2016.
  */
 @Ignore
-public class HomeActivityPresenterTest {
+public class HomeViewPresenterTest {
 
     @Mock
     private HomeActivity activity;

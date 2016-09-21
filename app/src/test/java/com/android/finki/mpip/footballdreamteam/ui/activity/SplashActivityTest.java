@@ -12,7 +12,6 @@ import com.android.finki.mpip.footballdreamteam.ui.presenter.SplashViewPresenter
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,15 +27,16 @@ import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.util.ActivityController;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by Borce on 06.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)
@@ -55,7 +55,7 @@ public class SplashActivityTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         MockApplication application = (MockApplication) RuntimeEnvironment.application;
-        application.setSplashActivityComponent(component);
+        application.setSplashViewComponent(component);
         this.mockDependencies();
         controller = Robolectric.buildActivity(SplashActivity.class);
         activity = controller.create().start().resume().visible().get();
@@ -81,6 +81,15 @@ public class SplashActivityTest {
     }
 
     /**
+     * Test thet the activity is created correctly.
+     */
+    @Test
+    public void testActivityIsCreated() {
+        assertNull(shadowOf(activity).getContentView());
+        verify(presenter).onViewLayoutCreated();
+    }
+
+    /**
      * Test that showInfoDialog method will start a new AlertDialog.
      */
     @Test
@@ -92,17 +101,25 @@ public class SplashActivityTest {
     }
 
     /**
+     * Test the behavior when onDialogDone is called.
+     */
+    @Test
+    public void testOnDialogDone() {
+        activity.onDialogDone();
+        verify(presenter).checkIfUserIsAuthenticated();
+    }
+
+    /**
      * Test that showLoginActivity method will start a new activity and finish the current.
      */
     @Test
     public void testShowLoginActivity() {
         activity.showLoginView();
-        ShadowActivity shadow = shadowOf(activity);
         Intent expectedIntent = new Intent(activity, LoginActivity.class);
-        Intent actualIntent = shadow.getNextStartedActivity();
+        Intent actualIntent = shadowOf(activity).getNextStartedActivity();
         assertNotNull(actualIntent);
         assertTrue(actualIntent.filterEquals(expectedIntent));
-        assertTrue(shadow.isFinishing());
+        assertTrue(activity.isFinishing());
     }
 
     /**
@@ -117,5 +134,6 @@ public class SplashActivityTest {
         assertNotNull(actualIntent);
         assertTrue(actualIntent.filterEquals(expectedIntent));
         assertTrue(activity.isFinishing());
+        assertNotNull(((MockApplication) RuntimeEnvironment.application).getAuthComponent());
     }
 }

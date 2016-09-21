@@ -49,6 +49,9 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     private boolean requestSending = false;
     private boolean viewLayoutCreated = false;
     private boolean isInfoDialogShowed = false;
+    private boolean storeTeamsTaskExecuting = false;
+    private boolean storePositionsTaskExecuting = false;
+    private boolean storePlayersTaskExecuting = false;
 
     public HomeViewPresenter(HomeView view, SharedPreferences preferences, Context context,
                              TeamApi teamApi, PositionApi positionApi, PlayerApi playerApi,
@@ -62,11 +65,9 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         this.storeTeamsTask = storeTeamsTask;
         this.storePositionsTask = storePositionsTask;
         this.storePlayersTask = storePlayersTask;
-
         this.storePositionsTask.setListener(this);
         this.storeTeamsTask.setListener(this);
         this.storePlayersTask.setListener(this);
-
         this.TEAMS_LOADED_KEY = context.getString(R.string.preference_teams_loaded_key);
         this.POSITIONS_LOADED_KEY = context.getString(R.string.preference_positions_loaded_key);
         this.PLAYERS_LOADED_KEY = context.getString(R.string.preference_players_loaded_key);
@@ -93,33 +94,6 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
                 view.showInitialDataInfoDialog();
             }
         }
-    }
-
-    /**
-     * Called when the view is not anymore visible.
-     */
-    public void onViewLayoutDestroyed() {
-        logger.info("onViewLayoutDestroyed");
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Called before the view is destroyed.
-     */
-    public void onViewDestroyed() {
-        logger.info("onViewDestroyed");
-        if (teamCall != null) {
-            teamCall.cancel();
-        }
-        if (positionCall != null) {
-            positionCall.cancel();
-        }
-        if (playerCall != null) {
-            playerCall.cancel();
-        }
-        storeTeamsTask.cancel(true);
-        storePositionsTask.cancel(true);
-        storePlayersTask.cancel(true);
     }
 
     /**
@@ -193,6 +167,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         teamCall = null;
         List<Team> teams = response.body();
         storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
+        storeTeamsTaskExecuting = true;
         if (viewLayoutCreated) {
             view.showTeamsStoring();
         }
@@ -224,6 +199,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     @Override
     public void onTeamsSavingSuccess() {
         preferences.edit().putBoolean(TEAMS_LOADED_KEY, true).apply();
+        storeTeamsTaskExecuting = false;
         loadPositions();
     }
 
@@ -232,6 +208,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onTeamsSavingFailed() {
+        storeTeamsTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showTeamsStoringFailed();
         }
@@ -292,6 +269,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         positionCall = null;
         List<Position> positions = response.body();
         storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
+        storePositionsTaskExecuting = true;
         if (viewLayoutCreated) {
             view.showPositionsStoring();
         }
@@ -323,6 +301,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     @Override
     public void onPositionsSavingSuccess() {
         preferences.edit().putBoolean(POSITIONS_LOADED_KEY, true).apply();
+        storePositionsTaskExecuting = false;
         loadPlayers();
     }
 
@@ -331,6 +310,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPositionsSavingFailed() {
+        storePositionsTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showPositionsStoringFailed();
         }
@@ -391,6 +371,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         playerCall = null;
         List<Player> players = response.body();
         storePlayersTask.execute(players.toArray(new Player[players.size()]));
+        storePlayersTaskExecuting = true;
         if (viewLayoutCreated) {
             view.showPlayersStoring();
         }
@@ -422,6 +403,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
     @Override
     public void onPlayersSavingSuccess() {
         preferences.edit().putBoolean(PLAYERS_LOADED_KEY, true).apply();
+        storePlayersTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showInitialDataLoadingSuccess();
         }
@@ -432,8 +414,42 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPlayersSavingFailed() {
+        storePlayersTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showPlayersStoringFailed();
+        }
+    }
+
+    /**
+     * Called when the view is not anymore visible.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called before the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (teamCall != null) {
+            teamCall.cancel();
+        }
+        if (positionCall != null) {
+            positionCall.cancel();
+        }
+        if (playerCall != null) {
+            playerCall.cancel();
+        }
+        if (storeTeamsTaskExecuting) {
+            storeTeamsTask.cancel(true);
+        }
+        if (storePositionsTaskExecuting) {
+            storePositionsTask.cancel(true);
+        }
+        if (storePlayersTaskExecuting) {
+            storePlayersTask.cancel(true);
         }
     }
 }

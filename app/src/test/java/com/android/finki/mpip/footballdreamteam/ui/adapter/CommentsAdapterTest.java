@@ -123,7 +123,7 @@ public class CommentsAdapterTest {
      *
      * @param view view containing the children
      */
-    private void initViews(View view) {
+    private void getViews(View view) {
         assertNotNull(view);
         mainContent = (RelativeLayout) view.findViewById(R.id.commentListItem_content);
         assertNotNull(mainContent);
@@ -150,7 +150,7 @@ public class CommentsAdapterTest {
     public void testGetView() {
         final Comment comment = comment1;
         View view = adapter.getView(comments.indexOf(comment), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.VISIBLE, mainContent.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         TextView txtUser = (TextView) view.findViewById(R.id.commentListItem_user);
@@ -184,7 +184,7 @@ public class CommentsAdapterTest {
     @Test
     public void testGetViewOnCommentCreatedByAuthUser() {
         View view = adapter.getView(comments.indexOf(authUserComment1), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.VISIBLE, btnEdit.getVisibility());
         assertEquals(View.VISIBLE, btnRemove.getVisibility());
         assertEquals(View.GONE, btnUpdate.getVisibility());
@@ -209,12 +209,12 @@ public class CommentsAdapterTest {
     @Test
     public void testBtnEditClick() {
         View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnEdit.performClick());
         for (int i = 0; i < 2; i++) {
             if (i == 1) {
                 view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-                this.initViews(view);
+                this.getViews(view);
             }
             assertEquals(View.VISIBLE, mainContent.getVisibility());
             assertEquals(View.GONE, spinner.getVisibility());
@@ -235,12 +235,12 @@ public class CommentsAdapterTest {
     public void testTxtBodyChanged() {
         String newBody = "New comment txtBody";
         View view = adapter.getView(comments.indexOf(authUserComment1), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnEdit.performClick());
         edBody.setText(newBody);
         assertEquals(View.VISIBLE, btnUpdate.getVisibility());
         view = adapter.getView(comments.indexOf(authUserComment1), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.GONE, txtBody.getVisibility());
         assertEquals(View.VISIBLE, edBody.getVisibility());
         assertEquals(newBody, edBody.getText().toString());
@@ -256,13 +256,13 @@ public class CommentsAdapterTest {
     @Test
     public void testBtnCancelUpdateClick() {
         View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnEdit.performClick());
         assertTrue(btnCancelUpdate.performClick());
         for (int i = 0; i < 2; i++) {
             if (i == 1) {
                 view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-                this.initViews(view);
+                this.getViews(view);
             }
             assertEquals(View.VISIBLE, mainContent.getVisibility());
             assertEquals(View.GONE, spinner.getVisibility());
@@ -282,12 +282,12 @@ public class CommentsAdapterTest {
     public void testEditTextBodyNewContentIsRememberedOnCancel() {
         String newBody = "New comment txtBody";
         View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnEdit.performClick());
         edBody.setText(newBody);
         assertTrue(btnCancelUpdate.performClick());
         view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(newBody, edBody.getText().toString());
     }
 
@@ -299,14 +299,14 @@ public class CommentsAdapterTest {
         int index = comments.indexOf(authUserComment1);
         String newBody = "Comment updated";
         View view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         edBody.setText(newBody);
         assertTrue(btnUpdate.performClick());
         verify(listener).updateComment(index, newBody);
         for (int i = 0; i < 2; i++) {
             if (i == 1) {
                 view = adapter.getView(index, null, null);
-                this.initViews(view);
+                this.getViews(view);
             }
             assertEquals(View.GONE, mainContent.getVisibility());
             assertEquals(View.VISIBLE, spinner.getVisibility());
@@ -320,13 +320,13 @@ public class CommentsAdapterTest {
     public void testBtnRemoveClick() {
         int index = comments.indexOf(authUserComment2);
         View view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnRemove.performClick());
         verify(listener).deleteComment(index);
         for (int i = 0; i < 2; i++) {
             if (i == 1) {
                 view = adapter.getView(index, null, null);
-                this.initViews(view);
+                this.getViews(view);
             }
             assertEquals(View.GONE, mainContent.getVisibility());
             assertEquals(View.VISIBLE, spinner.getVisibility());
@@ -354,14 +354,14 @@ public class CommentsAdapterTest {
                 authUserComment1.getLineup(), "New Comment BOdy", date, date);
         int index = comments.indexOf(authUserComment1);
         View view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnUpdate.performClick());
         adapter.onUpdateSuccess(authUserComment1, newComment);
         assertEquals(NUMBER_OF_COMMENTS, adapter.getCount());
         assertSame(newComment, adapter.getItem(index));
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
         view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.VISIBLE, mainContent.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, txtBody.getVisibility());
@@ -382,13 +382,13 @@ public class CommentsAdapterTest {
         String newBody = "Edited Body";
         int index = comments.indexOf(authUserComment2);
         View view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         edBody.setText(newBody);
         assertTrue(btnUpdate.performClick());
         adapter.onUpdateFailed(authUserComment2);
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
         view = adapter.getView(index, null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.VISIBLE, mainContent.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.GONE, txtBody.getVisibility());
@@ -419,13 +419,13 @@ public class CommentsAdapterTest {
     @Test
     public void testOnRemoveFailed() {
         View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertTrue(btnRemove.performClick());
         adapter.onRemoveFailed(authUserComment2);
         assertEquals(NUMBER_OF_COMMENTS, adapter.getCount());
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
         view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.initViews(view);
+        this.getViews(view);
         assertEquals(View.VISIBLE, mainContent.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
     }

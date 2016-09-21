@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
+import com.android.finki.mpip.footballdreamteam.dependency.component.AppComponent;
+import com.android.finki.mpip.footballdreamteam.dependency.component.ui.SplashViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.SplashViewModule;
 import com.android.finki.mpip.footballdreamteam.model.User;
 import com.android.finki.mpip.footballdreamteam.ui.component.SplashView;

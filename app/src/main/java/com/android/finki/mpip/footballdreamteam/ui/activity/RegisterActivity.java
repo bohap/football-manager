@@ -136,19 +136,6 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     }
 
     /**
-     * Handle click on the button 'Register'.
-     */
-    @OnClick(R.id.registerLayout_btnRegister)
-    void onBtnRegisterClick() {
-        logger.info("btn 'Register' clicked");
-        String name = txtName.getText().toString();
-        String email = txtEmail.getText().toString();
-        String password = txtPassword.getText().toString();
-        String repeatPassword = txtRepeatPassword.getText().toString();
-        presenter.register(name, email, password, repeatPassword);
-    }
-
-    /**
      * Change the EditText background depending on whatever he has a error.
      *
      * @param txtEdit EditText
@@ -258,6 +245,19 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
         this.toggleErrorBackground(txtRepeatPassword, false);
         super.toggleVisibility(txtRepeatPasswordRequiredError, false);
         super.toggleVisibility(txtRepeatPasswordNotMatchError, false);
+    }
+
+    /**
+     * Handle click on the button 'Register'.
+     */
+    @OnClick(R.id.registerLayout_btnRegister)
+    void onBtnRegisterClick() {
+        logger.info("btn 'Register' clicked");
+        String name = txtName.getText().toString();
+        String email = txtEmail.getText().toString();
+        String password = txtPassword.getText().toString();
+        String repeatPassword = txtRepeatPassword.getText().toString();
+        presenter.register(name, email, password, repeatPassword);
     }
 
     /**

@@ -25,8 +25,8 @@ import javax.inject.Inject;
 public class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
-    private AppComponent appComponent;
-    private AuthComponent authComponent;
+    protected AppComponent appComponent;
+    protected AuthComponent authComponent;
     private AuthUserUtils authUserUtils;
     private AlarmManagerUtils alarmManagerUtils;
 
@@ -74,7 +74,7 @@ public class MainApplication extends Application {
      *
      * @return instance of AppModule
      */
-    private AppModule getAppModule() {
+    protected AppModule getAppModule() {
         return new AppModule(this);
     }
 
@@ -83,7 +83,7 @@ public class MainApplication extends Application {
      *
      * @return instance of NetModule
      */
-    private NetModule getNetModule() {
+    protected NetModule getNetModule() {
         return new NetModule();
     }
 
@@ -92,18 +92,18 @@ public class MainApplication extends Application {
      *
      * @return instance of the UserModule
      */
-    private UserModule getAuthModule() {
+    protected UserModule getUserModule() {
         return new UserModule();
     }
 
     /**
      * Create a new instance of the AppComponent
      */
-    private void initAppComponent() {
+    protected void initAppComponent() {
         appComponent = DaggerAppComponent.builder()
                 .appModule(getAppModule())
                 .netModule(getNetModule())
-                .userModule(getAuthModule())
+                .userModule(getUserModule())
                 .build();
         appComponent.inject(this);
     }
@@ -123,7 +123,7 @@ public class MainApplication extends Application {
      * @param user authenticated user
      * @return instance of AuthModule
      */
-    private AuthModule getAuthModule(User user) {
+    protected AuthModule getUserModule(User user) {
         return new AuthModule(user);
     }
 
@@ -138,7 +138,7 @@ public class MainApplication extends Application {
                 System.exit(0);
             }
             logger.info(String.format("Creating AuthComponent for user with id %d.", user.getId()));
-            authComponent = appComponent.plus(getAuthModule(user));
+            authComponent = appComponent.plus(getUserModule(user));
             alarmManagerUtils.setupUserStatisticRepeatingService();
         }
     }

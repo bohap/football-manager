@@ -119,7 +119,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
     TextView txtSpinner;
 
     @BindView(R.id.error)
-    RelativeLayout errorLoadingLayout;
+    RelativeLayout error;
 
     @BindView(R.id.content)
     FrameLayout content;
@@ -144,7 +144,6 @@ public class HomeActivity extends BaseActivity implements HomeView,
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.home_layout);
-
         ButterKnife.bind(this);
         ((MainApplication) this.getApplication()).getAuthComponent()
                 .plus(new HomeViewModule(this)).inject(this);
@@ -166,7 +165,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem item) {
-                        onSidebarItemSelected(item);
+                        onOptionsItemSelected(item);
                         return true;
                     }
                 });
@@ -247,7 +246,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         logger.info("onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.mainMenu_createLineup:
-                this.startCreteLineupActivity();
+                this.startActivity(new Intent(this, CreateLineupActivity.class));
                 return true;
             case R.id.mainMenu_refresh:
                 Fragment fragment = this.getSupportFragmentManager()
@@ -267,22 +266,6 @@ public class HomeActivity extends BaseActivity implements HomeView,
                 }
         }
         return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Handle click on the sidebar menu item.
-     *
-     * @param item menu item that has been clicked
-     */
-    private void onSidebarItemSelected(MenuItem item) {
-        this.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Start the CreteLineupActivity.
-     */
-    private void startCreteLineupActivity() {
-        this.startActivity(new Intent(this, CreateLineupActivity.class));
     }
 
     /**
@@ -336,7 +319,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
     public void showInitialDataLoading() {
         logger.info("showInitialDataLoading");
         super.toggleVisibility(spinner, true);
-        super.toggleVisibility(errorLoadingLayout, false);
+        super.toggleVisibility(error, false);
         super.toggleVisibility(content, false);
     }
 
@@ -352,23 +335,10 @@ public class HomeActivity extends BaseActivity implements HomeView,
     }
 
     /**
-     * Called when loading the initial data is successful.
-     */
-    @Override
-    public void showInitialDataLoadingSuccess() {
-        logger.info("showInitialDataLoadingSuccess");
-        super.toggleVisibility(content, true);
-        super.toggleVisibility(spinner, false);
-        super.toggleVisibility(errorLoadingLayout, false);
-        this.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content, new ListLineupsFragment()).commit();
-    }
-
-    /**
      * Show the request failed layout content.
      */
     private void showInitialDataLoadingFailed() {
-        super.toggleVisibility(errorLoadingLayout, true);
+        super.toggleVisibility(error, true);
         super.toggleVisibility(spinner, false);
         super.toggleVisibility(content, false);
     }
@@ -483,6 +453,19 @@ public class HomeActivity extends BaseActivity implements HomeView,
     void reload() {
         logger.info("btn 'Try Again' clicked");
         presenter.loadData();
+    }
+
+    /**
+     * Called when loading the initial data is successful.
+     */
+    @Override
+    public void showInitialDataLoadingSuccess() {
+        logger.info("showInitialDataLoadingSuccess");
+        super.toggleVisibility(content, true);
+        super.toggleVisibility(spinner, false);
+        super.toggleVisibility(error, false);
+        this.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, new ListLineupsFragment()).commit();
     }
 
     /**
