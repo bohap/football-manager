@@ -9,21 +9,26 @@ import com.android.finki.mpip.footballdreamteam.exception.PlayerException;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 30.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)
@@ -53,14 +58,13 @@ public class StorePlayersTaskTest {
     public void testStoreFailed() {
         when(playerDBService.exists(anyInt())).thenReturn(false);
         doThrow(new PlayerException("")).when(playerDBService).store(any(Player.class));
-
         task.execute(players);
         Robolectric.flushBackgroundThreadScheduler();
-
-        verify(playerDBService).open();
-        verify(playerDBService).exists(players[0].getId());
-        verify(playerDBService).store(players[0]);
-        verify(playerDBService).close();
+        InOrder inOrder = inOrder(playerDBService);
+        inOrder.verify(playerDBService).open();
+        inOrder.verify(playerDBService).exists(players[0].getId());
+        inOrder.verify(playerDBService).store(players[0]);
+        inOrder.verify(playerDBService).close();
         verify(listener).onPlayersSavingFailed();
     }
 
@@ -71,16 +75,15 @@ public class StorePlayersTaskTest {
     public void testStoreSuccessful() {
         when(playerDBService.exists(players[0].getId())).thenReturn(true);
         when(playerDBService.exists(players[1].getId())).thenReturn(false);
-
         task.execute(players);
         Robolectric.flushBackgroundThreadScheduler();
-
-        verify(playerDBService).open();
-        verify(playerDBService).exists(players[0].getId());
-        verify(playerDBService, never()).store(players[0]);
-        verify(playerDBService).exists(players[1].getId());
-        verify(playerDBService).store(players[1]);
-        verify(playerDBService).close();
+        InOrder inOrder = inOrder(playerDBService);
+        inOrder.verify(playerDBService).open();
+        inOrder.verify(playerDBService).exists(players[0].getId());
+        inOrder.verify(playerDBService, never()).store(players[0]);
+        inOrder.verify(playerDBService).exists(players[1].getId());
+        inOrder.verify(playerDBService).store(players[1]);
+        inOrder.verify(playerDBService).close();
         verify(listener).onPlayersSavingSuccess();
     }
 }

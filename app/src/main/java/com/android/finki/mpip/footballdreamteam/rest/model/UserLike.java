@@ -2,6 +2,7 @@ package com.android.finki.mpip.footballdreamteam.rest.model;
 
 import android.support.annotation.NonNull;
 
+import com.android.finki.mpip.footballdreamteam.model.BaseModel;
 import com.android.finki.mpip.footballdreamteam.model.LineupLike;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by Borce on 29.07.2016.
  */
-public class UserLike implements Serializable {
+public class UserLike extends BaseModel implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -28,6 +29,10 @@ public class UserLike implements Serializable {
         this.id = id;
         this.name = name;
         this.pivot = pivot;
+    }
+
+    public UserLike(int id) {
+        this(id, null, null);
     }
 
     public int getId() {
@@ -59,7 +64,24 @@ public class UserLike implements Serializable {
         if (!(o instanceof UserLike)) {
             return false;
         }
-        UserLike userLike = (UserLike)o;
-        return this.getId() == userLike.getId();
+        UserLike like = (UserLike)o;
+        return this.id == like.getId();
+    }
+
+    /**
+     * Checks if its same with the given model.
+     *
+     * @param model BaseModel with which will be checked
+     * @return whatever the model are same
+     */
+    @Override
+    public boolean same(BaseModel model) {
+        if (!(model instanceof UserLike)) {
+            return false;
+        }
+        UserLike like = (UserLike) model;
+        return this.id == like.getId() &&
+                super.equalsFields(name, like.getName()) &&
+                super.sameModels(this.pivot, like.getPivot());
     }
 }

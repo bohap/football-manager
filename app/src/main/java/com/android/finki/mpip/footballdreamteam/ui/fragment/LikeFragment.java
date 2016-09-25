@@ -54,10 +54,10 @@ public class LikeFragment extends BaseFragment implements LikeView {
     String spinnerText;
 
     @BindView(R.id.error)
-    RelativeLayout errorLoadingLayout;
+    RelativeLayout error;
 
     @BindView(R.id.likeLayout_mainContent)
-    RelativeLayout mainContent;
+    RelativeLayout content;
 
     @BindView(R.id.likeLayout_listView)
     ListView likesListView;
@@ -147,6 +147,8 @@ public class LikeFragment extends BaseFragment implements LikeView {
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).changeTitle(title);
         }
+        adapter = new LikesAdapter(this.getActivity(), presenter.getLikes());
+        likesListView.setAdapter(adapter);
         return view;
     }
 
@@ -179,8 +181,8 @@ public class LikeFragment extends BaseFragment implements LikeView {
         logger.info("showLoading");
         txtSpinner.setText(spinnerText);
         spinner.setVisibility(View.VISIBLE);
-        errorLoadingLayout.setVisibility(View.GONE);
-        mainContent.setVisibility(View.GONE);
+        error.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
     }
 
     /**
@@ -190,11 +192,10 @@ public class LikeFragment extends BaseFragment implements LikeView {
      */
     public void showLoadingSuccess(List<UserLike> likes) {
         logger.info("showLoadingSuccess");
-        mainContent.setVisibility(View.VISIBLE);
-        errorLoadingLayout.setVisibility(View.GONE);
+        content.setVisibility(View.VISIBLE);
+        error.setVisibility(View.GONE);
         spinner.setVisibility(View.GONE);
-        adapter = new LikesAdapter(this.getActivity(), likes);
-        likesListView.setAdapter(adapter);
+        adapter.update(likes);
     }
 
     /**
@@ -202,9 +203,9 @@ public class LikeFragment extends BaseFragment implements LikeView {
      */
     public void showLoadingFailed() {
         logger.info("showLoadingFailed");
-        errorLoadingLayout.setVisibility(View.VISIBLE);
+        error.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
-        mainContent.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
     }
 
     /**
@@ -217,7 +218,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
     }
 
     /**
-     * Show the addLike like button.
+     * Show the add like button.
      */
     @Override
     public void showAddLikeButton() {
@@ -227,7 +228,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
     }
 
     /**
-     * Show the removeLike like button.
+     * Show the remove like button.
      */
     @Override
     public void showRemoveLikeButton() {
@@ -246,7 +247,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
     }
 
     /**
-     * Called when a request has been send to addLike a like to the lineup.
+     * Called when a request has been send to add a like to the lineup.
      */
     @Override
     public void showLikeAdding() {
@@ -262,7 +263,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
         logger.info("showAddLikeSuccess");
         spinnerLikeAdding.setVisibility(View.GONE);
         this.showRemoveLikeButton();
-        adapter.addLike(like);
+        adapter.add(like);
     }
 
     /**
@@ -285,7 +286,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
     }
 
     /**
-     * Called when a request has been send to removeLike the lineup like.
+     * Called when a request has been send to remove the lineup like.
      */
     @Override
     public void showLikeRemoving() {
@@ -301,7 +302,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
         logger.info("showLikeRemovingSuccess");
         spinnerLikeRemoving.setVisibility(View.GONE);
         this.showAddLikeButton();
-        adapter.removeLike(userLike);
+        adapter.remove(userLike);
     }
 
     /**

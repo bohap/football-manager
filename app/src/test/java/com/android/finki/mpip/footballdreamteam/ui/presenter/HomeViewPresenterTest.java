@@ -1,21 +1,20 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.background.task.StorePlayersTask;
 import com.android.finki.mpip.footballdreamteam.background.task.StorePositionsTask;
 import com.android.finki.mpip.footballdreamteam.background.task.StoreTeamsTask;
-import com.android.finki.mpip.footballdreamteam.model.Lineup;
+import com.android.finki.mpip.footballdreamteam.exception.InternalServerErrorException;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.model.Team;
-import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.PlayerApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.PositionApi;
 import com.android.finki.mpip.footballdreamteam.rest.web.TeamApi;
-import com.android.finki.mpip.footballdreamteam.ui.activity.HomeActivity;
+import com.android.finki.mpip.footballdreamteam.ui.component.HomeView;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,6 +27,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,9 +36,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
@@ -54,13 +52,16 @@ import static org.mockito.Mockito.when;
 public class HomeViewPresenterTest {
 
     @Mock
-    private HomeActivity activity;
+    private HomeView view;
 
     @Mock
     private SharedPreferences preferences;
 
     @Mock
     private SharedPreferences.Editor editor;
+
+    @Mock
+    private Context context;
 
     @Mock
     private TeamApi teamApi;
@@ -70,9 +71,6 @@ public class HomeViewPresenterTest {
 
     @Mock
     private PlayerApi playerApi;
-
-    @Mock
-    private LineupApi lineupApi;
 
     @Mock
     private StoreTeamsTask storeTeamsTask;
@@ -101,33 +99,6 @@ public class HomeViewPresenterTest {
     @Captor
     private ArgumentCaptor<Callback<List<Player>>> playersCaptor;
 
-    @Mock
-    private Call<List<Lineup>> lineupCall;
-
-    @Captor
-    private ArgumentCaptor<Callback<List<Lineup>>> lineupsCaptor;
-
-    @Captor
-    private ArgumentCaptor<Boolean> lineupShortResponseCaptor;
-
-    @Captor
-    private ArgumentCaptor<Boolean> lineupLatestCaptor;
-
-    @Captor
-    private ArgumentCaptor<Integer> lineupLimitCaptor;
-
-    @Captor
-    private ArgumentCaptor<Integer> lineupOffsetCaptor;
-
-    @Captor
-    private ArgumentCaptor<Player> playerCaptor;
-
-    @Captor
-    private ArgumentCaptor<Position> positionCaptor;
-
-    @Captor
-    private ArgumentCaptor<Team> teamCaptor;
-
     private HomeViewPresenter presenter;
 
     private String TEAMS_LOADED_KEY = "teams_loaded";
@@ -143,28 +114,24 @@ public class HomeViewPresenterTest {
     private Player player1 = new Player(1, "Player 1");
     private Player player2 = new Player(2, "Player 2");
     private List<Player> players = Arrays.asList(player1, player2);
-    private Lineup lineup1 = new Lineup(1, 1);
-    private Lineup lineup2 = new Lineup(1, 1);
-    private List<Lineup> lineups = Arrays.asList(lineup1, lineup2);
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.initMocks();
-//        presenter = new HomeViewPresenter(activity, preferences, teamApi, positionApi,
-//                playerApi, lineupApi, storeTeamsTask, storePositionsTask, storePlayersTask);
+        presenter = new HomeViewPresenter(view, preferences, context, teamApi, positionApi,
+                playerApi, storeTeamsTask, storePositionsTask, storePlayersTask);
     }
 
     /**
      * Mock the object to return specific values on method calls.
      */
-    @SuppressLint("CommitPrefEdits")
     private void initMocks() {
-        when(activity.getString(R.string.preference_teams_loaded_key))
+        when(context.getString(R.string.preference_teams_loaded_key))
                 .thenReturn(TEAMS_LOADED_KEY);
-        when(activity.getString(R.string.preference_positions_loaded_key))
+        when(context.getString(R.string.preference_positions_loaded_key))
                 .thenReturn(POSITIONS_LOADED_KEY);
-        when(activity.getString(R.string.preference_players_loaded_key))
+        when(context.getString(R.string.preference_players_loaded_key))
                 .thenReturn(PLAYERS_LOADED_KEY);
         /* Mock the preferences */
         when(preferences.edit()).thenReturn(editor);
@@ -173,38 +140,134 @@ public class HomeViewPresenterTest {
         when(teamApi.index(anyBoolean(), anyInt(), anyInt())).thenReturn(teamsCall);
         when(positionApi.index(anyBoolean(), anyInt(), anyInt())).thenReturn(positionCall);
         when(playerApi.index(anyBoolean(), anyInt(), anyInt())).thenReturn(playersCall);
-        when(lineupApi.index(anyBoolean(), anyBoolean(), anyInt(), anyInt()))
-                .thenReturn(lineupCall);
     }
 
     /**
-     * Test the behavior when the teams data is not loaded and the request to load the failed.
+     * Test the behavior when onViewLayoutCreated is called and a request is not sending.
      */
     @Test
-    public void testLoadingTeamsFailed() {
+    public void testOnViewLayoutCreatedWhenRequestIsNotSending() {
+        presenter.onViewLayoutCreated();
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+    }
+
+    /**
+     * Test the behavior when onViewLayoutCreated is called and a request is sending.
+     */
+    @Test
+    public void testOnViewLayoutCreatedWhenARequestIsSending() {
+        presenter.loadData();
+        verify(view, never()).showInitialDataInfoDialog();
+        verify(view, never()).showInitialDataInfoDialog();
+        presenter.onViewLayoutCreated();
+        verify(view).showInitialDataLoading();
+        verify(view).showInitialDataInfoDialog();
+    }
+
+    /**
+     * Test the behavior when loadTeams is called and the teams are already loading.
+     */
+    @Test
+    public void testLoadTeamsWhenTeamsAreCurrentlyLoading() {
         when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(false);
+        presenter.loadData();
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+    }
+
+    /**
+     * Test the behavior when loadPositions is called and the teams are currently loading.
+     */
+    @Test
+    public void testLoadPositionsWhenTeamsAreCurrentlyLoading() {
+        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(false);
+        presenter.loadData();
+        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionApi, never()).index(anyBoolean(), anyInt(), anyInt());
+    }
+
+    /**
+     * Test the behavior when loadPlayers is called and the positions are currently loading.
+     */
+    @Test
+    public void testLoadPlayersWhenPositionsAreCurrentlyLoading() {
+        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
         when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+        presenter.loadData();
+        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playerApi, never()).index(anyBoolean(), anyInt(), anyInt());
+    }
+
+    /**
+     * Mock the shared preferences.
+     *
+     * @param teamsLoaded     whatever the teams is be loaded
+     * @param positionsLoaded whatever the positions is loaded
+     * @param playersLoaded   whatever the players is loaded
+     */
+    private void initPreferences(boolean teamsLoaded, boolean positionsLoaded,
+                                 boolean playersLoaded) {
+        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(teamsLoaded);
+        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(positionsLoaded);
+        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(playersLoaded);
+    }
+
+    /**
+     * Test the behavior when the teams data is not loaded, the request to load them failed and
+     * the view layout is created before the request is send and not destroyed before the request
+     * response is received.
+     */
+    @Test
+    public void testLoadingTeamsFailedAndViewLayoutNotDestroyed() {
+        this.initPreferences(false, false, false);
+        presenter.onViewLayoutCreated();
         presenter.loadData();
         verify(teamsCall).enqueue(teamsCaptor.capture());
-        teamsCaptor.getValue().onFailure(teamsCall, new Throwable());
+        verify(view).showInitialDataLoading();
+        verify(view).showInitialDataInfoDialog();
+        teamsCaptor.getValue().onFailure(teamsCall, new InternalServerErrorException());
+        verify(view).showTeamsLoadingFailed();
+        verify(view).showInternalServerError();
+        verify(view, never()).showTeamsStoring();
+        verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playersCall, never()).enqueue(playersCaptor.capture());
+    }
 
-        verify(activity).showInitialDataLoading();
+    /**
+     * Test the behavior when the teams data is not loaded and the request to load them failed and
+     * the view layout is created before the request is send and destroyed before the request
+     * is received.
+     */
+    @Test
+    public void testLoadingTeamsFailedAndViewLayoutDestroyed() {
+        this.initPreferences(false, false, false);
+        presenter.onViewLayoutCreated();
+        presenter.loadData();
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        verify(view).showInitialDataLoading();
+        verify(view).showInitialDataInfoDialog();
+        presenter.onViewLayoutDestroyed();
+        teamsCaptor.getValue().onFailure(teamsCall, new InternalServerErrorException());
+        verify(view, never()).showTeamsLoadingFailed();
+        verify(view, never()).showInternalServerError();
+        verify(view, never()).showTeamsStoring();
         verify(positionCall, never()).enqueue(positionsCaptor.capture());
         verify(playersCall, never()).enqueue(playersCaptor.capture());
     }
 
     /**
      * Test the behavior when the teams data is not loaded, the request to load then is successful
-     * but a error occurred while saving the data.
-     *
-     * @throws InterruptedException
+     * but a error occurred while saving the data, and the view layout is not created before the
+     * request is send and is created before the request response is received.
      */
     @Test
-    public void testSavingTeamsDataFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testTeamsStoringFailedAndViewLayoutCreatedAfterTheRequest() {
+        this.initPreferences(false, false, false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -212,29 +275,55 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
-
         presenter.loadData();
         verify(teamsCall).enqueue(teamsCaptor.capture());
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+        presenter.onViewLayoutCreated();
+        verify(view).showInitialDataLoading();
+        verify(view).showInitialDataInfoDialog();
         teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        verify(view).showTeamsStoring();
+        verify(view).showTeamsStoringFailed();
+        verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playersCall, never()).enqueue(playersCaptor.capture());
+    }
 
-        verify(activity).showInitialDataLoading();
-
+    /**
+     * Test the behavior when the teams data is not loaded, the request to load then is successful
+     * but a error occurred while saving the data, and the view layout is not created neither
+     * before the request is send or the request response is received.
+     */
+    @Test
+    public void testTeamsStoringFailedAndViewLayoutNotCreatedAfterTheRequest() {
+        this.initPreferences(false, false, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onTeamsSavingFailed();
+                return null;
+            }
+        }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
+        presenter.loadData();
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        verify(view, never()).showTeamsStoring();
+        verify(view, never()).showTeamsStoringFailed();
         verify(positionCall, never()).enqueue(positionsCaptor.capture());
         verify(playersCall, never()).enqueue(playersCaptor.capture());
     }
 
     /**
      * Test the behavior when teams data is not loaded, the request to load them is successful,
-     * the teams are successfully saved in the database, the positions data is not loaded and the
-     * request to load positions data failed.
-     *
-     * @throws InterruptedException
+     * the teams are successfully saved in the database, the positions data is not loaded, the
+     * request to load positions data failed and the view layout created before the positions
+     * request is send.
      */
     @Test
-    public void testTeamsLoadedSuccessAndPositionsLoadingFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testTeamsStoringSuccessAndPositionsLoadingFailed() {
+        this.initPreferences(false, false, false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -242,29 +331,60 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
+        presenter.loadData();
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        presenter.onViewLayoutCreated();
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        verify(view, times(2)).showInitialDataLoading();
+        verify(view).showInitialDataInfoDialog();
+        verify(editor).putBoolean(TEAMS_LOADED_KEY, true);
+        verify(editor).apply();
+        positionsCaptor.getValue().onFailure(positionCall, new UnknownHostException());
+        verify(view).showPositionsLoadingFailed();
+        verify(view).showNoInternetConnection();
+        verify(playersCall, never()).enqueue(playersCaptor.capture());
+    }
 
+    /**
+     * Test the behavior when teams data is not loaded, the view layout is created before the
+     * request is send, the request to load the teams is successful, the teams are successfully
+     * saved in the database, the positions data is not loaded, the request to load positions data
+     * failed and the view layout is destroyed before the positions request is received.
+     */
+    @Test
+    public void testTeamsStoringSuccessAndPositionsLoadingFailedAndViewLayoutDestroyed() {
+        this.initPreferences(false, false, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onTeamsSavingSuccess();
+                return null;
+            }
+        }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
+        presenter.onViewLayoutCreated();
         presenter.loadData();
         verify(teamsCall).enqueue(teamsCaptor.capture());
         teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
-
         verify(positionCall).enqueue(positionsCaptor.capture());
-        positionsCaptor.getValue().onFailure(positionCall, new Throwable());
+        verify(view, times(2)).showInitialDataLoading();
+        verify(view, times(1)).showInitialDataInfoDialog();
+        verify(view).showPositionsLoading();
+        presenter.onViewLayoutDestroyed();
+        positionsCaptor.getValue().onFailure(positionCall, new UnknownHostException());
+        verify(view, never()).showPositionsLoadingFailed();
+        verify(view, never()).showNoInternetConnection();
         verify(playersCall, never()).enqueue(playersCaptor.capture());
-
-        verify(activity, times(2)).showInitialDataLoading();
     }
 
     /**
      * Test the behavior when the teams data is loaded, the position is not, the request
-     * to load them is successful and saving the teams failed.
-     *
-     * @throws InterruptedException
+     * to load them is successful, saving the positions failed and the view layout is created before
+     * the request response is received.
      */
     @Test
-    public void testPositionsStoringFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testPositionsStoringFailedAndViewLayoutCreatedBeforeTheResponseIsReceived() {
+        this.initPreferences(true, false, false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -272,28 +392,54 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
-
         presenter.loadData();
         verify(teamsCall, never()).enqueue(teamsCaptor.capture());
         verify(positionCall).enqueue(positionsCaptor.capture());
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+        verify(view, never()).showPositionsLoading();
+        presenter.onViewLayoutCreated();
         positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
-
-        verify(activity).showInitialDataLoading();
+        verify(view).showPositionsStoring();
+        verify(view).showPositionsStoringFailed();
         verify(playersCall, never()).enqueue(playersCaptor.capture());
     }
 
     /**
-     * Test the behavior when only the teams data is loaded, the request to load the positions is
-     * successful, saving the positions in the database is successful and the request to load
-     * the teams failed.
-     *
-     * @throws InterruptedException
+     * Test the behavior when the teams data is loaded, the position is not, the request
+     * to load them is successful, saving the positions failed and the view layout is
+     * never created.
      */
     @Test
-    public void testPositionsLoadingSuccessAndPlayersLoadingFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(false);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testPositionsStoringFailedAndViewLayoutNeverCreated() {
+        this.initPreferences(true, false, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPositionsSavingFailed();
+                return null;
+            }
+        }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
+        presenter.loadData();
+        verify(teamsCall, never()).enqueue(teamsCaptor.capture());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+        verify(view, never()).showPositionsLoading();
+        verify(view, never()).showPositionsStoring();
+        verify(view, never()).showPositionsStoringFailed();
+        verify(playersCall, never()).enqueue(playersCaptor.capture());
+    }
+
+    /**
+     * Test the behavior when the teams data is loaded, the position is not, the request
+     * to load them is successful, saving the positions is successful and the players data
+     * is loaded.
+     */
+    @Test
+    public void testPositionsStoringSuccessAndPlayersDataLoaded() {
+        this.initPreferences(true, false, true);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -301,29 +447,79 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
-
         presenter.loadData();
         verify(teamsCall, never()).enqueue(teamsCaptor.capture());
         verify(positionCall).enqueue(positionsCaptor.capture());
+        presenter.onViewLayoutCreated();
         positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
-
-        verify(playersCall).enqueue(playersCaptor.capture());
-        playersCaptor.getValue().onFailure(playersCall, new Throwable());
-
-        verify(activity, times(2)).showInitialDataLoading();
+        verify(view, never()).showPositionsStoringFailed();
+        verify(editor).putBoolean(POSITIONS_LOADED_KEY, true);
+        verify(editor).apply();
+        verify(playersCall, never()).enqueue(playersCaptor.capture());
     }
 
     /**
-     * Test the behavior when the players data is not loaded, the players data is successfully
-     * loaded from the server and saving the players in the local database failed.
-     *
-     * @throws InterruptedException
+     * Test the behavior when only the teams and positions data is loaded, the request to load
+     * the teams failed and the view layout is created before the players is send.
      */
     @Test
-    public void testPlayersSavingFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testPlayersLoadingFailedAndViewLayoutCreatedBeforeTheRequestIsSend() {
+        this.initPreferences(true, true, false);
+        presenter.onViewLayoutCreated();
+        presenter.loadData();
+        verify(teamsCall, never()).enqueue(teamsCaptor.capture());
+        verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        verify(view).showInitialDataLoading();
+        verify(view).showPlayersLoading();
+        verify(view).showInitialDataInfoDialog();
+        playersCaptor.getValue().onFailure(playersCall, new SocketTimeoutException());
+        verify(view).showPlayersLoadingFailed();
+        verify(view).showSocketTimeout();
+    }
+
+    /**
+     * Test the behavior when teams data is loaded, the positions data is not, the request to load
+     * positions data is successful, storing the positions is successful, the request to load
+     * players failed and the view layout is created before the positions request is send and
+     * destroyed before the players request response is received send.
+     */
+    @Test
+    public void testPlayersLoadingFailedAndViewLayoutDestroyedBeforePlayersResponse() {
+        this.initPreferences(true, false, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPositionsSavingSuccess();
+                return null;
+            }
+        }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
+        presenter.onViewLayoutCreated();
+        presenter.loadData();
+        verify(teamsCall, never()).enqueue(teamsCaptor.capture());
+        verify(view).showInitialDataLoading();
+        verify(view).showPositionsLoading();
+        verify(view).showInitialDataInfoDialog();
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        verify(playersCall).enqueue(playersCaptor.capture());
+        verify(view, times(2)).showInitialDataLoading();
+        verify(view).showPlayersLoading();
+        verify(view, times(1)).showInitialDataInfoDialog();
+        presenter.onViewLayoutDestroyed();
+        playersCaptor.getValue().onFailure(playersCall, new SocketTimeoutException());
+        verify(view, never()).showPlayersLoadingFailed();
+        verify(view, never()).showSocketTimeout();
+    }
+
+    /**
+     * Test the behavior when the teams and positions data is loaded, the request to load players
+     * data is successful, storing the players data failed and the view layout is created before
+     * the request response is received.
+     */
+    @Test
+    public void testPlayersStoringFailedAndViewLayoutCreatedAfterPlayersResponse() {
+        this.initPreferences(true, true, false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -331,26 +527,55 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
-
         presenter.loadData();
         verify(teamsCall, never()).enqueue(teamsCaptor.capture());
         verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showPlayersLoading();
+        verify(view, never()).showInitialDataInfoDialog();
         verify(playersCall).enqueue(playersCaptor.capture());
+        presenter.onViewLayoutCreated();
         playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        verify(view).showPlayersStoring();
+        verify(view).showPlayersStoringFailed();
     }
 
     /**
-     * Test the behavior when the players is not loaded, the request to load them is
-     * successful, the players are successfully saved in the database and loading the
-     * lineup failed.
-     *
-     * @throws InterruptedException
+     * Test the behavior when the teams and positions data is loaded, loading the players data is
+     * successful, storing the players data failed and the view layout is never created.
      */
     @Test
-    public void testPlayersLoadingSuccessAndLineupsLoadingFailed() throws InterruptedException {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(false);
+    public void testPlayersStoringFailedAndViewLayoutNeverCreated() {
+        this.initPreferences(true, true, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPlayersSavingFailed();
+                return null;
+            }
+        }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
+        presenter.loadData();
+        verify(teamsCall, never()).enqueue(teamsCaptor.capture());
+        verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        verify(view, never()).showInitialDataLoading();
+        verify(view, never()).showPlayersLoading();
+        verify(view, never()).showInitialDataInfoDialog();
+        verify(view, never()).showPlayersStoring();
+        verify(view, never()).showPlayersStoringFailed();
+        verify(view, never()).showInitialDataLoadingSuccess();
+    }
+
+    /**
+     * Test the behavior when the teams and positions data is loaded, loading the players data is
+     * successful and storing the players data is successful.
+     */
+    @Test
+    public void testPlayersStoringSuccess() {
+        this.initPreferences(true, true, false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -358,102 +583,140 @@ public class HomeViewPresenterTest {
                 return null;
             }
         }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
-
+        presenter.onViewLayoutCreated();
         presenter.loadData();
         verify(teamsCall, never()).enqueue(teamsCaptor.capture());
         verify(positionCall, never()).enqueue(positionsCaptor.capture());
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(view).showInitialDataLoading();
+        verify(view).showPlayersLoading();
+        verify(view).showInitialDataInfoDialog();
         verify(playersCall).enqueue(playersCaptor.capture());
         playersCaptor.getValue().onResponse(playersCall, Response.success(players));
-
-        verify(lineupCall).enqueue(lineupsCaptor.capture());
-        lineupsCaptor.getValue().onFailure(lineupCall, new Throwable());
-
-        verify(activity).showInitialDataLoading();
+        verify(view).showPlayersStoring();
+        verify(view, never()).showPlayersStoringFailed();
+        verify(view).showInitialDataLoadingSuccess();
+        verify(editor).putBoolean(PLAYERS_LOADED_KEY, true);
+        verify(editor).apply();
     }
 
     /**
-     * Test the behavior when all teams, positions and players are already loaded and loading
-     * the lineups is successful.
+     * Test the behavior when the teams and positions data is loaded, loading the players data is
+     * successful, storing the players data is successful and the view layout is destroyed when
+     * request response is received.
      */
     @Test
-    public void testLineupsLoadingSuccess() {
-        when(preferences.getBoolean(TEAMS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(POSITIONS_LOADED_KEY, false)).thenReturn(true);
-        when(preferences.getBoolean(PLAYERS_LOADED_KEY, false)).thenReturn(true);
-
+    public void testPlayersStoringSuccessAndViewLayoutDestroyed() {
+        this.initPreferences(true, true, false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPlayersSavingSuccess();
+                return null;
+            }
+        }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
+        presenter.onViewLayoutCreated();
         presenter.loadData();
         verify(teamsCall, never()).enqueue(teamsCaptor.capture());
         verify(positionCall, never()).enqueue(positionsCaptor.capture());
-        verify(playersCall, never()).enqueue(playersCaptor.capture());
-        verify(lineupCall).enqueue(lineupsCaptor.capture());
-        lineupsCaptor.getValue().onResponse(lineupCall, Response.success(lineups));
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(view).showInitialDataLoading();
+        verify(view).showPlayersLoading();
+        verify(view).showInitialDataInfoDialog();
+        verify(playersCall).enqueue(playersCaptor.capture());
+        presenter.onViewLayoutDestroyed();
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        verify(view, never()).showPlayersStoring();
+        verify(view, never()).showPlayersStoringFailed();
+        verify(view, never()).showInitialDataLoadingSuccess();
+        verify(editor).putBoolean(PLAYERS_LOADED_KEY, true);
+        verify(editor).apply();
     }
 
     /**
-     * Test the behavior when loadMoreLineups is called before a response from the last
-     * request came.
+     * Test the behavior when onViewDestroyed is called and the request to load the teams is not
+     * yet finished.
      */
     @Test
-    public void testLoadMoreLineupsCalledBeforeTHeLastRequestResponse() {
-        verify(lineupCall).enqueue(lineupsCaptor.capture());
+    public void testOnViewDestroyedWhenTeamsAreLoading() {
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        presenter.onViewDestroyed();
+        verify(teamsCall).cancel();
     }
 
     /**
-     * Test the behavior when loading more lineups is successful.
+     * Test the behavior when onViewDestroyed is called and the request to load the positions is
+     * not yet finished.
      */
     @Test
-    public void testLoadMoreLineupsSuccess() {
-//        final int limit = HomeViewPresenter.LINEUPS_LIMIT;
-//        presenter.loadMoreLineups();
-//        verify(lineupCall).enqueue(lineupsCaptor.capture());
-//        lineupsCaptor.getValue().onResponse(lineupCall, Response.success(lineups));
-//
-//        presenter.loadMoreLineups();
-//        lineupsCaptor.getValue().onResponse(lineupCall, Response.success(lineups));
-//
-//        verify(lineupApi, times(2)).index(lineupShortResponseCaptor.capture(),
-//                lineupLatestCaptor.capture(), lineupLimitCaptor.capture(),
-//                lineupOffsetCaptor.capture());
-//
-//        assertNull(lineupShortResponseCaptor.getAllValues().get(0));
-//        assertTrue(lineupLatestCaptor.getAllValues().get(0));
-//        assertEquals(limit, lineupLimitCaptor.getAllValues().get(0).intValue());
-//        assertEquals(limit, lineupOffsetCaptor.getAllValues().get(0).intValue());
-//        assertNull(lineupShortResponseCaptor.getAllValues().get(1));
-//        assertTrue(lineupLatestCaptor.getAllValues().get(1));
-//        assertEquals(limit, lineupLimitCaptor.getAllValues().get(1).intValue());
-//        assertEquals(2 * limit, lineupOffsetCaptor.getAllValues().get(1).intValue());
-//
-//        verify(activity, times(2)).successLoadingLineups(lineups);
+    public void testOnViewDestroyedWhenPositionsAreLoading() {
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        presenter.onViewDestroyed();
+        verify(positionCall).cancel();
     }
 
     /**
-     * Test the behavior when loading more lineups failed.
+     * Test the behavior when onViewDestroyed is called and the request to load the players is
+     * not yet finished.
      */
     @Test
-    public void testLoadMoreLineupsFailed() {
-//        final int limit = HomeViewPresenter.LINEUPS_LIMIT;
-//        presenter.loadMoreLineups();
-//        verify(lineupCall).enqueue(lineupsCaptor.capture());
-//        lineupsCaptor.getValue().onFailure(lineupCall, new Throwable());
-//
-//        presenter.loadMoreLineups();
-//        lineupsCaptor.getValue().onResponse(lineupCall, Response.success(lineups));
-//
-//        verify(lineupApi, times(2)).index(lineupShortResponseCaptor.capture(),
-//                lineupLatestCaptor.capture(), lineupLimitCaptor.capture(),
-//                lineupOffsetCaptor.capture());
-//
-//        assertNull(lineupShortResponseCaptor.getAllValues().get(0));
-//        assertTrue(lineupLatestCaptor.getAllValues().get(0));
-//        assertEquals(limit, lineupLimitCaptor.getAllValues().get(0).intValue());
-//        assertEquals(limit, lineupOffsetCaptor.getAllValues().get(0).intValue());
-//        assertNull(lineupShortResponseCaptor.getAllValues().get(1));
-//        assertTrue(lineupLatestCaptor.getAllValues().get(1));
-//        assertEquals(limit, lineupLimitCaptor.getAllValues().get(1).intValue());
-//        assertEquals(limit, lineupOffsetCaptor.getAllValues().get(1).intValue());
-//
-//        verify(activity).showErrorLoading();
-//        verify(activity).successLoadingLineups(lineups);
+    public void testOnViewDestroyedWhenPlayersAreLoading() {
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        presenter.onViewDestroyed();
+        verify(playersCall).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and the request to load the teams is
+     * successful and the task to store the teams is not yer finished.
+     */
+    @Test
+    public void testOnViewDestroyedWhenTaskForStoringTheTeamsIsNotFinished() {
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        presenter.onViewDestroyed();
+        verify(teamsCall, never()).cancel();
+        verify(storeTeamsTask).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and the request to load the positions is
+     * successful and the task to store the positions is not yer finished.
+     */
+    @Test
+    public void testOnViewDestroyedWhenTaskForStoringThePositionsIsNotFinished() {
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        presenter.onViewDestroyed();
+        verify(positionCall, never()).cancel();
+        verify(storePositionsTask).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and the request to load the players is
+     * successful and the task to store the players is not yer finished.
+     */
+    @Test
+    public void testOnViewDestroyedWhenTaskForStoringThePlayersIsNotFinished() {
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        presenter.onViewDestroyed();
+        verify(playersCall, never()).cancel();
+        verify(storePlayersTask).cancel(true);
     }
 }

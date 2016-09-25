@@ -128,7 +128,7 @@ public class PlayerDetailsDialogTest {
 
     /**
      * Test that when bindPlayer is called with editable false, the
-     * removeLike button will not be showed.
+     * remove button will not be showed.
      */
     @Test
     public void testBindPlayerWithEditableFalse() {
@@ -143,7 +143,7 @@ public class PlayerDetailsDialogTest {
     }
 
     /**
-     * Test the behavior when btn removeLike is clicked.
+     * Test the behavior when btn remove is clicked.
      */
     @Test
     public void testBtnRemoveClick() {

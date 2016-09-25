@@ -49,8 +49,11 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     @BindView(R.id.spinner_text)
     TextView txtSpinner;
 
-    @BindString(R.string.listLineupsLayout_spinner_text)
-    String spinnerLineupText;
+    @BindString(R.string.listLineupsLayout_spinnerLoadingLineups_text)
+    String spinnerLoadingLineupText;
+
+    @BindString(R.string.listLineupsLayout_spinnerRefreshingLineups_text)
+    String spinnerRefreshingLineupText;
 
     @BindView(R.id.error)
     RelativeLayout error;
@@ -58,13 +61,16 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     @BindView(R.id.txtError)
     TextView txtError;
 
-    @BindString(R.string.lineupPlayersActivity_loadingLineupFailed_text)
+    @BindString(R.string.listLineupLayout_loadingFailed_test)
     String loadingLineupsFailedText;
+
+    @BindString(R.string.listLineupLayout_refreshingFailed_text)
+    String refreshingLineupsFailedText;
 
     @BindView(R.id.listLineupsLayout_content)
     RelativeLayout content;
 
-    @BindView(R.id.listLineupsLayout_listVIew)
+    @BindView(R.id.listLineupsLayout_listView)
     ListView listView;
 
     @BindString(R.string.listLineupLayout_deletingSuccess_text)
@@ -117,9 +123,9 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         View footer = inflater.inflate(R.layout.lineups_footer, null);
         listView.addFooterView(footer);
         listViewFooterHolder = new LineupsListViewFooterHolder(footer);
-        adapter = new ListLineupsAdapter(this.getActivity(), presenter.getUser(), this);
+        adapter = new ListLineupsAdapter(this.getActivity(), presenter.getLineups(),
+                presenter.getUser(), this);
         listView.setAdapter(adapter);
-        adapter.update(presenter.getLineups());
         return view;
     }
 
@@ -132,7 +138,6 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         super.onDestroyView();
         unbinder.unbind();
         presenter.onViewLayoutDestroyed();
-        presenter.onViewDestroyed();
     }
 
     /**
@@ -146,19 +151,19 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     }
 
     /**
-     * Show the spinner for when the lineups data is loading.
+     * Called when a reqeust has been send for loading the lineups.
      */
     @Override
     public void showLoading() {
         logger.info("showLoading");
-        txtSpinner.setText(spinnerLineupText);
+        txtSpinner.setText(spinnerLoadingLineupText);
         spinner.setVisibility(View.VISIBLE);
         error.setVisibility(View.GONE);
         content.setVisibility(View.GONE);
     }
 
     /**
-     * Called when loading hte lineups is successful.
+     * Called when loading the lineups is successful.
      *
      * @param lineups list of Lineups
      */
@@ -168,13 +173,12 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         content.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
         error.setVisibility(View.GONE);
-        assert listViewFooterHolder.lineupsListViewSpinner != null;
         listViewFooterHolder.lineupsListViewSpinner.setVisibility(View.GONE);
         adapter.update(lineups);
     }
 
     /**
-     * Called when loading the lineup failed.
+     * Called when loading the lineups failed.
      */
     public void showLoadingFailed() {
         logger.info("showLoadingFailed");
@@ -182,6 +186,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         error.setVisibility(View.VISIBLE);
         spinner.setVisibility(View.GONE);
         content.setVisibility(View.GONE);
+        listViewFooterHolder.lineupsListViewSpinner.setVisibility(View.GONE);
     }
 
     /**
@@ -190,7 +195,31 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
     @OnClick(R.id.error_btnTryAgain)
     void reload() {
         logger.info("btn 'Try Again' clicked");
-        presenter.loadLineups();
+        presenter.loadLineups(true);
+    }
+
+    /**
+     * Called when a request has been send for refreshing the lineups.
+     */
+    @Override
+    public void showRefreshing() {
+        logger.info("showRefreshing");
+        txtSpinner.setText(spinnerRefreshingLineupText);
+        spinner.setVisibility(View.VISIBLE);
+        error.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
+    }
+
+    /**
+     * Called when refreshing the lineups failed.
+     */
+    @Override
+    public void showRefreshingFailed() {
+        logger.info("showRefreshingFailed");
+        txtError.setText(refreshingLineupsFailedText);
+        error.setVisibility(View.VISIBLE);
+        spinner.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
     }
 
     /**
@@ -293,7 +322,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
          * Is marked as nullable because the view is injected from the ButterKnife
          * after is has been added to the list view.
          */
-        @BindView(R.id.lineupsListVIew_spinnerLoadMore)
+        @BindView(R.id.lineupsListView_spinnerLoadMore)
         ProgressBar lineupsListViewSpinner;
 
         @BindView(R.id.lineupsListView_btnLoadMore)
@@ -310,7 +339,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
         void loadMore() {
             logger.info("btn 'Load More' clicked");
             lineupsListViewSpinner.setVisibility(View.VISIBLE);
-            presenter.loadMoreLineups();
+            presenter.loadLineups(false);
         }
 
 

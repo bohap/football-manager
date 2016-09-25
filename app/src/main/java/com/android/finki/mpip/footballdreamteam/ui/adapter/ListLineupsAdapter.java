@@ -19,7 +19,6 @@ import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +40,16 @@ public class ListLineupsAdapter extends BaseAdapter {
     private List<Lineup> lineups;
     private Map<Integer, Boolean> deleting;
 
-    public ListLineupsAdapter(Context context, User user, Listener listener) {
+    public ListLineupsAdapter(Context context, List<Lineup> lineups, User user,
+                              Listener listener) {
         this.context = context;
         this.listener = listener;
         this.user = user;
-        lineups = new ArrayList<>();
+        this.lineups = lineups;
         deleting = new HashMap<>();
+        for (Lineup lineup : lineups) {
+            deleting.put(lineup.getId(), false);
+        }
     }
 
     /**
@@ -138,6 +141,22 @@ public class ListLineupsAdapter extends BaseAdapter {
         logger.info(String.format("onDeletingFailed, id - %d", lineup.getId()));
         this.deleting.put(lineup.getId(), false);
         super.notifyDataSetChanged();
+    }
+
+    /**
+     * Checks if the given lineup is deleting in the adapter.
+     *
+     * @param lineup lineup to be checked
+     */
+    public boolean isDeleting(Lineup lineup) {
+        if (lineup == null) {
+            throw new IllegalArgumentException("lineup can't be null");
+        }
+        Boolean deleting = this.deleting.get(lineup.getId());
+        if (deleting == null) {
+            throw new IllegalArgumentException("lineup not in the adapter");
+        }
+        return deleting;
     }
 
     /**

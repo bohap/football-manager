@@ -25,13 +25,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBaseAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -67,21 +67,20 @@ public class ListLineupsAdapterTest {
     private Lineup lineup3 = new Lineup(5, user3, date, date);
     private Lineup lineup4 = new Lineup(6, user1, date, date);
     private Lineup unExistingLineup = new Lineup(7, user2, date, date);
-    private List<Lineup> lineups = Arrays.asList(authUserLineup1, lineup1, lineup2,
-            authUserLineup2, lineup3, lineup4);
+    private List<Lineup> lineups = new ArrayList<>();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         context = RuntimeEnvironment.application.getBaseContext();
-        adapter = new ListLineupsAdapter(context, authUser, listener);
+        lineups.add(authUserLineup1);
+        lineups.add(lineup1);
+        lineups.add(lineup2);
+        lineups.add(authUserLineup2);
+        lineups.add(lineup3);
+        lineups.add(lineup4);
+        adapter = new ListLineupsAdapter(context, lineups, authUser, listener);
         shadow = shadowOf(adapter);
-        adapter.add(authUserLineup1);
-        adapter.add(lineup1);
-        adapter.add(lineup2);
-        adapter.add(authUserLineup2);
-        adapter.add(lineup3);
-        adapter.add(lineup4);
     }
 
     /**
@@ -104,6 +103,18 @@ public class ListLineupsAdapterTest {
     }
 
     /**
+     * Test that all items from the test list are put in the lineup.
+     */
+    @Test
+    public void testGetItemsInTheLineup() {
+        assertEquals(lineups.size(), adapter.getCount());
+        for (int i = 0; i < lineups.size(); i++) {
+            assertSame(lineups.get(i), adapter.getItem(i));
+            assertFalse(adapter.isDeleting(lineups.get(i)));
+        }
+    }
+
+    /**
      * Test the behavior on getItem called with un existing position in the list.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -112,17 +123,34 @@ public class ListLineupsAdapterTest {
     }
 
     /**
-     * Test the addLike method works.
+     * Test the behavior when isDeleting is called with null param.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsDeletingOnNull() {
+        adapter.isDeleting(null);
+    }
+
+    /**
+     * Test the behavior when is deleting is called with lineup that is not in the adapter.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsDeletingOnUnExistingLineup() {
+        adapter.isDeleting(unExistingLineup);
+    }
+
+    /**
+     * Test the add method works.
      */
     @Test
     public void testAdd() {
         adapter.add(unExistingLineup);
         assertEquals(NUMBER_OF_LINEUPS + 1, adapter.getCount());
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
+        assertFalse(adapter.isDeleting(unExistingLineup));
     }
 
     /**
-     * Test the behavior on addLike method called with null param.
+     * Test the behavior on add method called with null param.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAddOnNull() {
@@ -154,6 +182,9 @@ public class ListLineupsAdapterTest {
         for (int i = 0; i < expectedList.size(); i++) {
             assertSame(expectedList.get(i), adapter.getItem(i));
         }
+        for (Lineup lineup : newItems) {
+            assertFalse(adapter.isDeleting(lineup));
+        }
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
     }
 
@@ -182,13 +213,15 @@ public class ListLineupsAdapterTest {
     /**
      * Test the behavior when delete method is called.
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testDelete() {
+        List<Lineup> lineups = new ArrayList<>(this.lineups);
         int index = lineups.indexOf(lineup1);
         adapter.delete(lineup1);
         assertEquals(NUMBER_OF_LINEUPS - 1, adapter.getCount());
         assertSame(lineups.get(index + 1), adapter.getItem(index));
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
+        adapter.isDeleting(lineup1);
     }
 
     /**
@@ -332,6 +365,7 @@ public class ListLineupsAdapterTest {
             assertNotNull(spinner);
             assertEquals(View.VISIBLE, spinner.getVisibility());
         }
+        assertTrue(adapter.isDeleting(authUserLineup1));
     }
 
     /**
@@ -344,6 +378,7 @@ public class ListLineupsAdapterTest {
         ButtonAwesome btnDelete = (ButtonAwesome) view.findViewById(R.id.lineupItem_btnDelete);
         assertNotNull(btnDelete);
         assertTrue(btnDelete.performClick());
+        assertTrue(adapter.isDeleting(authUserLineup2));
         adapter.onDeletingFailed(authUserLineup2);
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
         view = adapter.getView(lineups.indexOf(authUserLineup2), null, null);
@@ -355,5 +390,6 @@ public class ListLineupsAdapterTest {
         LinearLayout spinner = (LinearLayout) view.findViewById(R.id.lineupsItem_spinner);
         assertNotNull(spinner);
         assertEquals(View.GONE, spinner.getVisibility());
+        assertFalse(adapter.isDeleting(authUserLineup2));
     }
 }

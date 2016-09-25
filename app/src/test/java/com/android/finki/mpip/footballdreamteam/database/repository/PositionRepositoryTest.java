@@ -197,7 +197,7 @@ public class PositionRepositoryTest {
     }
 
     /**
-     * Test that the delete method will removeLike the position from the database.
+     * Test that the delete method will remove the position from the database.
      */
     @Test
     public void testDelete() {

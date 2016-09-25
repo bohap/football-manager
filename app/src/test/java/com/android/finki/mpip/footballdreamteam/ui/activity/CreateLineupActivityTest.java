@@ -309,7 +309,7 @@ public class CreateLineupActivityTest {
     }
 
     /**
-     * Test the behavior when removeLike player is called and LineupFormationFragment is not visible.
+     * Test the behavior when remove player is called and LineupFormationFragment is not visible.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRemovePlayerOnLineupFormationFragmentNoVisible() {

@@ -48,6 +48,7 @@ public class StorePositionsTask extends AsyncTask<Position, Void, Boolean> {
                 }
             } catch (RuntimeException exc) {
                 logger.error("error occurred while saving the position");
+                exc.printStackTrace();
                 dbService.close();
                 return false;
             }

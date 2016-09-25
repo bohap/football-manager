@@ -219,6 +219,9 @@ public class Lineup extends IdModel<Integer> implements Serializable, Comparable
      */
     @Override
     public int compareTo(@NonNull Lineup lineup) {
+        if (this.updatedAt == null || lineup.getUpdatedAt() == null) {
+            return 0;
+        }
         if (this.updatedAt.after(lineup.getUpdatedAt())) {
             return -1;
         }

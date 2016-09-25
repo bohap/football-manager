@@ -12,7 +12,7 @@
         android:layout_marginEnd="@dimen/base_horizontalMargin"
         android:text="@string/lineupsListView_loadMoreBtnText" />
     <ProgressBar
-        android:id="@+id/lineupsListVIew_spinnerLoadMore"
+        android:id="@+id/lineupsListView_spinnerLoadMore"
         style="@style/ButtonSpinner"
         android:layout_toRightOf="@id/lineupsListView_btnLoadMoreText"
         android:layout_toEndOf="@id/lineupsListView_btnLoadMoreText"

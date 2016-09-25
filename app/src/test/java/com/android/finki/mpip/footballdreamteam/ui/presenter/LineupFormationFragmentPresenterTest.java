@@ -612,7 +612,7 @@ public class LineupFormationFragmentPresenterTest {
 //    }
 //
 //    /**
-//     * Test the behavior when removeLike selected player is called and a position
+//     * Test the behavior when remove selected player is called and a position
 //     * is not yet selected.
 //     */
 //    @Test(expected = IllegalArgumentException.class)

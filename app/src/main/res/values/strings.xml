@@ -118,11 +118,17 @@
         Error occurred while storing the players
     </string>
     <!--ListLineupsFragment-->
-    <string name="listLineupsLayout_spinner_text">
+    <string name="listLineupsLayout_spinnerLoadingLineups_text">
         Loading latest lineups…
+    </string>
+    <string name="listLineupsLayout_spinnerRefreshingLineups_text">
+        Refreshing lineups data…
     </string>
     <string name="listLineupLayout_loadingFailed_test">
         Error occurred while loading the lineups.
+    </string>
+    <string name="listLineupLayout_refreshingFailed_text">
+        Error occurred while refreshing the lineups.
     </string>
     <string name="listLineupsLayout_headerText">Latest lineups</string>
     <string name="listLineupLayout_deletingSuccess_text">
@@ -176,7 +182,7 @@
     <string name="lineupPlayersActivity_title">Lineup Players</string>
     <string name="lineupPlayersActivity_spinnerLoadPlayers_text">Loading lineup players…</string>
     <string name="lineupPlayersActivity_loadingLineupFailed_text">
-        Error occurred while loading the lineups.
+        Error occurred while loading the lineup players.
     </string>
     <string name="lineupPlayersActivity_spinnerUpdatingLineup_text">
         Updating lineup players…

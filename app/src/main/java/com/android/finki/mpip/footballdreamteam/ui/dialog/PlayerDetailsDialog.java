@@ -55,7 +55,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
      * Create a new instance of the dialog.
      *
      * @param playerId player id
-     * @param editable whatever the user can removeLike the player from
+     * @param editable whatever the user can remove the player from
      * @return new instance of the dialog
      */
     public static PlayerDetailsDialog newInstance(int playerId, boolean editable) {
@@ -124,7 +124,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
      * @param team     name of the player team
      * @param age      player age
      * @param position name of the player position
-     * @param editable whatever the user can removeLike the player
+     * @param editable whatever the user can remove the player
      */
     @Override
     public void bindPlayer(String name, String team, String age,
@@ -142,7 +142,7 @@ public class PlayerDetailsDialog extends DialogFragment implements PlayerDetails
     }
 
     /**
-     * Handle click on hte button to removeLike the player.
+     * Handle click on hte button to remove the player.
      */
     @OnClick(R.id.playerDetailsLayout_btnRemove)
     void removePlayer() {

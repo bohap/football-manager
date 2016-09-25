@@ -48,6 +48,7 @@ public class StoreTeamsTask extends AsyncTask<Team, Void, Boolean> {
                 }
             } catch (RuntimeException exp) {
                 logger.error("error occurred while saving the team");
+                exp.printStackTrace();
                 dbService.close();
                 return false;
             }

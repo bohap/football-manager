@@ -31,6 +31,8 @@ public class LikeViewPresenter extends BasePresenter {
     private LineupApi api;
     private User user;
     private Lineup lineup;
+    private UserLike userLike;
+    private List<UserLike> likes;
     private Call<List<UserLike>> likesCall;
     private Call<ServerResponse> addLikeCall;
     private Call<Void> removeLikeCall;
@@ -38,12 +40,12 @@ public class LikeViewPresenter extends BasePresenter {
     private boolean loadLikesRequestSending = false;
     private boolean addLikeRequestSending = false;
     private boolean removeLikeRequestSending = false;
-    private boolean likeAdded = false;
 
     public LikeViewPresenter(LikeView view, LineupApi api, User user) {
         this.view = view;
         this.api = api;
         this.user = user;
+        userLike = new UserLike(user.getId(), user.getName(), new LineupLike());
     }
 
     /**
@@ -65,6 +67,8 @@ public class LikeViewPresenter extends BasePresenter {
             throw new IllegalArgumentException(message);
         }
         this.lineup = (Lineup) serializable;
+        userLike.getPivot().setUser(user);
+        userLike.getPivot().setLineup(lineup);
         this.loadLikes();
     }
 
@@ -80,27 +84,12 @@ public class LikeViewPresenter extends BasePresenter {
     }
 
     /**
-     * Called when the view is not anymore visible to the user.
+     * Get all loaded likes.
+     *
+     * @return loaded likes
      */
-    public void onViewLayoutDestroyed() {
-        logger.info("onViewLayoutDestroyed");
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Called when the view is destroyed.
-     */
-    public void onViewDestroyed() {
-        logger.info("onViewDestroyed");
-        if (likesCall != null) {
-            likesCall.cancel();
-        }
-        if (addLikeCall != null) {
-            addLikeCall.cancel();
-        }
-        if (removeLikeCall != null) {
-            removeLikeCall.cancel();
-        }
+    public List<UserLike> getLikes() {
+        return likes;
     }
 
     /**
@@ -140,16 +129,14 @@ public class LikeViewPresenter extends BasePresenter {
         logger.info("likes request success");
         likesCall = null;
         loadLikesRequestSending = false;
+        List<UserLike> likes = response.body();
+        this.likes = likes;
         if (viewLayoutCreated) {
-            List<UserLike> likes = response.body();
             view.showLoadingSuccess(likes);
-            final UserLike userLike = new UserLike(user.getId(), user.getName(), null);
             if (likes.contains(userLike)) {
                 view.showRemoveLikeButton();
-                likeAdded = true;
             } else {
                 view.showAddLikeButton();
-                likeAdded = false;
             }
         }
     }
@@ -182,10 +169,10 @@ public class LikeViewPresenter extends BasePresenter {
         if (this.lineup == null) {
             throw new IllegalArgumentException("lineup is not set yet");
         }
-        if (likeAdded) {
-            throw new IllegalArgumentException("like already added");
-        }
         if (!addLikeRequestSending) {
+            if (likes.contains(userLike)) {
+                throw new IllegalArgumentException("like already added");
+            }
             logger.info("sending add like request");
             addLikeRequestSending = true;
             if (viewLayoutCreated) {
@@ -194,7 +181,8 @@ public class LikeViewPresenter extends BasePresenter {
             addLikeCall = api.addLike(lineup.getId());
             addLikeCall.enqueue(new Callback<ServerResponse>() {
                 @Override
-                public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                public void onResponse(Call<ServerResponse> call,
+                                       Response<ServerResponse> response) {
                     addLikeSuccess();
                 }
 
@@ -212,11 +200,11 @@ public class LikeViewPresenter extends BasePresenter {
     private void addLikeSuccess() {
         logger.info("add like request success");
         addLikeRequestSending = false;
-        likeAdded = true;
         addLikeCall = null;
+        userLike.getPivot().setCreatedAt(new Date());
+        this.likes.add(userLike);
         if (viewLayoutCreated) {
-            view.showLikeAddingSuccess(new UserLike(user.getId(), user.getName(),
-                    new LineupLike(user, lineup, new Date())));
+            view.showLikeAddingSuccess(userLike);
         }
     }
 
@@ -248,10 +236,10 @@ public class LikeViewPresenter extends BasePresenter {
         if (this.lineup == null) {
             throw new IllegalArgumentException("lineup is not set yet");
         }
-        if (!this.likeAdded) {
-            throw new IllegalArgumentException("lineup not liked");
-        }
         if (!removeLikeRequestSending) {
+            if (!likes.contains(userLike)) {
+                throw new IllegalArgumentException("lineup not liked");
+            }
             logger.info("sending onRemoveSuccess like request");
             removeLikeRequestSending = true;
             if (viewLayoutCreated) {
@@ -276,12 +264,12 @@ public class LikeViewPresenter extends BasePresenter {
      * Called when removing the like is successful.
      */
     private void removeLikeSuccess() {
-        logger.info("onRemoveSuccess like request success");
+        logger.info("remove like request success");
         removeLikeRequestSending = false;
-        likeAdded = false;
         removeLikeCall = null;
+        this.likes.remove(userLike);
         if (viewLayoutCreated) {
-            view.showLikeRemovingSuccess(new UserLike(user.getId(), user.getName(), null));
+            view.showLikeRemovingSuccess(userLike);
         }
     }
 
@@ -292,10 +280,10 @@ public class LikeViewPresenter extends BasePresenter {
      * @param t    exception that has been thrown
      */
     private void removeLikeFailed(Call<Void> call, Throwable t) {
-        logger.info("onRemoveSuccess like request failed");
+        logger.info("remove like request failed");
         removeLikeRequestSending = false;
         if (call.isCanceled()) {
-            logger.info("onRemoveSuccess like request canceled");
+            logger.info("remove like request canceled");
         } else {
             t.printStackTrace();
             if (viewLayoutCreated) {
@@ -304,5 +292,29 @@ public class LikeViewPresenter extends BasePresenter {
             }
         }
         removeLikeCall = null;
+    }
+
+    /**
+     * Called when the view is not anymore visible to the user.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (likesCall != null) {
+            likesCall.cancel();
+        }
+        if (addLikeCall != null) {
+            addLikeCall.cancel();
+        }
+        if (removeLikeCall != null) {
+            removeLikeCall.cancel();
+        }
     }
 }

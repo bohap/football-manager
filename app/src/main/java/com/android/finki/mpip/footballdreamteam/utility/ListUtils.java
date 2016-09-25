@@ -1,6 +1,7 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,19 @@ public class ListUtils {
                 result.add(element);
             }
         }
+        return result;
+    }
+
+    /**
+     * Put the content from the array into a ArrayList.
+     *
+     * @param items arrays of items
+     * @param <T> element type
+     * @return ArrayList containing the elements in the array
+     */
+    public static <T> List<T> asList(T[] items) {
+        List<T> result = new ArrayList<>();
+        Collections.addAll(result, items);
         return result;
     }
 

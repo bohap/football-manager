@@ -166,7 +166,7 @@ public class TeamRepositoryTest {
     }
 
     /**
-     * Test that the delete method will removeLike the team from the database.
+     * Test that the delete method will remove the team from the database.
      */
     @Test
     public void testDelete() {

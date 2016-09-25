@@ -198,6 +198,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onTeamsSavingSuccess() {
+        logger.info("onTeamsSavingSuccess");
         preferences.edit().putBoolean(TEAMS_LOADED_KEY, true).apply();
         storeTeamsTaskExecuting = false;
         loadPositions();
@@ -208,6 +209,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onTeamsSavingFailed() {
+        logger.info("onTeamsSavingFailed");
         storeTeamsTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showTeamsStoringFailed();
@@ -300,6 +302,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPositionsSavingSuccess() {
+        logger.info("onPositionsSavingSuccess");
         preferences.edit().putBoolean(POSITIONS_LOADED_KEY, true).apply();
         storePositionsTaskExecuting = false;
         loadPlayers();
@@ -310,6 +313,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPositionsSavingFailed() {
+        logger.info("onPositionsSavingFailed");
         storePositionsTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showPositionsStoringFailed();
@@ -402,6 +406,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPlayersSavingSuccess() {
+        logger.info("onPlayersSavingSuccess");
         preferences.edit().putBoolean(PLAYERS_LOADED_KEY, true).apply();
         storePlayersTaskExecuting = false;
         if (viewLayoutCreated) {
@@ -414,6 +419,7 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
      */
     @Override
     public void onPlayersSavingFailed() {
+        logger.info("onPlayersSavingFailed");
         storePlayersTaskExecuting = false;
         if (viewLayoutCreated) {
             view.showPlayersStoringFailed();

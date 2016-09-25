@@ -9,11 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +31,7 @@ public class ListLineupsViewPresenter extends BasePresenter {
     private boolean viewLayoutCreated = false;
     static final int LINEUPS_LIMIT = 20;
     private int lineupCounter = 0;
-    private Set<Lineup> lineups = new LinkedHashSet<>();
+    private List<Lineup> lineups = new ArrayList<>();
     private Queue<DeleteCall> deleteCalls = new ArrayDeque<>();
 
     public ListLineupsViewPresenter(ListLineupsView view, LineupApi api, User user) {
@@ -46,36 +44,18 @@ public class ListLineupsViewPresenter extends BasePresenter {
      * Called when the view is created.
      */
     public void onViewCreated() {
-        this.loadLineups();
+        logger.info("onViewCreated");
+        this.loadLineups(true);
     }
 
     /**
      * Called when the view layout is created.
      */
     public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
         viewLayoutCreated = true;
         if (requestSending) {
             view.showLoading();
-        }
-    }
-
-    /**
-     * Called when the view layout is destroyed.
-     */
-    public void onViewLayoutDestroyed() {
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Called when the view is destroyed.
-     */
-    public void onViewDestroyed() {
-        if (call != null) {
-            call.cancel();
-        }
-        DeleteCall deleteCall = deleteCalls.peek();
-        if (deleteCall != null) {
-            deleteCall.cancel();
         }
     }
 
@@ -85,7 +65,7 @@ public class ListLineupsViewPresenter extends BasePresenter {
      * @return loaded lineups
      */
     public List<Lineup> getLineups() {
-        return Arrays.asList(lineups.toArray(new Lineup[lineups.size()]));
+        return lineups;
     }
 
     /**
@@ -99,60 +79,29 @@ public class ListLineupsViewPresenter extends BasePresenter {
 
     /**
      * Load the lineups data from the server.
+     *
+     * @param callView whatever the view method should be called
      */
-    public void loadLineups() {
+    public void loadLineups(boolean callView) {
         if (!requestSending) {
             logger.info("loading lineups data");
             requestSending = true;
-            if (viewLayoutCreated) {
+            if (viewLayoutCreated && callView) {
                 view.showLoading();
             }
-            this.loadData(LINEUPS_LIMIT, lineupCounter * LINEUPS_LIMIT);
+            call = this.api.index(null, true, LINEUPS_LIMIT, lineupCounter * LINEUPS_LIMIT);
+            call.enqueue(new Callback<List<Lineup>>() {
+                @Override
+                public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
+                    onLineupsLoadingSuccess(response);
+                }
+
+                @Override
+                public void onFailure(Call<List<Lineup>> call, Throwable t) {
+                    onLineupsLoadingFailed(call, t);
+                }
+            });
         }
-    }
-
-    /**
-     * Load more lineup from the server.
-     */
-    public void loadMoreLineups() {
-        if (!requestSending) {
-            logger.info("loading more lineups data");
-            requestSending = true;
-            this.loadData(LINEUPS_LIMIT, lineupCounter * LINEUPS_LIMIT);
-        }
-    }
-
-    /**
-     * Refresh the lineup data from the server.
-     */
-    public void refresh() {
-        if (!requestSending) {
-            requestSending = true;
-            logger.info("refreshing lineups data");
-            if (viewLayoutCreated) {
-                view.showLoading();
-            }
-            final int limit = lineupCounter * LINEUPS_LIMIT;
-            this.loadData(limit, 0);
-        }
-    }
-
-    /**
-     * Send a call to load lineup data from the server.
-     */
-    private void loadData(int limit, int offset) {
-        call = this.api.index(null, true, limit, offset);
-        call.enqueue(new Callback<List<Lineup>>() {
-            @Override
-            public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
-                loadDataSuccess(response);
-            }
-
-            @Override
-            public void onFailure(Call<List<Lineup>> call, Throwable t) {
-                loadDataFailed(call, t);
-            }
-        });
     }
 
     /**
@@ -160,7 +109,7 @@ public class ListLineupsViewPresenter extends BasePresenter {
      *
      * @param response server response
      */
-    private void loadDataSuccess(Response<List<Lineup>> response) {
+    private void onLineupsLoadingSuccess(Response<List<Lineup>> response) {
         logger.info("loading lineups data success");
         requestSending = false;
         this.call = null;
@@ -168,7 +117,7 @@ public class ListLineupsViewPresenter extends BasePresenter {
         List<Lineup> body = response.body();
         lineups.addAll(body);
         if (viewLayoutCreated) {
-            view.showLoadingSuccess(response.body());
+            view.showLoadingSuccess(body);
             if (body.size() < LINEUPS_LIMIT) {
                 view.showNoMoreLineups();
             }
@@ -181,7 +130,7 @@ public class ListLineupsViewPresenter extends BasePresenter {
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    private void loadDataFailed(Call<List<Lineup>> call, Throwable t) {
+    private void onLineupsLoadingFailed(Call<List<Lineup>> call, Throwable t) {
         logger.info("loading lineups request failed");
         requestSending = false;
         if (call.isCanceled()) {
@@ -197,7 +146,70 @@ public class ListLineupsViewPresenter extends BasePresenter {
     }
 
     /**
-     * Execute the next call from the queue.
+     * Refresh the lineup data from the server.
+     */
+    public void refresh() {
+        if (!requestSending) {
+            requestSending = true;
+            logger.info("refreshing lineups data");
+            if (viewLayoutCreated) {
+                view.showRefreshing();
+            }
+            final int limit = (lineupCounter + 1) * LINEUPS_LIMIT;
+            call = api.index(false, true, limit, 0);
+            call.enqueue(new Callback<List<Lineup>>() {
+                @Override
+                public void onResponse(Call<List<Lineup>> call, Response<List<Lineup>> response) {
+                    onRefreshSuccess(response);
+                }
+
+                @Override
+                public void onFailure(Call<List<Lineup>> call, Throwable t) {
+                    onRefreshFailed(call, t);
+                }
+            });
+        }
+    }
+
+    /**
+     * Called when refreshing the lineup data is successful.
+     *
+     * @param response server response
+     */
+    private void onRefreshSuccess(Response<List<Lineup>> response) {
+        logger.info("refresh lineups success");
+        requestSending = false;
+        call = null;
+        List<Lineup> lineups = response.body();
+        this.lineups = lineups;
+        if (viewLayoutCreated) {
+            view.showLoadingSuccess(lineups);
+        }
+    }
+
+    /**
+     * Called when refreshing the lineup data failed.
+     *
+     * @param call retrofit call
+     * @param t    exception that has been thrown
+     */
+    private void onRefreshFailed(Call<List<Lineup>> call, Throwable t) {
+        logger.info("onRefreshFailed");
+        requestSending = false;
+        if (call.isCanceled()) {
+            logger.info("refresh lineups canceled");
+        } else {
+            t.printStackTrace();
+            if (viewLayoutCreated) {
+                view.showRefreshingFailed();
+                super.onRequestFailed(view, t);
+            }
+        }
+        this.call = null;
+    }
+
+    /**
+     * Execute the next call from the queue of delete calls.
      */
     private void executeCall() {
         DeleteCall call = deleteCalls.peek();
@@ -250,6 +262,28 @@ public class ListLineupsViewPresenter extends BasePresenter {
         }
         deleteCalls.poll();
         this.executeCall();
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        logger.info("onViewLayoutDestroyed");
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        logger.info("onViewDestroyed");
+        if (call != null) {
+            call.cancel();
+        }
+        DeleteCall deleteCall = deleteCalls.peek();
+        if (deleteCall != null) {
+            deleteCall.cancel();
+        }
     }
 
     /**

@@ -9,23 +9,26 @@ import com.android.finki.mpip.footballdreamteam.exception.PositionException;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 30.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)
@@ -55,14 +58,13 @@ public class StorePositionsTaskTest {
     public void testStoreFailed() {
         when(positionDBService.exists(anyInt())).thenReturn(false);
         doThrow(new PositionException("")).when(positionDBService).store(any(Position.class));
-
         task.execute(positions);
         Robolectric.flushBackgroundThreadScheduler();
-
-        verify(positionDBService).open();
-        verify(positionDBService).exists(positions[0].getId());
-        verify(positionDBService).store(positions[0]);
-        verify(positionDBService).close();
+        InOrder inOrder = inOrder(positionDBService);
+        inOrder.verify(positionDBService).open();
+        inOrder.verify(positionDBService).exists(positions[0].getId());
+        inOrder.verify(positionDBService).store(positions[0]);
+        inOrder.verify(positionDBService).close();
         verify(listener).onPositionsSavingFailed();
     }
 
@@ -73,16 +75,15 @@ public class StorePositionsTaskTest {
     public void testStoreSuccessful() {
         when(positionDBService.exists(positions[0].getId())).thenReturn(true);
         when(positionDBService.exists(positions[1].getId())).thenReturn(false);
-
         task.execute(positions);
         Robolectric.flushBackgroundThreadScheduler();
-
-        verify(positionDBService).open();
-        verify(positionDBService).exists(positions[0].getId());
-        verify(positionDBService, never()).store(positions[0]);
-        verify(positionDBService).exists(positions[1].getId());
-        verify(positionDBService).store(positions[1]);
-        verify(positionDBService).close();
+        InOrder inOrder = inOrder(positionDBService);
+        inOrder.verify(positionDBService).open();
+        inOrder.verify(positionDBService).exists(positions[0].getId());
+        inOrder.verify(positionDBService, never()).store(positions[0]);
+        inOrder.verify(positionDBService).exists(positions[1].getId());
+        inOrder.verify(positionDBService).store(positions[1]);
+        inOrder.verify(positionDBService).close();
         verify(listener).onPositionsSavingSuccess();
     }
 }

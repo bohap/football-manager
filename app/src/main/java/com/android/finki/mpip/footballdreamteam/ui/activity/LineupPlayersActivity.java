@@ -431,7 +431,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
      * Show the PlayerDetailsDialog.
      *
      * @param id       player
-     * @param editable whatever the user can removeLike the player
+     * @param editable whatever the user can remove the player
      */
     @Override
     public void showPlayerDetailsDialog(int id, boolean editable) {

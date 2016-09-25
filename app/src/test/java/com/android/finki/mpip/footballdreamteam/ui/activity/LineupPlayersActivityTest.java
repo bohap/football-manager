@@ -362,7 +362,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testShowListPositionPlayersFragment() {
-//        /* A LineupFormationFragment need to be addLike in order to be replaced
+//        /* A LineupFormationFragment need to be add in order to be replaced
 //         * with ListPositionPlayersFragment */
 //        activity.showLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
@@ -423,7 +423,7 @@ public class LineupPlayersActivityTest {
 //    }
 //
 //    /**
-//     * Test the behavior when removeLike player is called and PlayerDetailsFragment is not yet shown.
+//     * Test the behavior when remove player is called and PlayerDetailsFragment is not yet shown.
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testRemovePlayerWhenPlayerDetailsDialogIsNotShown() {

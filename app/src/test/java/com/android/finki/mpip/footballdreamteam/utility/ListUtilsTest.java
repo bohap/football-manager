@@ -37,14 +37,27 @@ public class ListUtilsTest {
     }
 
     /**
-     * Test that asList method will correctly convert Map values into a List
+     * Test that asList method called with Map will correctly convert Map values into a List
      */
     @Test
-    public void testAsList() {
+    public void testAsListWithMap() {
         List<String> list = ListUtils.asList(map);
         assertEquals(values.size(), list.size());
         for (int i = 0; i < values.size(); i++) {
             assertEquals(values.get(i), list.get(i));
+        }
+    }
+
+    /**
+     * Test that asList method called with Array will put the content of the array into a List.
+     */
+    @Test
+    public void testAsListWithArray() {
+        String[] items = {"Item 1", "Item 2", "Item 3", "Item 3"};
+        List<String> result = ListUtils.asList(items);
+        assertEquals(result.size(), items.length);
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals(result.get(i), items[i]);
         }
     }
 

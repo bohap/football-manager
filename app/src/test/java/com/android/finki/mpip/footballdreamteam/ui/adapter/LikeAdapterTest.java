@@ -18,6 +18,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -140,29 +141,45 @@ public class LikeAdapterTest {
     }
 
     /**
-     * Test that addLike method add a new item in the adapter.
+     * Test that add method add a new item in the adapter.
      */
     @Test
-    public void testAddLike() {
+    public void testAdd() {
         int id = NUMBER_OF_ITEMS + 1;
         UserLike userLike = new UserLike(id, "User 101", new LineupLike(id, id + 2, date));
-        adapter.addLike(userLike);
+        adapter.add(userLike);
         assertEquals(NUMBER_OF_ITEMS + 1, adapter.getCount());
         assertSame(userLike, adapter.getItem(0));
         assertTrue(shadowOf(adapter).wasNotifyDataSetChangedCalled());
     }
 
     /**
-     * Test that removeLike method onRemoveSuccess a item from the adapter.
+     * Test that remove method remove a item from the adapter.
      */
     @Test
-    public void testRemoveLike() {
+    public void testRemove() {
         List<UserLike> likes = new ArrayList<>(this.likes);
         final int position = 1;
         UserLike userLike = likes.get(position);
-        adapter.removeLike(userLike);
+        adapter.remove(userLike);
         assertEquals(NUMBER_OF_ITEMS - 1, adapter.getCount());
         assertSame(likes.get(position + 1), adapter.getItem(position));
         assertTrue(shadowOf(adapter).wasNotifyDataSetChangedCalled());
+    }
+
+    /**
+     * Test update method will sync the list of likes with the given list.
+     */
+    @Test
+    public void testUpdate() {
+        int id = this.likes.get(NUMBER_OF_ITEMS - 1).getId();
+        final UserLike like1 = new UserLike(id + 1, "User", new LineupLike(id + 1, id + 1, date));
+        id++;
+        final UserLike like2 = new UserLike(id + 1, "User", new LineupLike(id + 1, id + 1, date));
+        List<UserLike> likes = Arrays.asList(like1, this.likes.get(3), like2);
+        adapter.update(likes);
+        assertEquals(NUMBER_OF_ITEMS + 2, adapter.getCount());
+        assertSame(likes.get(0), adapter.getItem(NUMBER_OF_ITEMS));
+        assertSame(likes.get(2), adapter.getItem(NUMBER_OF_ITEMS + 1));
     }
 }

@@ -22,7 +22,7 @@
             android:textColor="@android:color/white"
             android:text="@string/listLineupsLayout_headerText"/>
         <ListView
-            android:id="@+id/listLineupsLayout_listVIew"
+            android:id="@+id/listLineupsLayout_listView"
             android:layout_width="match_parent"
             android:layout_below="@+id/listLineupsLayout_headerText"
             android:layout_height="match_parent" />
