@@ -53,8 +53,8 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      *
      * @param place            position place on the field for which the player will be listed
      * @param playersToExclude players ids that should be excluded from the list
-     * @param startX           view start position on x axis (user for animation)
-     * @param startY           view start position on y axis (user for animation)
+     * @param startX           view start position on x axis (used for animation)
+     * @param startY           view start position on y axis (used for animation)
      * @return new instance of the fragment
      */
     public static ListPositionPlayersFragment newInstance(PositionUtils.POSITION_PLACE place,
@@ -74,6 +74,18 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         args.putFloat(START_Y_KEY, startY);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    /**
+     * Create a new instance of the fragment.
+     *
+     * @param place            position place on the field for which the player will be listed
+     * @param playersToExclude players ids that should be excluded from the list
+     * @return new instance of the fragment
+     */
+    public static ListPositionPlayersFragment newInstance(PositionUtils.POSITION_PLACE place,
+                                                          int[] playersToExclude) {
+        return newInstance(place, playersToExclude, 0, 0);
     }
 
     /**
@@ -131,6 +143,8 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
         logger.info("onCreateView");
         View view = inflater.inflate(R.layout.position_players_layout, container, false);
         ButterKnife.bind(this, view);
+        adapter = new ListPositionPlayersAdapter(this.getActivity(), presenter.getPlayers(), utils);
+        listView.setAdapter(adapter);
         presenter.onViewLayoutCreated();
         ScaleAnimation animation = new ScaleAnimation(0, 1, 0, 1, startX, startY);
         animation.setDuration(200);
@@ -154,23 +168,13 @@ public class ListPositionPlayersFragment extends BaseFragment implements ListPos
      * Create the adapter for the ListVIew.
      *
      * @param players position players
-     */
-    @Override
-    public void setAdapter(List<Player> players) {
-        logger.info("setAdapter");
-        adapter = new ListPositionPlayersAdapter(this.getActivity(), players, utils);
-        listView.setAdapter(adapter);
-    }
-
-    /**
-     * Set the text of the text view position place.
-     *
      * @param place position place
      */
     @Override
-    public void setPositionPlace(String place) {
-        logger.info("setPositionsPlace");
+    public void onPlayersLoaded(List<Player> players, String place) {
+        logger.info("onPlayersLoaded");
         txtPositionPlace.setText(place);
+        adapter.update(players);
     }
 
     /**

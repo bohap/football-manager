@@ -30,10 +30,10 @@ public class CommentsViewPresenter extends BasePresenter {
     private LineupApi api;
     private User user;
     private int lineupId = -1;
+    private List<Comment> comments;
     private Call<List<Comment>> loadCommentsCall;
     private Queue<CommentCall> calls = new ArrayDeque<>();
     private boolean loadCommentsRequestSending = false;
-    private boolean addCommentRequestSending = false;
     private boolean viewLayoutCreated = false;
 
     public CommentsViewPresenter(CommentsView view, LineupApi api, User user) {
@@ -48,9 +48,10 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param args view arguments
      */
     public void onViewCreated(Bundle args) {
+        logger.info("onViewCreated");
         lineupId = args.getInt(CommentsView.LINEUP_ID_KEY, -1);
-        if (lineupId == -1) {
-            throw new IllegalArgumentException("lineup id is not set");
+        if (lineupId < 1) {
+            throw new IllegalArgumentException("invalid lineup id");
         }
         this.loadComments();
     }
@@ -59,6 +60,7 @@ public class CommentsViewPresenter extends BasePresenter {
      * Called when the view layout is created.
      */
     public void onViewLayoutCreated() {
+        logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
         if (loadCommentsRequestSending) {
             view.showCommentsLoading();
@@ -66,23 +68,21 @@ public class CommentsViewPresenter extends BasePresenter {
     }
 
     /**
-     * Called when the view layout is destroyed.
+     * Get all loaded comments.
+     *
+     * @return all comments that are loaded
      */
-    public void onViewLayoutDestroyed() {
-        this.viewLayoutCreated = false;
+    public List<Comment> getComments() {
+        return comments;
     }
 
     /**
-     * Called when the view is destroyed.
+     * Get the authenticated user.
+     *
+     * @return authenticated user
      */
-    public void onViewDestroyed() {
-        if (loadCommentsCall != null) {
-            loadCommentsCall.cancel();
-        }
-        CommentCall call = calls.peek();
-        if (call != null) {
-            call.cancel();
-        }
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -123,8 +123,10 @@ public class CommentsViewPresenter extends BasePresenter {
         logger.info("comments loaded successfully");
         loadCommentsRequestSending = false;
         loadCommentsCall = null;
+        List<Comment> comments = response.body();
+        this.comments = comments;
         if (viewLayoutCreated) {
-            view.showCommentsLoadingSuccess(response.body());
+            view.showCommentsLoadingSuccess(comments);
         }
     }
 
@@ -150,15 +152,6 @@ public class CommentsViewPresenter extends BasePresenter {
     }
 
     /**
-     * Get the authenticated user.
-     *
-     * @return authenticated user
-     */
-    public User getUser() {
-        return user;
-    }
-
-    /**
      * Execute a call from the queue of call.
      */
     private void executeCall() {
@@ -180,11 +173,8 @@ public class CommentsViewPresenter extends BasePresenter {
         if (body == null) {
             throw new IllegalArgumentException("body is required");
         }
-        if (!addCommentRequestSending) {
-            addCommentRequestSending = true;
-            calls.add(new AddCommentCall(body));
-            this.executeCall();
-        }
+        calls.add(new AddCommentCall(body));
+        this.executeCall();
     }
 
     /**
@@ -194,7 +184,6 @@ public class CommentsViewPresenter extends BasePresenter {
      */
     private void onCommentAddingSuccess(Response<CommentResponse> response) {
         logger.info("adding comment success");
-        addCommentRequestSending = false;
         Comment comment = response.body().getComment();
         comment.setLineupId(lineupId);
         comment.setUser(user);
@@ -213,7 +202,6 @@ public class CommentsViewPresenter extends BasePresenter {
      */
     private void onCommentAddingFailed(Call<CommentResponse> call, Throwable t) {
         logger.info("adding comment failed");
-        addCommentRequestSending = false;
         if (call.isCanceled()) {
             logger.info("add comment request canceled");
         } else {
@@ -234,6 +222,16 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param newBody new comment body
      */
     public void updateComment(Comment comment, String newBody) {
+        if (lineupId < 1) {
+            throw new IllegalArgumentException("lineup id not set");
+        }
+        if (comment == null) {
+            throw new IllegalArgumentException("comment can't be null");
+        }
+        if (newBody == null) {
+            throw new IllegalArgumentException("new body can't be null");
+        }
+        logger.info(String.format("update comment, id-%d", comment.getId()));
         calls.add(new UpdateCommentCall(comment, newBody));
         this.executeCall();
     }
@@ -245,7 +243,8 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param response server response
      */
     public void onCommentUpdatingSuccess(Comment comment, Response<CommentResponse> response) {
-        logger.info(String.format("onUpdateSuccess comment success, comment id %d", comment.getId()));
+        logger.info(String
+                .format("updating comment success, comment id %d", comment.getId()));
         if (viewLayoutCreated) {
             view.showCommentUpdatingSuccess(comment, response.body().getComment());
         }
@@ -260,10 +259,13 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param call    retrofit call
      * @param t       exception that has been thrown
      */
-    public void onCommentUpdatingFailed(Comment comment, Call<CommentResponse> call, Throwable t) {
-        logger.info(String.format("onUpdateSuccess comment failed, comment id %d", comment.getId()));
+    public void onCommentUpdatingFailed(Comment comment, Call<CommentResponse> call,
+                                        Throwable t) {
+        logger.info(String
+                .format("updating comment failed, comment id %d", comment.getId()));
         if (call.isCanceled()) {
-            logger.info(String.format("onUpdateSuccess comment canceled, comment id %d", comment.getId()));
+            logger.info(String
+                    .format("updating comment canceled, comment id %d", comment.getId()));
         } else {
             if (viewLayoutCreated) {
                 view.showCommentUpdatingFailed(comment);
@@ -280,6 +282,12 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param comment comment to be deleted
      */
     public void deleteComment(Comment comment) {
+        if (lineupId == -1) {
+            throw new IllegalArgumentException("lineup id not set");
+        }
+        if (comment == null) {
+            throw new IllegalArgumentException("comment can't be null");
+        }
         calls.add(new DeleteCommentCall(comment));
         this.executeCall();
     }
@@ -318,6 +326,26 @@ public class CommentsViewPresenter extends BasePresenter {
         }
         calls.poll();
         this.executeCall();
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        this.viewLayoutCreated = false;
+    }
+
+    /**
+     * Called when the view is destroyed.
+     */
+    public void onViewDestroyed() {
+        if (loadCommentsCall != null) {
+            loadCommentsCall.cancel();
+        }
+        CommentCall call = calls.peek();
+        if (call != null) {
+            call.cancel();
+        }
     }
 
     /**
@@ -417,7 +445,8 @@ public class CommentsViewPresenter extends BasePresenter {
          * Send a request for updating the comment.
          */
         public void execute() {
-            logger.info(String.format("onUpdateSuccess comment request, comment id %d", comment.getId()));
+            logger.info(String.format("update comment request, comment id %d",
+                    comment.getId()));
             call = api.updateComment(lineupId, comment.getId(), new CommentRequest(newBody));
             call.enqueue(this);
         }
@@ -495,6 +524,7 @@ public class CommentsViewPresenter extends BasePresenter {
          */
         @Override
         public void onResponse(Call<Void> call, Response<Void> response) {
+            logger.info(String.format("delete comment success, comment id %d", comment.getId()));
             this.call = null;
             onCommentDeletingSuccess(comment);
         }
@@ -507,6 +537,7 @@ public class CommentsViewPresenter extends BasePresenter {
          */
         @Override
         public void onFailure(Call<Void> call, Throwable t) {
+            logger.info(String.format("delete comment failed, comment id %d", comment.getId()));
             onCommentDeletingFailed(comment, call, t);
             this.call = null;
         }

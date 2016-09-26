@@ -386,6 +386,14 @@ public class ListLineupsViewPresenterTest {
     }
 
     /**
+     * Test the behavior when delete is called with null param.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteWithNullParam() {
+        presenter.deleteLineup(null);
+    }
+
+    /**
      * Test the deleting the lineup failed and the view layout is created before the request
      * is send.
      */
@@ -423,7 +431,7 @@ public class ListLineupsViewPresenterTest {
      */
     @SuppressWarnings("ConstantConditions")
     @Test
-    public void testDeleteLineupSuccessAndVIewLayoutCreated() {
+    public void testDeleteLineupSuccessAndViewLayoutCreated() {
         final Lineup lineup = lineups.get(0);
         presenter.onViewLayoutCreated();
         presenter.deleteLineup(lineup);
@@ -552,7 +560,7 @@ public class ListLineupsViewPresenterTest {
      * is sending.
      */
     @Test
-    public void testOnViewDestroyedWhenLineupsCallIsSending() {
+    public void testOnViewDestroyedWhenLoadLineupsCallIsSending() {
         presenter.loadLineups(false);
         verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
         presenter.onViewDestroyed();
@@ -560,12 +568,70 @@ public class ListLineupsViewPresenterTest {
     }
 
     /**
-     * Test the behavior when onViewDestroyed is called and a request for the lineups
-     * is not sending.
+     * Test the behavior when onVIewDestroyed is called after a request to load
+     * lineups that succeeded.
      */
     @Test
-    public void testOnViewDestroyedWhenLineupsCallIsNotSending() {
-        presenter.onViewLayoutDestroyed();
+    public void testOnViewDestroyedAfterLoadLineupsRequestSucceeded() {
+        presenter.loadLineups(false);
+        verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
+        verify(call).enqueue(callbackCaptor.capture());
+        callbackCaptor.getValue().onResponse(call, Response.success(lineups));
+        presenter.onViewDestroyed();
+        verify(call, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onVIewDestroyed is called after a request to load
+     * lineups that succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterLoadLineupsRequestFailed() {
+        presenter.loadLineups(false);
+        verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
+        verify(call).enqueue(callbackCaptor.capture());
+        callbackCaptor.getValue().onFailure(call, new Throwable());
+        presenter.onViewDestroyed();
+        verify(call, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and a request for the lineups
+     * is sending.
+     */
+    @Test
+    public void testOnViewDestroyedWhenRefreshLineupsCallIsSending() {
+        presenter.refresh();
+        verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
+        presenter.onViewDestroyed();
+        verify(call).cancel();
+    }
+
+    /**
+     * Test the behavior when onVIewDestroyed is called after a request to refresh
+     * lineups that succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterRefreshLineupsRequestSucceeded() {
+        presenter.refresh();
+        verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
+        verify(call).enqueue(callbackCaptor.capture());
+        callbackCaptor.getValue().onResponse(call, Response.success(lineups));
+        presenter.onViewDestroyed();
+        verify(call, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onVIewDestroyed is called after a request to refresh
+     * lineups that succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterRefreshLineupsRequestFailed() {
+        presenter.refresh();
+        verify(api).index(anyBoolean(), anyBoolean(), anyInt(), anyInt());
+        verify(call).enqueue(callbackCaptor.capture());
+        callbackCaptor.getValue().onFailure(call, new Throwable());
+        presenter.onViewDestroyed();
         verify(call, never()).cancel();
     }
 
@@ -576,6 +642,20 @@ public class ListLineupsViewPresenterTest {
     public void testOnViewDestroyedWhenDeleteCallIsSending() {
         presenter.deleteLineup(lineups.get(0));
         verify(api).delete(lineups.get(0).getId());
+        presenter.onViewDestroyed();
+        verify(deleteCall).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and there are multiple delete calls in the
+     * queue waiting to be executed.
+     */
+    @Test
+    public void testOnViewDestroyedWhenThereAreMultipleDeleteCallInTheQueue() {
+        presenter.deleteLineup(lineups.get(0));
+        presenter.deleteLineup(lineups.get(1));
+        presenter.deleteLineup(lineups.get(2));
+        verify(api).delete(anyInt());
         presenter.onViewDestroyed();
         verify(deleteCall).cancel();
     }

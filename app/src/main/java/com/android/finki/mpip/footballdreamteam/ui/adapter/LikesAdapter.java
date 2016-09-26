@@ -117,9 +117,9 @@ public class LikesAdapter extends BaseAdapter {
     }
 
     /**
-     * Sync the given list of likes with the current list.
+     * Merge the given list with the current.
      *
-     * @param likes List of likes that will be synced with the current
+     * @param likes List of likes that will be merged
      */
     public void update(List<UserLike> likes) {
         this.likes = ListUtils.concat(this.likes, likes);

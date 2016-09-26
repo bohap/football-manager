@@ -224,6 +224,12 @@ public class ListLineupsViewPresenter extends BasePresenter {
      * @param lineup lineup to be deleted
      */
     public void deleteLineup(Lineup lineup) {
+        if (lineup == null) {
+            throw new IllegalArgumentException("lineup can't be null");
+        }
+        if (lineup.getId() < 1) {
+            throw new IllegalArgumentException("lineup id not valid");
+        }
         deleteCalls.add(new DeleteCall(lineup));
         this.executeCall();
     }

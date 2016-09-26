@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
+import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
@@ -72,6 +73,15 @@ public class ListPositionPlayersAdapter extends BaseAdapter {
     @Override
     public long getItemId(int id) {
         return id;
+    }
+
+    /**
+     * Merge the given list with the current.
+     *
+     * @param players List of players that will be merged
+     */
+    public void update(List<Player> players) {
+        this.players = ListUtils.concat(this.players, players);
     }
 
     /**

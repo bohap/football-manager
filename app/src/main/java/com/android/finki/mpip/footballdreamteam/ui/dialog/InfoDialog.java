@@ -18,9 +18,9 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
 
     private static final Logger logger = LoggerFactory.getLogger(InfoDialog.class);
     public static final String TAG = "INFO_DIALOG";
-    private static String titleKey = "title";
+    public static String TITLE_KEY = "title";
+    public static String MESSAGE_KEY = "message";
     private String title;
-    private static String messageKey = "message";
     private String message;
 
     /**
@@ -32,8 +32,8 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
     public static InfoDialog newInstance(String title, String message) {
         InfoDialog infoDialog = new InfoDialog();
         Bundle args = new Bundle();
-        args.putString(titleKey, title);
-        args.putString(messageKey, message);;
+        args.putString(TITLE_KEY, title);
+        args.putString(MESSAGE_KEY, message);;
         infoDialog.setArguments(args);
         return infoDialog;
     }
@@ -48,8 +48,8 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
         logger.info("onCreate");
         super.onCreate(savedInstanceState);
         this.setStyle(DialogFragment.STYLE_NORMAL, 0);
-        this.title = this.getArguments().getString(titleKey);
-        this.message = this.getArguments().getString(messageKey);
+        this.title = this.getArguments().getString(TITLE_KEY);
+        this.message = this.getArguments().getString(MESSAGE_KEY);
     }
 
     /**

@@ -105,9 +105,9 @@ public class ListLineupsAdapter extends BaseAdapter {
     }
 
     /**
-     * Update the lineups list.
+     * Merge the given list with the current.
      *
-     * @param lineups List of new lineups
+     * @param lineups List of lineups that will be merged
      */
     public void update(List<Lineup> lineups) {
         logger.info("update");

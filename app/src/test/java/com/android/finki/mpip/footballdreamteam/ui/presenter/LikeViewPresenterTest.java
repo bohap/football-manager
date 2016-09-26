@@ -97,7 +97,7 @@ public class LikeViewPresenterTest {
     }
 
     /**
-     * Init the mocked fragment argument to return specific value.
+     * Init the mocked view arguments to return specific value.
      */
     private void initArgs() {
         when(args.getSerializable(LikeFragment.LINEUP_KEY)).thenReturn(lineup);
@@ -598,7 +598,7 @@ public class LikeViewPresenterTest {
     }
 
     /**
-     * Test the behavior when the view layout is destroyed and the load likes request is sending.
+     * Test the behavior when the view is destroyed and the load likes request is sending.
      */
     @Test
     public void testOnViewDestroyedWhenLoadLikesRequestIsSending() {
@@ -607,12 +607,40 @@ public class LikeViewPresenterTest {
         verify(api).likes(anyInt(), anyBoolean(), anyInt(), anyInt());
         presenter.onViewDestroyed();
         verify(callListUserLikes).cancel();
-        verify(callAddLike, never()).cancel();
-        verify(callDeleteLike, never()).cancel();
     }
 
     /**
-     * Test the behavior when the view layout is destroyed and the add like request is sending.
+     * Test the behavior when onViewDestroyed is called after a request to load likes that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterLoadLikesRequestSucceeded() {
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(api).likes(anyInt(), anyBoolean(), anyInt(), anyInt());
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
+        presenter.onViewDestroyed();
+        verify(callListUserLikes, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after a request to load likes that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterLoadLikesRequestFailed() {
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(api).likes(anyInt(), anyBoolean(), anyInt(), anyInt());
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onFailure(callListUserLikes, new Throwable());
+        presenter.onViewDestroyed();
+        verify(callListUserLikes, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called and the add like request is sending.
      */
     @Test
     public void testOnViewDestroyedWhenAddLikeRequestIsSending() {
@@ -623,9 +651,44 @@ public class LikeViewPresenterTest {
         presenter.addLike();
         verify(api).addLike(anyInt());
         presenter.onViewDestroyed();
-        verify(callListUserLikes, never()).cancel();
         verify(callAddLike).cancel();
-        verify(callDeleteLike, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after a request to add like that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterAddLikeRequestSucceeded() {
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
+        presenter.addLike();
+        verify(api).addLike(anyInt());
+        verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
+        callbackAddLikeCaptor.getValue()
+                .onResponse(callAddLike, Response.success(new ServerResponse()));
+        presenter.onViewDestroyed();
+        verify(callAddLike, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after a request to add like that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterAddLikeRequestFailed() {
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
+        presenter.addLike();
+        verify(api).addLike(anyInt());
+        verify(callAddLike).enqueue(callbackAddLikeCaptor.capture());
+        callbackAddLikeCaptor.getValue().onFailure(callAddLike, new Throwable());
+        presenter.onViewDestroyed();
+        verify(callAddLike, never()).cancel();
     }
 
     /**
@@ -641,8 +704,46 @@ public class LikeViewPresenterTest {
         presenter.removeLike();
         verify(api).deleteLike(anyInt());
         presenter.onViewDestroyed();
-        verify(callListUserLikes, never()).cancel();
-        verify(callAddLike, never()).cancel();
         verify(callDeleteLike).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after a request to remove like that
+     * succeeded.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void testOnViewDestroyedAfterRemoveLikeRequestSucceeded() {
+        likes.add(userLike);
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
+        presenter.removeLike();
+        verify(api).deleteLike(anyInt());
+        verify(callDeleteLike).enqueue(callbackDeleteLikeCaptor.capture());
+        Void response = null;
+        callbackDeleteLikeCaptor.getValue().onResponse(callDeleteLike, Response.success(response));
+        presenter.onViewDestroyed();
+        verify(callDeleteLike, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after a request to remove like that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterRemoveLikeRequestFailed() {
+        likes.add(userLike);
+        this.initArgs();
+        presenter.onViewCreated(args);
+        verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
+        callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
+        presenter.removeLike();
+        verify(api).deleteLike(anyInt());
+        verify(callDeleteLike).enqueue(callbackDeleteLikeCaptor.capture());
+        callbackDeleteLikeCaptor.getValue().onFailure(callDeleteLike, new Throwable());
+        presenter.onViewDestroyed();
+        verify(callDeleteLike, never()).cancel();
     }
 }

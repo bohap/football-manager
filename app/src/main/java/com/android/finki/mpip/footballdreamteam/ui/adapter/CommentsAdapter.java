@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
 import com.android.finki.mpip.footballdreamteam.model.User;
+import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,40 @@ public class CommentsAdapter extends BaseAdapter {
     }
 
     /**
+     * Checks if a update/delete request is sending for the given comment.
+     *
+     * @return comment that will be checked
+     */
+    public boolean isSending(Comment comment) {
+        if (comment == null) {
+            throw new IllegalArgumentException("comment can't be null");
+        }
+        Item item = this.items.get(comment.getId());
+        if (item == null) {
+            throw new IllegalArgumentException(String
+                    .format("comment with id %d not in the adapter", comment.getId()));
+        }
+        return item.isSending();
+    }
+
+    /**
+     * Checks if the given comment is editing.
+     *
+     * @return comment that will be checked
+     */
+    public boolean isEditing(Comment comment) {
+        if (comment == null) {
+            throw new IllegalArgumentException("comment can't be null");
+        }
+        Item item = this.items.get(comment.getId());
+        if (item == null) {
+            throw new IllegalArgumentException(String
+                    .format("comment with id %d not in the adapter", comment.getId()));
+        }
+        return item.isEditing();
+    }
+
+    /**
      * Add a new comment in the adapter.
      *
      * @param comment new comment
@@ -121,6 +156,21 @@ public class CommentsAdapter extends BaseAdapter {
         comments.add(0, comment);
         items.put(comment.getId(), new Item());
         super.notifyDataSetChanged();
+    }
+
+    /**
+     * Merge the given list with the current.
+     *
+     * @param comments List of comments that will be merged
+     */
+    public void update(List<Comment> comments) {
+        logger.info("update");
+        this.comments = ListUtils.concat(this.comments, comments);
+        for (Comment comment : comments) {
+            if (this.items.get(comment.getId()) == null) {
+                this.items.put(comment.getId(), new Item());
+            }
+        }
     }
 
     /**

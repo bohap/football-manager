@@ -193,7 +193,7 @@ public class ListLineupsFragment extends BaseFragment implements ListLineupsView
      * Handle click on the button to load lineups again.
      */
     @OnClick(R.id.error_btnTryAgain)
-    void reload() {
+    void onBtnTryAgainClick() {
         logger.info("btn 'Try Again' clicked");
         presenter.loadLineups(true);
     }

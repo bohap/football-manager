@@ -6,16 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 import com.android.finki.mpip.footballdreamteam.MockApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
+import com.android.finki.mpip.footballdreamteam.ui.component.PlayerDetailsView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -25,34 +24,38 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowToast;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
-import static com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialogTest.TestActivity.REMOVE_PLAYER_TOAST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Borce on 20.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)
 public class PlayerDetailsDialogTest {
+
+    @Mock
+    private PlayerDetailsViewComponent component;
+
+    @Mock
+    private PlayerDetailsViewPresenter presenter;
+
+    @Mock
+    private static PlayerDetailsDialog.Listener listener;
 
     private final int playerId = 1;
     private final String name = "Player";
     private final String team = "Team";
     private final String age = "30";
     private final String position = "Position";
-    @Mock
-    private PlayerDetailsViewComponent component;
-    @Mock
-    private PlayerDetailsViewPresenter presenter;
     private PlayerDetailsDialog dialog;
 
     @Before
@@ -60,7 +63,8 @@ public class PlayerDetailsDialogTest {
         MockitoAnnotations.initMocks(this);
         this.mockDependencies();
         MockApplication application = (MockApplication) RuntimeEnvironment.application;
-        application.setPlayerDetailsDialogComponent(component);
+        application.setPlayerDetailsViewComponent(component);
+        application.createAuthComponent();
     }
 
     /**
@@ -94,9 +98,11 @@ public class PlayerDetailsDialogTest {
         SupportFragmentTestUtil.startFragment(dialog);
         Bundle args = dialog.getArguments();
         assertNotNull(args);
-//        assertEquals(playerId, args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey()));
-//        assertEquals(true, args.getBoolean(PlayerDetailsDialog.getBundleEditableKey()));
+        assertEquals(playerId, args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY));
+        assertEquals(true, args.getBoolean(PlayerDetailsView.BUNDLE_EDITABLE_KEY));
         assertNotNull(dialog.getView());
+        verify(presenter).onViewCreated(args);
+        verify(presenter).onViewLayoutCreated();
     }
 
     /**
@@ -106,40 +112,42 @@ public class PlayerDetailsDialogTest {
     public void testBindPlayerWIthEditableTrue() {
         dialog = PlayerDetailsDialog.newInstance(playerId, true);
         SupportFragmentTestUtil.startFragment(dialog);
-        dialog.bindPlayer(name, team, age, position, true);
         View view = dialog.getView();
         assertNotNull(view);
         TextView txtName = (TextView) view.findViewById(R.id.playerDetailsLayout_name);
         assertNotNull(txtName);
-        assertEquals(name, txtName.getText());
         TextView txtTeam = (TextView) view.findViewById(R.id.playerDetailsLayout_team);
         assertNotNull(txtTeam);
-        assertEquals(team, txtTeam.getText());
         TextView txtAge = (TextView) view.findViewById(R.id.playerDetailsLayout_age);
         assertNotNull(txtAge);
-        assertEquals(age, txtAge.getText());
         TextView txtPosition = (TextView) view.findViewById(R.id.playerDetailsLayout_position);
         assertNotNull(txtPosition);
+        Button btn = (Button) view.findViewById(R.id.playerDetailsLayout_btnRemove);
+        assertNotNull(btn);
+        btn.setVisibility(View.GONE);
+        dialog.bindPlayer(name, team, age, position, true);
+        assertEquals(name, txtName.getText());
+        assertEquals(team, txtTeam.getText());
+        assertEquals(age, txtAge.getText());
         assertEquals(position, txtPosition.getText());
-        Button button = (Button) view.findViewById(R.id.playerDetailsLayout_btnRemove);
-        assertNotNull(button);
-        assertEquals(View.VISIBLE, button.getVisibility());
+        assertEquals(View.VISIBLE, btn.getVisibility());
     }
 
     /**
-     * Test that when bindPlayer is called with editable false, the
-     * remove button will not be showed.
+     * Test that when bindPlayer is called with editable false, the remove button will not
+     * be showed.
      */
     @Test
     public void testBindPlayerWithEditableFalse() {
         dialog = PlayerDetailsDialog.newInstance(playerId, false);
         SupportFragmentTestUtil.startFragment(dialog);
-        dialog.bindPlayer(name, team, age, position, false);
         View view = dialog.getView();
         assertNotNull(view);
-        Button button = (Button) view.findViewById(R.id.playerDetailsLayout_btnRemove);
-        assertNotNull(button);
-        assertEquals(View.GONE, button.getVisibility());
+        Button btn = (Button) view.findViewById(R.id.playerDetailsLayout_btnRemove);
+        assertNotNull(btn);
+        btn.setVisibility(View.VISIBLE);
+        dialog.bindPlayer(name, team, age, position, false);
+        assertEquals(View.GONE, btn.getVisibility());
     }
 
     /**
@@ -148,23 +156,24 @@ public class PlayerDetailsDialogTest {
     @Test
     public void testBtnRemoveClick() {
         dialog = PlayerDetailsDialog.newInstance(playerId, true);
-        SupportFragmentTestUtil.startFragment(dialog, TestActivity.class);
+        SupportFragmentTestUtil.startFragment(dialog, MockActivity.class);
         dialog.bindPlayer(name, team, age, position, true);
         assertNotNull(dialog.getView());
         Button btn = (Button) dialog.getView().findViewById(R.id.playerDetailsLayout_btnRemove);
-        btn.performClick();
-        assertEquals(REMOVE_PLAYER_TOAST, ShadowToast.getTextOfLatestToast());
+        assertTrue(btn.performClick());
         assertFalse(dialog.isVisible());
+        verify(listener).removePlayer();
     }
 
-    public static class TestActivity extends AppCompatActivity
-            implements PlayerDetailsDialog.Listener {
-
-        static final String REMOVE_PLAYER_TOAST = "Remove Player";
+    /**
+     * Mock activity class for the dialog.
+     */
+    public static class MockActivity extends AppCompatActivity implements
+            PlayerDetailsDialog.Listener {
 
         @Override
         public void removePlayer() {
-            Toast.makeText(this, REMOVE_PLAYER_TOAST, Toast.LENGTH_SHORT).show();
+            listener.removePlayer();
         }
     }
 }

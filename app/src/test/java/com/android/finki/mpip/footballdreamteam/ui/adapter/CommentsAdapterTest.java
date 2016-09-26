@@ -26,12 +26,14 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBaseAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +70,8 @@ public class CommentsAdapterTest {
     private Comment comment4 = new Comment(6, user2, lineup, "Comment 6", date, date);
     private Comment unExistingComment =
             new Comment(7, user1, lineup, "Un Existing Comment", date, date);
-    private List<Comment> comments = new ArrayList<>();
+    private List<Comment> comments = Arrays.asList(authUserComment1, comment1, comment2,
+            authUserComment2, comment3, comment4);
     private RelativeLayout mainContent;
     private LinearLayout spinner;
     private TextView txtBody;
@@ -81,14 +84,8 @@ public class CommentsAdapterTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        comments.add(authUserComment1);
-        comments.add(comment1);
-        comments.add(comment2);
-        comments.add(authUserComment2);
-        comments.add(comment3);
-        comments.add(comment4);
         context = RuntimeEnvironment.application.getApplicationContext();
-        adapter = new CommentsAdapter(context, comments, authUser, listener);
+        adapter = new CommentsAdapter(context, new ArrayList<>(comments), authUser, listener);
         shadow = shadowOf(adapter);
     }
 
@@ -119,6 +116,67 @@ public class CommentsAdapterTest {
     }
 
     /**
+     * Test that all items in the adapter are correctly set.
+     */
+    @Test
+    public void testGetItems() {
+        assertEquals(comments.size(), adapter.getCount());
+        for (int i = 0; i < comments.size(); i++) {
+            assertSame(comments.get(i), adapter.getItem(i));
+            assertFalse(adapter.isSending(comments.get(i)));
+            assertFalse(adapter.isEditing(comments.get(i)));
+        }
+    }
+
+    /**
+     * Test the behavior when isSending is called with null param.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsSendingCalledWithNullParam() {
+        adapter.isSending(null);
+    }
+
+    /**
+     * Test the behavior when isSending is called with comment that is not in the adapter.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsSendingCalledWithUnExistingComment() {
+        adapter.isSending(unExistingComment);
+    }
+
+    /**
+     * Test the behavior when isSending is called with comment that is in the adapter.
+     */
+    @Test
+    public void testIsSendingCalledWithExistingComment() {
+        assertFalse(adapter.isSending(comment1));
+    }
+
+    /**
+     * Test the behavior when isEditing is called with null param.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsEditingCalledWithNullParam() {
+        adapter.isEditing(null);
+    }
+
+    /**
+     * Test the behavior when isEditing is called with comment that is not in the adapter.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsEditingCalledWithUnExistingComment() {
+        adapter.isEditing(unExistingComment);
+    }
+
+    /**
+     * Test the behavior when isEditing is called with comment that is in the adapter.
+     */
+    @Test
+    public void testIsEditingCalledWithExistingComment() {
+        assertFalse(adapter.isEditing(comment1));
+    }
+
+    /**
      * Get all main children views from the view.
      *
      * @param view view containing the children
@@ -144,7 +202,8 @@ public class CommentsAdapterTest {
     }
 
     /**
-     * Test the getView correctly sets the views for the comment at the given position.
+     * Test the getView correctly sets the views for the comment at the given position when the
+     * comment is not editing and a request is not sending for him.
      */
     @Test
     public void testGetView() {
@@ -204,28 +263,93 @@ public class CommentsAdapterTest {
     }
 
     /**
+     * Test that getVIew will correctly set the views for the comment when he is editing.
+     */
+    @Test
+    public void testGetViewWhenCommentIsEditing() {
+        final Comment comment = authUserComment1;
+        final int index = comments.indexOf(comment);
+        View view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertFalse(adapter.isEditing(comment));
+        assertTrue(btnEdit.performClick());
+        assertTrue(adapter.isEditing(comment));
+        view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertEquals(View.GONE, txtBody.getVisibility());
+        assertEquals(View.VISIBLE, edBody.getVisibility());
+        assertEquals(View.GONE, btnEdit.getVisibility());
+        assertEquals(View.GONE, btnRemove.getVisibility());
+        assertEquals(View.GONE, btnUpdate.getVisibility());
+        assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
+        assertEquals(comment.getBody(), edBody.getText().toString());
+    }
+
+    /**
+     * Test that getVIew will correctly set the views for the comment when he is editing and the
+     * EditText body content is different then comment body.
+     */
+    @Test
+    public void testGetViewWhenCommentIsEditingEditTextContentIsDifferentThenCommentBody() {
+        final Comment comment = authUserComment1;
+        final int index = comments.indexOf(comment);
+        final String newBody = "New Test Body";
+        View view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertFalse(adapter.isEditing(comment));
+        assertTrue(btnEdit.performClick());
+        assertTrue(adapter.isEditing(comment));
+        edBody.setText(newBody);
+        view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertEquals(View.GONE, txtBody.getVisibility());
+        assertEquals(View.VISIBLE, edBody.getVisibility());
+        assertEquals(View.GONE, btnEdit.getVisibility());
+        assertEquals(View.GONE, btnRemove.getVisibility());
+        assertEquals(View.VISIBLE, btnUpdate.getVisibility());
+        assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
+        assertEquals(newBody, edBody.getText().toString());
+    }
+
+    /**
+     * Test that getView will correctly set the view for the comment when a request is sending
+     * for him.
+     */
+    @Test
+    public void testGetViewWhenRequestForTheCommentIsSending() {
+        final Comment comment = authUserComment2;
+        final int index = comments.indexOf(comment);
+        View view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertFalse(adapter.isSending(comment));
+        assertTrue(btnUpdate.performClick());
+        assertTrue(adapter.isSending(comment));
+        view = adapter.getView(index, null, null);
+        this.getViews(view);
+        assertEquals(View.GONE, mainContent.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
+    }
+
+    /**
      * Test the behavior when button 'Edit' is clicked for the item.
      */
     @Test
     public void testBtnEditClick() {
-        View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
+        final Comment comment = authUserComment2;
+        View view = adapter.getView(comments.indexOf(comment), null, null);
         this.getViews(view);
+        assertFalse(adapter.isEditing(comment));
         assertTrue(btnEdit.performClick());
-        for (int i = 0; i < 2; i++) {
-            if (i == 1) {
-                view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-                this.getViews(view);
-            }
-            assertEquals(View.VISIBLE, mainContent.getVisibility());
-            assertEquals(View.GONE, spinner.getVisibility());
-            assertEquals(View.GONE, txtBody.getVisibility());
-            assertEquals(View.VISIBLE, edBody.getVisibility());
-            assertEquals(authUserComment2.getBody(), edBody.getText().toString());
-            assertEquals(View.GONE, btnEdit.getVisibility());
-            assertEquals(View.GONE, btnRemove.getVisibility());
-            assertEquals(View.GONE, btnUpdate.getVisibility());
-            assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
-        }
+        assertTrue(adapter.isEditing(comment));
+        assertEquals(View.VISIBLE, mainContent.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.GONE, txtBody.getVisibility());
+        assertEquals(View.VISIBLE, edBody.getVisibility());
+        assertEquals(comment.getBody(), edBody.getText().toString());
+        assertEquals(View.GONE, btnEdit.getVisibility());
+        assertEquals(View.GONE, btnRemove.getVisibility());
+        assertEquals(View.GONE, btnUpdate.getVisibility());
+        assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
     }
 
     /**
@@ -233,21 +357,13 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testTxtBodyChanged() {
-        String newBody = "New comment txtBody";
+        String newBody = "New comment Body";
         View view = adapter.getView(comments.indexOf(authUserComment1), null, null);
         this.getViews(view);
         assertTrue(btnEdit.performClick());
+        assertEquals(View.GONE, btnUpdate.getVisibility());
         edBody.setText(newBody);
         assertEquals(View.VISIBLE, btnUpdate.getVisibility());
-        view = adapter.getView(comments.indexOf(authUserComment1), null, null);
-        this.getViews(view);
-        assertEquals(View.GONE, txtBody.getVisibility());
-        assertEquals(View.VISIBLE, edBody.getVisibility());
-        assertEquals(newBody, edBody.getText().toString());
-        assertEquals(View.VISIBLE, btnUpdate.getVisibility());
-        assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
-        assertEquals(View.GONE, btnEdit.getVisibility());
-        assertEquals(View.GONE, btnRemove.getVisibility());
     }
 
     /**
@@ -255,40 +371,21 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testBtnCancelUpdateClick() {
-        View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
+        final Comment comment = authUserComment2;
+        View view = adapter.getView(comments.indexOf(comment), null, null);
         this.getViews(view);
         assertTrue(btnEdit.performClick());
+        assertTrue(adapter.isEditing(comment));
         assertTrue(btnCancelUpdate.performClick());
-        for (int i = 0; i < 2; i++) {
-            if (i == 1) {
-                view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-                this.getViews(view);
-            }
-            assertEquals(View.VISIBLE, mainContent.getVisibility());
-            assertEquals(View.GONE, spinner.getVisibility());
-            assertEquals(View.VISIBLE, txtBody.getVisibility());
-            assertEquals(View.GONE, edBody.getVisibility());
-            assertEquals(View.VISIBLE, btnEdit.getVisibility());
-            assertEquals(View.VISIBLE, btnRemove.getVisibility());
-            assertEquals(View.GONE, btnUpdate.getVisibility());
-            assertEquals(View.GONE, btnCancelUpdate.getVisibility());
-        }
-    }
-
-    /**
-     * Test that when editing is canceled the edit text txtBody field new content is remembered.
-     */
-    @Test
-    public void testEditTextBodyNewContentIsRememberedOnCancel() {
-        String newBody = "New comment txtBody";
-        View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.getViews(view);
-        assertTrue(btnEdit.performClick());
-        edBody.setText(newBody);
-        assertTrue(btnCancelUpdate.performClick());
-        view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.getViews(view);
-        assertEquals(newBody, edBody.getText().toString());
+        assertFalse(adapter.isEditing(comment));
+        assertEquals(View.VISIBLE, mainContent.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+        assertEquals(View.VISIBLE, txtBody.getVisibility());
+        assertEquals(View.GONE, edBody.getVisibility());
+        assertEquals(View.VISIBLE, btnEdit.getVisibility());
+        assertEquals(View.VISIBLE, btnRemove.getVisibility());
+        assertEquals(View.GONE, btnUpdate.getVisibility());
+        assertEquals(View.GONE, btnCancelUpdate.getVisibility());
     }
 
     /**
@@ -296,21 +393,21 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testBtnUpdateClick() {
-        int index = comments.indexOf(authUserComment1);
+        final Comment comment = authUserComment1;
+        int index = comments.indexOf(comment);
         String newBody = "Comment updated";
         View view = adapter.getView(index, null, null);
         this.getViews(view);
         edBody.setText(newBody);
+        assertTrue(btnEdit.performClick());
+        assertTrue(adapter.isEditing(comment));
+        assertFalse(adapter.isSending(comment));
         assertTrue(btnUpdate.performClick());
+        assertFalse(adapter.isEditing(comment));
+        assertTrue(adapter.isSending(comment));
         verify(listener).updateComment(index, newBody);
-        for (int i = 0; i < 2; i++) {
-            if (i == 1) {
-                view = adapter.getView(index, null, null);
-                this.getViews(view);
-            }
-            assertEquals(View.GONE, mainContent.getVisibility());
-            assertEquals(View.VISIBLE, spinner.getVisibility());
-        }
+        assertEquals(View.GONE, mainContent.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
     }
 
     /**
@@ -318,19 +415,16 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testBtnRemoveClick() {
-        int index = comments.indexOf(authUserComment2);
+        final Comment comment = authUserComment2;
+        int index = comments.indexOf(comment);
         View view = adapter.getView(index, null, null);
         this.getViews(view);
+        assertFalse(adapter.isSending(comment));
         assertTrue(btnRemove.performClick());
+        assertTrue(adapter.isSending(comment));
         verify(listener).deleteComment(index);
-        for (int i = 0; i < 2; i++) {
-            if (i == 1) {
-                view = adapter.getView(index, null, null);
-                this.getViews(view);
-            }
-            assertEquals(View.GONE, mainContent.getVisibility());
-            assertEquals(View.VISIBLE, spinner.getVisibility());
-        }
+        assertEquals(View.GONE, mainContent.getVisibility());
+        assertEquals(View.VISIBLE, spinner.getVisibility());
     }
 
     /**
@@ -343,6 +437,28 @@ public class CommentsAdapterTest {
         assertEquals(unExistingComment, adapter.getItem(0));
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
         assertNotNull(adapter.getView(0, null, null));
+        assertFalse(adapter.isSending(unExistingComment));
+        assertFalse(adapter.isEditing(unExistingComment));
+    }
+
+    /**
+     * Test that update method will sync the current list of comments in the adapter with the
+     * given one.
+     */
+    @Test
+    public void testUpdate() {
+        int id = this.comments.get(this.comments.size() - 1).getId();
+        Comment comment1 = new Comment(id++, user1, lineup, "Comment", date, date);
+        Comment comment2 = new Comment(id, user1, lineup, "Comment", date, date);
+        List<Comment> comments = Arrays.asList(comment1, comment2);
+        adapter.update(comments);
+        assertEquals(NUMBER_OF_COMMENTS + 2, adapter.getCount());
+        assertSame(comment1, adapter.getItem(NUMBER_OF_COMMENTS));
+        assertSame(comment2, adapter.getItem(NUMBER_OF_COMMENTS + 1));
+        assertFalse(adapter.isSending(comment1));
+        assertFalse(adapter.isEditing(comment1));
+        assertFalse(adapter.isSending(comment2));
+        assertFalse(adapter.isEditing(comment2));
     }
 
     /**
@@ -350,28 +466,21 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testOnUpdateSuccess() {
-        Comment newComment = new Comment(authUserComment1.getId(), authUserComment1.getUser(),
-                authUserComment1.getLineup(), "New Comment BOdy", date, date);
-        int index = comments.indexOf(authUserComment1);
+        final Comment comment = authUserComment1;
+        Comment newComment = new Comment(comment.getId(), comment.getUser(), comment.getLineup(),
+                "New Comment Body", date, date);
+        int index = comments.indexOf(comment);
         View view = adapter.getView(index, null, null);
         this.getViews(view);
+        assertFalse(adapter.isSending(comment));
         assertTrue(btnUpdate.performClick());
-        adapter.onUpdateSuccess(authUserComment1, newComment);
+        assertTrue(adapter.isSending(comment));
+        adapter.onUpdateSuccess(comment, newComment);
         assertEquals(NUMBER_OF_COMMENTS, adapter.getCount());
         assertSame(newComment, adapter.getItem(index));
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
-        view = adapter.getView(index, null, null);
-        this.getViews(view);
-        assertEquals(View.VISIBLE, mainContent.getVisibility());
-        assertEquals(View.GONE, spinner.getVisibility());
-        assertEquals(View.VISIBLE, txtBody.getVisibility());
-        assertEquals(newComment.getBody(), txtBody.getText());
-        assertEquals(View.GONE, edBody.getVisibility());
-        assertEquals(newComment.getBody(), edBody.getText().toString());
-        assertEquals(View.VISIBLE, btnEdit.getVisibility());
-        assertEquals(View.VISIBLE, btnRemove.getVisibility());
-        assertEquals(View.GONE, btnUpdate.getVisibility());
-        assertEquals(View.GONE, btnCancelUpdate.getVisibility());
+        assertFalse(adapter.isEditing(comment));
+        assertFalse(adapter.isSending(comment));
     }
 
     /**
@@ -379,38 +488,39 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testOnUpdateFailed() {
+        final Comment comment = authUserComment2;
         String newBody = "Edited Body";
-        int index = comments.indexOf(authUserComment2);
+        int index = comments.indexOf(comment);
         View view = adapter.getView(index, null, null);
         this.getViews(view);
         edBody.setText(newBody);
+        assertTrue(btnEdit.performClick());
+        assertTrue(adapter.isEditing(comment));
+        assertFalse(adapter.isSending(comment));
         assertTrue(btnUpdate.performClick());
-        adapter.onUpdateFailed(authUserComment2);
+        assertTrue(adapter.isSending(comment));
+        adapter.onUpdateFailed(comment);
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
+        assertTrue(adapter.isEditing(comment));
+        assertFalse(adapter.isSending(comment));
         view = adapter.getView(index, null, null);
         this.getViews(view);
-        assertEquals(View.VISIBLE, mainContent.getVisibility());
-        assertEquals(View.GONE, spinner.getVisibility());
-        assertEquals(View.GONE, txtBody.getVisibility());
-        assertEquals(View.VISIBLE, edBody.getVisibility());
         assertEquals(newBody, edBody.getText().toString());
-        assertEquals(View.VISIBLE, btnUpdate.getVisibility());
-        assertEquals(View.VISIBLE, btnCancelUpdate.getVisibility());
-        assertEquals(View.GONE, btnEdit.getVisibility());
-        assertEquals(View.GONE, btnRemove.getVisibility());
     }
 
     /**
      * Test the behavior when onRemoveSuccess is called.
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testOnRemoveSuccess() {
         int index = 2;
         List<Comment> comments = new ArrayList<>(this.comments);
-        adapter.onRemoveSuccess(comments.get(index));
+        final Comment comment = comments.get(index);
+        adapter.onRemoveSuccess(comment);
         assertEquals(NUMBER_OF_COMMENTS - 1, adapter.getCount());
         assertSame(comments.get(index + 1), adapter.getItem(index));
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
+        adapter.isSending(comment);
     }
 
     /**
@@ -418,15 +528,15 @@ public class CommentsAdapterTest {
      */
     @Test
     public void testOnRemoveFailed() {
-        View view = adapter.getView(comments.indexOf(authUserComment2), null, null);
+        final Comment comment = authUserComment2;
+        View view = adapter.getView(comments.indexOf(comment), null, null);
         this.getViews(view);
         assertTrue(btnRemove.performClick());
-        adapter.onRemoveFailed(authUserComment2);
+        assertTrue(adapter.isSending(comment));
+        adapter.onRemoveFailed(comment);
         assertEquals(NUMBER_OF_COMMENTS, adapter.getCount());
         assertTrue(shadow.wasNotifyDataSetChangedCalled());
-        view = adapter.getView(comments.indexOf(authUserComment2), null, null);
-        this.getViews(view);
-        assertEquals(View.VISIBLE, mainContent.getVisibility());
-        assertEquals(View.GONE, spinner.getVisibility());
+        assertFalse(adapter.isSending(comment));
+        assertFalse(adapter.isEditing(comment));
     }
 }

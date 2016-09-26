@@ -21,6 +21,7 @@ import com.android.finki.mpip.footballdreamteam.ui.adapter.CommentsAdapter;
 import com.android.finki.mpip.footballdreamteam.ui.component.CommentsView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.CommentsViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
+import com.android.finki.mpip.footballdreamteam.utility.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,13 +86,13 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
     String deletingCommentFailedText;
 
     @BindView(R.id.commentsLayout_mainContent)
-    RelativeLayout mainLayout;
+    RelativeLayout content;
 
     @BindView(R.id.commentsLayout_listView)
     ListView listView;
 
     @BindView(R.id.commentsLayout_addCommentMainContent)
-    RelativeLayout addCommentMainContent;
+    RelativeLayout addCommentContent;
 
     @BindView(R.id.commentsLayout_btnAddComment)
     Button btnAddComment;
@@ -170,6 +171,9 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).changeTitle(title);
         }
+        adapter = new CommentsAdapter(this.getActivity(), presenter.getComments(),
+                presenter.getUser(), this);
+        listView.setAdapter(adapter);
         return view;
     }
 
@@ -202,7 +206,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         txtSpinner.setText(spinnerText);
         spinner.setVisibility(View.VISIBLE);
         error.setVisibility(View.GONE);
-        mainLayout.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
     }
 
     /**
@@ -215,9 +219,8 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         logger.info("showCommentsLoadingSuccess");
         spinner.setVisibility(View.GONE);
         error.setVisibility(View.GONE);
-        mainLayout.setVisibility(View.VISIBLE);
-        adapter = new CommentsAdapter(this.getActivity(), comments, presenter.getUser(), this);
-        listView.setAdapter(adapter);
+        content.setVisibility(View.VISIBLE);
+        adapter.update(comments);
     }
 
     /**
@@ -229,14 +232,14 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         txtError.setText(loadingCommentsFailedText);
         spinner.setVisibility(View.GONE);
         error.setVisibility(View.VISIBLE);
-        mainLayout.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
     }
 
     /**
      * Handle click on the button "Try Again".
      */
     @OnClick(R.id.error_btnTryAgain)
-    void reload() {
+    void onBtnTryAgainClick() {
         logger.info("btn 'Try Again' clicked");
         presenter.loadComments();
     }
@@ -245,10 +248,10 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
      * Handle click on the button 'Add Comment'.
      */
     @OnClick(R.id.commentsLayout_btnAddComment)
-    void onBtnAddCommentClicked() {
-        logger.info("btn 'Add Comment' clciked");
+    void onBtnAddCommentClick() {
+        logger.info("btn 'Add Comment' clicked");
         btnAddComment.setVisibility(View.GONE);
-        addCommentMainContent.setVisibility(View.VISIBLE);
+        addCommentContent.setVisibility(View.VISIBLE);
         txtComment.setText(null);
         txtComment.setEnabled(true);
         btnCancelAddingComment.setVisibility(View.VISIBLE);
@@ -261,7 +264,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
      */
     @OnTextChanged(R.id.commentsLayout_txtComment)
     void onTxtAddCommentChanged() {
-        if (txtComment.getText().toString().length() > 0) {
+        if (!StringUtils.isEmpty(txtComment.getText().toString())) {
             btnSubmitComment.setVisibility(View.VISIBLE);
         } else {
             btnSubmitComment.setVisibility(View.GONE);
@@ -274,7 +277,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
     @OnClick(R.id.commentsLayout_btnCancelAddingComment)
     void onBtnCancelAddingCommentClick() {
         logger.info("btn 'Cancel Adding Comment' clicked");
-        addCommentMainContent.setVisibility(View.GONE);
+        addCommentContent.setVisibility(View.GONE);
         btnAddComment.setVisibility(View.VISIBLE);
     }
 
@@ -301,7 +304,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         logger.info("showCommentAddingSuccess");
         Toast.makeText(this.getActivity(), addingCommentSuccessText, Toast.LENGTH_SHORT).show();
         btnAddComment.setVisibility(View.VISIBLE);
-        addCommentMainContent.setVisibility(View.GONE);
+        addCommentContent.setVisibility(View.GONE);
         adapter.add(comment);
     }
 

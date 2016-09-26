@@ -18,8 +18,8 @@ public class ConfirmDialog extends DialogFragment implements DialogInterface.OnC
 
     private static final Logger logger = LoggerFactory.getLogger(ConfirmDialog.class);
     public static final String TAG = "CONFIRM_DIALOG";
-    private static final String TITLE_KEY = "title";
-    private static final String MESSAGE_KEY = "message";
+    public static final String TITLE_KEY = "title";
+    public static final String MESSAGE_KEY = "message";
     private String title;
     private String message;
 

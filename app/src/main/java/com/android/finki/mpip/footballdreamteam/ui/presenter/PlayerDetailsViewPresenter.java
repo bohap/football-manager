@@ -5,7 +5,6 @@ import android.os.Bundle;
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.component.PlayerDetailsView;
-import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.slf4j.Logger;
@@ -68,19 +67,13 @@ public class PlayerDetailsViewPresenter {
         player = playerDBService.get(id);
         playerDBService.close();
         if (player == null) {
-            String message = String.format("player with id %d don't exists", id);
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String.format("player with id %d don't exists", id));
         }
         if (player.getTeam() == null) {
-            String message = "player team is null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player team is null");
         }
         if (player.getPosition() == null) {
-            String message = "player position is null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("player position is null");
         }
     }
 }

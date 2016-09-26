@@ -446,11 +446,11 @@ public class HomeActivity extends BaseActivity implements HomeView,
     }
 
     /**
-     * Bind the button click to call the presenter method to reload the
+     * Bind the button click to call the presenter method to onBtnTryAgainClick the
      * data when a error happened.
      */
     @OnClick(R.id.error_btnTryAgain)
-    void reload() {
+    void onBtnTryAgainClick() {
         logger.info("btn 'Try Again' clicked");
         presenter.loadData();
     }

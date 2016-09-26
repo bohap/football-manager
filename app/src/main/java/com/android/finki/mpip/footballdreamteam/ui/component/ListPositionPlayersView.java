@@ -14,7 +14,5 @@ public interface ListPositionPlayersView {
     String START_X_KEY = "start_x";
     String START_Y_KEY = "start_y";
 
-    void setAdapter(List<Player> players);
-
-    void setPositionPlace(String place);
+    void onPlayersLoaded(List<Player> players, String place);
 }

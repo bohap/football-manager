@@ -62,10 +62,20 @@ public class PositionUtils {
     }
 
     public enum POSITION_PLACE {
-        KEEPERS,
-        DEFENDERS,
-        MIDFIELDERS,
-        ATTACKERS
+        KEEPERS("Keepers"),
+        DEFENDERS("Defenders"),
+        MIDFIELDERS("Midfielders"),
+        ATTACKERS("Attackers");
+
+        private  final String name;
+
+        POSITION_PLACE(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
     }
 
     private static Logger logger = LoggerFactory.getLogger(PositionUtils.class);

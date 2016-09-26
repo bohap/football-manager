@@ -23,6 +23,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -89,6 +90,24 @@ public class ListPositionPlayersAdapterTest {
         int index = 7;
         Player player = adapter.getItem(index);
         assertSame(players.get(index), player);
+    }
+
+    /**
+     * Test that update method will merge the given list of items with the current one.
+     */
+    @Test
+    public void testUpdate() {
+        int id = players.get(players.size() - 1).getId();
+        Player player1 = new Player(id, new Team(id, "Team"),
+                new Position(id, "Position"), "Player", null, null);
+        id++;
+        Player player2 = new Player(id, new Team(id, "Team"),
+                new Position(id, "Position"), "Player", null, null);
+        List<Player> players = Arrays.asList(player1, player2);
+        adapter.update(players);
+        assertEquals(NUMBER_OF_PLAYERS + 2, adapter.getCount());
+        assertSame(player1, adapter.getItem(NUMBER_OF_PLAYERS));
+        assertSame(player2, adapter.getItem(NUMBER_OF_PLAYERS + 1));
     }
 
     /**

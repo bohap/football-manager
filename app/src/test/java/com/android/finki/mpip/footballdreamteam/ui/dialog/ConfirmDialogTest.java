@@ -2,39 +2,47 @@ package com.android.finki.mpip.footballdreamteam.ui.dialog;
 
 import android.app.Dialog;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.android.finki.mpip.footballdreamteam.BuildConfig;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowToast;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
-import static com.android.finki.mpip.footballdreamteam.ui.dialog.ConfirmDialogTest.TestActivity.ON_DIALOG_CONFIRM_TOAST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by Borce on 21.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class ConfirmDialogTest {
 
+    @Mock
+    private static ConfirmDialog.Listener listener;
+
     private String title = "Confirm Dialog";
     private String message = "Confirm Dialog Message";
     private ConfirmDialog dialog;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     /**
      * Test that dialog is successfully created.
@@ -46,6 +54,10 @@ public class ConfirmDialogTest {
         Dialog alertDialog = dialog.getDialog();
         assertTrue(alertDialog instanceof AlertDialog);
         assertTrue(alertDialog.isShowing());
+        Bundle args = dialog.getArguments();
+        assertNotNull(args);
+        assertEquals(title, args.getString(ConfirmDialog.TITLE_KEY));
+        assertEquals(message, args.getString(ConfirmDialog.MESSAGE_KEY));
     }
 
     /**
@@ -54,13 +66,13 @@ public class ConfirmDialogTest {
     @Test
     public void testBtnCancelClick() {
         dialog = ConfirmDialog.newInstance(title, message);
-        SupportFragmentTestUtil.startFragment(dialog, TestActivity.class);
+        SupportFragmentTestUtil.startFragment(dialog, MockActivity.class);
         Dialog alertDialog = dialog.getDialog();
         Button btn = (Button) alertDialog.findViewById(android.R.id.button2);
         assertNotNull(btn);
-        btn.performClick();
+        assertTrue(btn.performClick());
         assertFalse(alertDialog.isShowing());
-        assertNull(ShadowToast.getTextOfLatestToast());
+        verify(listener, never()).onDialogConfirmed();
     }
 
     /**
@@ -69,13 +81,13 @@ public class ConfirmDialogTest {
     @Test
     public void testBtnConfirmClick() {
         dialog = ConfirmDialog.newInstance(title, message);
-        SupportFragmentTestUtil.startFragment(dialog, TestActivity.class);
+        SupportFragmentTestUtil.startFragment(dialog, MockActivity.class);
         Dialog alertDialog = dialog.getDialog();
         Button btn = (Button) alertDialog.findViewById(android.R.id.button1);
         assertNotNull(btn);
-        btn.performClick();
+        assertTrue(btn.performClick());
         assertFalse(alertDialog.isShowing());
-        assertEquals(ON_DIALOG_CONFIRM_TOAST, ShadowToast.getTextOfLatestToast());
+        verify(listener).onDialogConfirmed();
     }
 
     /**
@@ -89,21 +101,19 @@ public class ConfirmDialogTest {
         Dialog alertDialog = dialog.getDialog();
         Button btn = (Button) alertDialog.findViewById(android.R.id.button1);
         assertNotNull(btn);
-        btn.performClick();
+        assertTrue(btn.performClick());
         assertFalse(alertDialog.isShowing());
-        assertNull(ShadowToast.getTextOfLatestToast());
+        verify(listener, never()).onDialogConfirmed();
     }
 
     /**
-     * Test activity so the methods from the dialog that calls the listener can be verified.
+     * Mock activity class for the dialog.
      */
-    public static class TestActivity extends AppCompatActivity implements ConfirmDialog.Listener {
-
-        static final String ON_DIALOG_CONFIRM_TOAST = "On Dialog Confirm";
+    public static class MockActivity extends AppCompatActivity implements ConfirmDialog.Listener {
 
         @Override
         public void onDialogConfirmed() {
-            Toast.makeText(this, ON_DIALOG_CONFIRM_TOAST, Toast.LENGTH_SHORT).show();
+            listener.onDialogConfirmed();
         }
     }
 }

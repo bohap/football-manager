@@ -113,8 +113,8 @@ public class LineupPlayersActivityTest {
 //        MockApplication application = (MockApplication) RuntimeEnvironment.application;
 //        application.setLineupPlayerActivityComponent(component);
 //        application.setLineupFormationFragmentComponent(lineupFormationFragmentComponent);
-//        application.setListPositionPlayersFragmentComponent(listPositionPlayersFragmentComponent);
-//        application.setPlayerDetailsDialogComponent(playerDetailsDialogComponent);
+//        application.setListPositionPlayersViewComponent(listPositionPlayersFragmentComponent);
+//        application.setPlayerDetailsViewComponent(playerDetailsDialogComponent);
 //        activity = Robolectric.setupActivity(LineupPlayersActivity.class);
 //        manager = activity.getSupportFragmentManager();
 //

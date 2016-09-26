@@ -5,7 +5,6 @@ import android.os.Bundle;
 import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayersView;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.ListPositionPlayersFragment;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ public class ListPositionPlayersViewPresenter {
     private ListPositionPlayersView view;
     private PlayerDBService playerDBService;
     private List<Player> players;
-    private PositionUtils.POSITION_PLACE place;
+    private String txtPlace;
 
     public ListPositionPlayersViewPresenter(ListPositionPlayersView view,
                                             PlayerDBService playerDBService) {
@@ -41,17 +40,16 @@ public class ListPositionPlayersViewPresenter {
         if (args == null) {
             throw new IllegalArgumentException("bundle can't be null");
         }
-        Serializable serializable = args
-                .getSerializable(ListPositionPlayersView.PLACE_KEY);
-        if (serializable == null || ! (serializable instanceof PositionUtils.POSITION_PLACE)) {
+        Serializable serializable = args.getSerializable(ListPositionPlayersView.PLACE_KEY);
+        if (!(serializable instanceof PositionUtils.POSITION_PLACE)) {
             throw new IllegalArgumentException("position place must be set");
         }
         int[] playersToExclude = args.getIntArray(ListPositionPlayersView.EXCLUDE_LAYERS_KEY);
         if (playersToExclude == null) {
             throw new IllegalArgumentException("players to exclude must be set");
         }
-        this.place = (PositionUtils.POSITION_PLACE)serializable;
-        this.getPlayers(playersToExclude);
+        PositionUtils.POSITION_PLACE place = (PositionUtils.POSITION_PLACE)serializable;
+        this.getPlayers(place, playersToExclude);
     }
 
     /**
@@ -59,33 +57,21 @@ public class ListPositionPlayersViewPresenter {
      */
     public void onViewLayoutCreated() {
         logger.info("onViewLayoutCreated");
-        if (place == null) {
-            throw new IllegalArgumentException("place is not set");
+        if (this.players == null) {
+            throw new IllegalArgumentException("players nto set");
         }
-        view.setAdapter(this.players);
-        switch (place) {
-            case KEEPERS:
-                view.setPositionPlace("Keepers");
-                break;
-            case DEFENDERS:
-                view.setPositionPlace("Defenders");
-                break;
-            case MIDFIELDERS:
-                view.setPositionPlace("Midfielders");
-                break;
-            case ATTACKERS:
-                view.setPositionPlace("Attackers");
-                break;
-        }
+        view.onPlayersLoaded(this.players, txtPlace);
     }
 
     /**
      * Set the positions place.
      *
+     * @param place the player place on the field
      * @param playersToExclude players ids that should be excluded from the response
      */
-    private void getPlayers(int[] playersToExclude) {
+    private void getPlayers(PositionUtils.POSITION_PLACE place, int[] playersToExclude) {
         playerDBService.open();
+        this.txtPlace = place.getName();
         switch (place) {
             case KEEPERS:
                 this.players = playerDBService.getGoalkeepers(playersToExclude);
@@ -100,10 +86,17 @@ public class ListPositionPlayersViewPresenter {
                 this.players = playerDBService.getAttackers(playersToExclude);
                 break;
             default:
-                String message = "unknown position place";
-                logger.error(message);
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException("unknown position place");
         }
         playerDBService.close();
+    }
+
+    /**
+     * Get all players that are loaded from the database.
+     *
+     * @return all loaded players
+     */
+    public List<Player> getPlayers() {
+        return players;
     }
 }

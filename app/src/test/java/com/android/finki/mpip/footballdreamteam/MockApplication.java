@@ -43,11 +43,11 @@ public class MockApplication extends MainApplication {
     private ListLineupsViewComponent listLineupsViewComponent;
     private LikeViewComponent likeViewComponent;
     private CommentsViewComponent commentsViewComponent;
+    private PlayerDetailsViewComponent playerDetailsViewComponent;
+    private ListPositionPlayersViewComponent listPositionPlayersViewComponent;
 
     private LineupPlayersViewComponent lineupPlayerActivityComponent;
     private LineupFormationViewComponent lineupFormationFragmentComponent;
-    private ListPositionPlayersViewComponent listPositionPlayersFragmentComponent;
-    private PlayerDetailsViewComponent playerDetailsDialogComponent;
     private CreateLineupViewComponent createLineupViewComponent;
 
     /**
@@ -85,14 +85,15 @@ public class MockApplication extends MainApplication {
                 .thenReturn(likeViewComponent);
         when(authComponent.plus(any(CommentsViewModule.class)))
                 .thenReturn(commentsViewComponent);
+        when(authComponent.plus(any(PlayerDetailsViewModule.class)))
+                .thenReturn(playerDetailsViewComponent);
+
         when(authComponent.plus(any(LineupPlayersViewModule.class)))
                 .thenReturn(lineupPlayerActivityComponent);
         when(authComponent.plus(any(LineupFormationViewModule.class)))
                 .thenReturn(lineupFormationFragmentComponent);
         when(authComponent.plus(any(ListPositionPlayersViewModule.class)))
-                .thenReturn(listPositionPlayersFragmentComponent);
-        when(authComponent.plus(any(PlayerDetailsViewModule.class)))
-                .thenReturn(playerDetailsDialogComponent);
+                .thenReturn(listPositionPlayersViewComponent);
         when(authComponent.plus(any(CreateLineupViewModule.class)))
                 .thenReturn(createLineupViewComponent);
     }
@@ -191,9 +192,9 @@ public class MockApplication extends MainApplication {
      *
      * @param component mocked instance of the ListPositionPlayersComponent
      */
-    public void setListPositionPlayersFragmentComponent(
+    public void setListPositionPlayersViewComponent(
             ListPositionPlayersViewComponent component) {
-        this.listPositionPlayersFragmentComponent = component;
+        this.listPositionPlayersViewComponent = component;
     }
 
     /**
@@ -201,8 +202,8 @@ public class MockApplication extends MainApplication {
      *
      * @param component mocked instance of the PlayerDetailsViewComponent
      */
-    public void setPlayerDetailsDialogComponent(PlayerDetailsViewComponent component) {
-        this.playerDetailsDialogComponent = component;
+    public void setPlayerDetailsViewComponent(PlayerDetailsViewComponent component) {
+        this.playerDetailsViewComponent = component;
     }
 
     /**

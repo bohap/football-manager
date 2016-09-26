@@ -212,7 +212,7 @@ public class LikeFragment extends BaseFragment implements LikeView {
      * Handle click on the button "Try Again".
      */
     @OnClick(R.id.error_btnTryAgain)
-    void reload() {
+    void onBtnTryAgainClick() {
         logger.info("btn 'Try Again' clicked");
         presenter.loadLikes();
     }

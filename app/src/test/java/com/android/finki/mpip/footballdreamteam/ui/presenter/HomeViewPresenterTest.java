@@ -647,6 +647,36 @@ public class HomeViewPresenterTest {
     }
 
     /**
+     * Test the behavior when onViewDestroyed is called after request to load the teams that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterTeamsLoadingSucceeded() {
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        presenter.onViewDestroyed();
+        verify(teamsCall, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after request to load the teams that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterTeamsLoadingFailed() {
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        teamsCaptor.getValue().onFailure(teamsCall, new Throwable());
+        presenter.onViewDestroyed();
+        verify(teamsCall, never()).cancel();
+    }
+
+    /**
      * Test the behavior when onViewDestroyed is called and the request to load the positions is
      * not yet finished.
      */
@@ -660,6 +690,36 @@ public class HomeViewPresenterTest {
     }
 
     /**
+     * Test the behavior when onViewDestroyed is called after request to load the positions that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterPositionsLoadingSucceeded() {
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        presenter.onViewDestroyed();
+        verify(positionCall, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after request to load the positions that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterPositionsLoadingFailed() {
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onFailure(positionCall, new Throwable());
+        presenter.onViewDestroyed();
+        verify(positionCall, never()).cancel();
+    }
+
+    /**
      * Test the behavior when onViewDestroyed is called and the request to load the players is
      * not yet finished.
      */
@@ -670,6 +730,36 @@ public class HomeViewPresenterTest {
         verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
         presenter.onViewDestroyed();
         verify(playersCall).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after request to load the players that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterPlayersLoadingSucceeded() {
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        presenter.onViewDestroyed();
+        verify(playersCall, never()).cancel();
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after request to load the players that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterPlayersLoadingFailed() {
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onFailure(playersCall, new Throwable());
+        presenter.onViewDestroyed();
+        verify(playersCall, never()).cancel();
     }
 
     /**
@@ -689,6 +779,52 @@ public class HomeViewPresenterTest {
     }
 
     /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the teams that
+     * succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStoreTeamsTaskSucceeded() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onTeamsSavingSuccess();
+                return null;
+            }
+        }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        presenter.onViewDestroyed();
+        verify(teamsCall, never()).cancel();
+        verify(storeTeamsTask, never()).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the teams that
+     * failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStoreTeamsTaskFailed() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onTeamsSavingFailed();
+                return null;
+            }
+        }).when(storeTeamsTask).execute(Matchers.<Team>anyVararg());
+        this.initPreferences(false, true, true);
+        presenter.loadData();
+        verify(teamApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(teamsCall).enqueue(teamsCaptor.capture());
+        teamsCaptor.getValue().onResponse(teamsCall, Response.success(teams));
+        presenter.onViewDestroyed();
+        verify(teamsCall, never()).cancel();
+        verify(storeTeamsTask, never()).cancel(true);
+    }
+
+    /**
      * Test the behavior when onViewDestroyed is called and the request to load the positions is
      * successful and the task to store the positions is not yer finished.
      */
@@ -705,6 +841,52 @@ public class HomeViewPresenterTest {
     }
 
     /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the positions
+     * that succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStorePositionsTaskSucceeded() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPositionsSavingSuccess();
+                return null;
+            }
+        }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        presenter.onViewDestroyed();
+        verify(positionCall, never()).cancel();
+        verify(storePositionsTask, never()).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the positions
+     * that failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStorePositionsTaskFailed() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPositionsSavingFailed();
+                return null;
+            }
+        }).when(storePositionsTask).execute(Matchers.<Position>anyVararg());
+        this.initPreferences(true, false, true);
+        presenter.loadData();
+        verify(positionApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(positionCall).enqueue(positionsCaptor.capture());
+        positionsCaptor.getValue().onResponse(positionCall, Response.success(positions));
+        presenter.onViewDestroyed();
+        verify(positionCall, never()).cancel();
+        verify(storePositionsTask, never()).cancel(true);
+    }
+
+    /**
      * Test the behavior when onViewDestroyed is called and the request to load the players is
      * successful and the task to store the players is not yer finished.
      */
@@ -718,5 +900,51 @@ public class HomeViewPresenterTest {
         presenter.onViewDestroyed();
         verify(playersCall, never()).cancel();
         verify(storePlayersTask).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the players
+     * that succeeded.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStorePlayersTaskSucceeded() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPlayersSavingSuccess();
+                return null;
+            }
+        }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        presenter.onViewDestroyed();
+        verify(playersCall, never()).cancel();
+        verify(storePlayersTask, never()).cancel(true);
+    }
+
+    /**
+     * Test the behavior when onViewDestroyed is called after the task for storing the players
+     * that failed.
+     */
+    @Test
+    public void testOnViewDestroyedAfterStorePlayersTaskFailed() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                presenter.onPlayersSavingSuccess();
+                return null;
+            }
+        }).when(storePlayersTask).execute(Matchers.<Player>anyVararg());
+        this.initPreferences(true, true, false);
+        presenter.loadData();
+        verify(playerApi).index(anyBoolean(), anyInt(), anyInt());
+        verify(playersCall).enqueue(playersCaptor.capture());
+        playersCaptor.getValue().onResponse(playersCall, Response.success(players));
+        presenter.onViewDestroyed();
+        verify(playersCall, never()).cancel();
+        verify(storePlayersTask, never()).cancel(true);
     }
 }

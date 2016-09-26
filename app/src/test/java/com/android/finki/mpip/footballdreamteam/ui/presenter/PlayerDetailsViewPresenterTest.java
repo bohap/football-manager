@@ -6,29 +6,30 @@ import com.android.finki.mpip.footballdreamteam.database.service.PlayerDBService
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.Position;
 import com.android.finki.mpip.footballdreamteam.model.Team;
-import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
+import com.android.finki.mpip.footballdreamteam.ui.component.PlayerDetailsView;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 20.08.2016.
  */
-@Ignore
-public class PlayerDetailsDialogPresenterTest {
+public class PlayerDetailsViewPresenterTest {
 
     @Mock
-    private PlayerDetailsDialog dialog;
+    private PlayerDetailsView view;
 
     @Mock
     private PlayerDBService dbService;
@@ -37,16 +38,15 @@ public class PlayerDetailsDialogPresenterTest {
     private Bundle args;
 
     private PlayerDetailsViewPresenter presenter;
-
-    private final int year = 2016, month = 8, day = 20;
-    private final Calendar calendar = new GregorianCalendar(year, month, day);
+    private final Calendar calendar = new GregorianCalendar(2016, 8, 20);
+    private Date date = calendar.getTime();
     private final Player player = new Player(1, new Team(1, "Team"),
-            new Position(1, "Position"), "Player", null, calendar.getTime(), 0);
+            new Position(1, "Position"), "Player", null, date, 0);
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        presenter = new PlayerDetailsViewPresenter(dialog, dbService);
+        presenter = new PlayerDetailsViewPresenter(view, dbService);
     }
 
     /**
@@ -61,8 +61,8 @@ public class PlayerDetailsDialogPresenterTest {
      * Test the behavior on onViewCreated called with invalid player id bundle key.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testOnDialogCreatedWithInvalidPlayerId() {
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1)).thenReturn(0);
+    public void testOnViewCreatedWithInvalidPlayerId() {
+        when(args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1)).thenReturn(0);
         presenter.onViewCreated(args);
     }
 
@@ -71,12 +71,12 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerOnUnExistingPlayerId() {
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-//                .thenReturn(player.getId());
+        when(args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1)).thenReturn(player.getId());
         presenter.onViewCreated(args);
-        verify(dbService).open();
-        verify(dbService).close();
-        verify(dbService).get(player.getId());
+        InOrder inOrder = inOrder(dbService);
+        inOrder.verify(dbService).open();
+        inOrder.verify(dbService).get(player.getId());
+        inOrder.verify(dbService).close();
     }
 
     /**
@@ -84,14 +84,14 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerOnPlayerNullTeam() {
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-//                .thenReturn(player.getId());
+        when(args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1)).thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setTeam(null);
         presenter.onViewCreated(args);
-        verify(dbService).open();
-        verify(dbService).close();
-        verify(dbService).get(player.getId());
+        InOrder inOrder = inOrder(dbService);
+        inOrder.verify(dbService).open();
+        inOrder.verify(dbService).get(player.getId());
+        inOrder.verify(dbService).close();
     }
 
     /**
@@ -99,46 +99,34 @@ public class PlayerDetailsDialogPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayerWithPlayerNullPosition() {
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-//                .thenReturn(player.getId());
+        when(args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1)).thenReturn(player.getId());
         when(dbService.get(player.getId())).thenReturn(player);
         player.setPosition(null);
         presenter.onViewCreated(args);
-        verify(dbService).open();
-        verify(dbService).close();
-        verify(dbService).get(player.getId());
+        InOrder inOrder = inOrder(dbService);
+        inOrder.verify(dbService).open();
+        inOrder.verify(dbService).get(player.getId());
+        inOrder.verify(dbService).close();
     }
 
     /**
-     * Test that getPlayer works when all data is valid.
+     * Test the behavior when onViewLayoutCreated is called.
      */
     @Test
-    public void testGetPlayer() {
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-//                .thenReturn(player.getId());
-        when(dbService.get(player.getId())).thenReturn(player);
-        presenter.onViewCreated(args);
-        verify(dbService).open();
-        verify(dbService).close();
-        verify(dbService).get(player.getId());
-    }
-
-    /**
-     * Test the behavior when loadComments is called.
-     */
-    @Test
-    public void testOnViewCreated() {
+    public void testOnViewLayoutCreated() {
         String name = player.getName();
         String team = player.getTeam().getName();
         String age = String.valueOf(DateUtils.getYearDiff(player.getDateOfBirth()));
         String position = player.getPosition().getName();
-//        when(args.getInt(PlayerDetailsDialog.getBundlePlayerIdKey(), -1))
-//                .thenReturn(player.getId());
-//        when(args.getBoolean(PlayerDetailsDialog.getBundleEditableKey(), false))
-//                .thenReturn(true);
+        when(args.getInt(PlayerDetailsView.BUNDLE_PLAYER_ID_KEY, -1)).thenReturn(player.getId());
+        when(args.getBoolean(PlayerDetailsView.BUNDLE_EDITABLE_KEY, false)).thenReturn(true);
         when(dbService.get(player.getId())).thenReturn(player);
         presenter.onViewCreated(args);
-//        presenter.onViewCreated();
-        verify(dialog).bindPlayer(name, team, age, position, true);
+        presenter.onViewLayoutCreated();
+        InOrder inOrder = inOrder(dbService);
+        inOrder.verify(dbService).open();
+        inOrder.verify(dbService).get(player.getId());
+        inOrder.verify(dbService).close();
+        verify(view).bindPlayer(name, team, age, position, true);
     }
 }

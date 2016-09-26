@@ -166,8 +166,8 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         requestSending = false;
         teamCall = null;
         List<Team> teams = response.body();
-        storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
         storeTeamsTaskExecuting = true;
+        storeTeamsTask.execute(teams.toArray(new Team[teams.size()]));
         if (viewLayoutCreated) {
             view.showTeamsStoring();
         }
@@ -270,8 +270,8 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         requestSending = false;
         positionCall = null;
         List<Position> positions = response.body();
-        storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
         storePositionsTaskExecuting = true;
+        storePositionsTask.execute(positions.toArray(new Position[positions.size()]));
         if (viewLayoutCreated) {
             view.showPositionsStoring();
         }
@@ -374,8 +374,8 @@ public class HomeViewPresenter extends BasePresenter implements StoreTeamsTask.L
         requestSending = false;
         playerCall = null;
         List<Player> players = response.body();
-        storePlayersTask.execute(players.toArray(new Player[players.size()]));
         storePlayersTaskExecuting = true;
+        storePlayersTask.execute(players.toArray(new Player[players.size()]));
         if (viewLayoutCreated) {
             view.showPlayersStoring();
         }

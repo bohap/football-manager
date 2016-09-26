@@ -1,13 +1,11 @@
 package com.android.finki.mpip.footballdreamteam.ui.activity;
 
-import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,7 +16,6 @@ import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLi
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
-import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
@@ -29,7 +26,6 @@ import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayers
 import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
-import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -110,8 +106,8 @@ public class CreateLineupActivityTest {
         MockApplication application = (MockApplication) RuntimeEnvironment.application;
         application.setCreateLineupViewComponent(component);
         application.setLineupFormationFragmentComponent(lineupFormationFragmentComponent);
-        application.setListPositionPlayersFragmentComponent(listPositionPlayersFragmentComponent);
-        application.setPlayerDetailsDialogComponent(playerDetailsDialogComponent);
+        application.setListPositionPlayersViewComponent(listPositionPlayersFragmentComponent);
+        application.setPlayerDetailsViewComponent(playerDetailsDialogComponent);
         this.mockDependencies();
         controller = Robolectric.buildActivity(CreateLineupActivity.class);
         activity = controller.create().start().resume().visible().get();
