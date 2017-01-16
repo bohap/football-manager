@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -39,6 +40,7 @@ public class SplashViewPresenterTest {
     private String FIRST_TIME_KEY = "first_time";
     private String AUTH_USER_ID_KEY = "auth_user_id";
 
+    @SuppressLint("CommitPrefEdits")
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);

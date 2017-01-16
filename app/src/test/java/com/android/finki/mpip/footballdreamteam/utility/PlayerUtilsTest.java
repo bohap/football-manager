@@ -1,18 +1,24 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
-import com.android.finki.mpip.footballdreamteam.model.Player;
-
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Borce on 12.08.2016.
  */
-@Ignore
 public class PlayerUtilsTest {
 
     private PlayerUtils utils = new PlayerUtils();
+
+    /**
+     * Test the behavior when getLastName is called with null param.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetLastNameWithNullParam() {
+        utils.getLastName(null);
+    }
 
     /**
      * Test the getLastName method will return the player last name.
@@ -41,7 +47,7 @@ public class PlayerUtilsTest {
      */
     @Test
     public void testGetLastNameOnNameWithNoEmptySpace() {
-        String name = "Rafinha";
+        String name = "Rooney";
         String result = utils.getLastName(name);
         assertEquals(name, result);
     }

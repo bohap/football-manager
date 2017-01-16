@@ -543,10 +543,10 @@ public class HomeActivityTest {
     }
 
     /**
-     * Test the behavior when showLoadingSuccess is called.
+     * Test the behavior when testShowLoadingSuccess is called.
      */
     @Test
-    public void showLoadingSuccess() {
+    public void testShowLoadingSuccess() {
         spinner.setVisibility(View.VISIBLE);
         error.setVisibility(View.VISIBLE);
         activity.showInitialDataLoadingSuccess();

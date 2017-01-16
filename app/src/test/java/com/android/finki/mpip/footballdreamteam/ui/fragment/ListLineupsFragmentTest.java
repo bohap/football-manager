@@ -187,7 +187,7 @@ public class ListLineupsFragmentTest {
     }
 
     /**
-     * Test the behavior when showLoadingSuccess is called.
+     * Test the behavior when testShowLoadingSuccess is called.
      */
     @Test
     public void testShowLoadingSuccess() {

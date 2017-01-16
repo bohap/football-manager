@@ -13,6 +13,7 @@ import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupForma
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
+import com.android.finki.mpip.footballdreamteam.model.helpers.SerializableList;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
@@ -101,21 +102,22 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     /**
      * Create a new instance of the fragment.
      *
-     * @param lineupPlayers List of players
+     * @param players  List of players in the lineup
+     * @param editable whatever the lineup can be edited
      * @return new instance of the fragment
      */
-    public static LineupFormationFragment newInstance(LineupPlayers lineupPlayers) {
-        if (lineupPlayers == null) {
-            throw new IllegalArgumentException("lineup players can't be null");
+    public static LineupFormationFragment newInstance(List<Player> players, boolean editable) {
+        if (players == null) {
+            throw new IllegalArgumentException("players can't be null");
         }
-        if (lineupPlayers.getPlayers().size() != 11) {
+        if (players.size() != 11) {
             throw new IllegalArgumentException(String
-                    .format("invalid player size, required 11, but got %s",
-                            lineupPlayers.getPlayers().size()));
+                    .format("invalid player size, required 11, but got %s", players.size()));
         }
         LineupFormationFragment fragment = new LineupFormationFragment();
         Bundle args = new Bundle();
-        args.putSerializable(LINEUP_PLAYERS_KEY, lineupPlayers);
+        args.putSerializable(LINEUP_PLAYERS_KEY, new SerializableList<>(players));
+        args.putBoolean(LINEUP_EDITABLE_KEY, editable);
         fragment.setArguments(args);
         return fragment;
     }
@@ -130,19 +132,15 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation,
                                                       List<Player> players) {
         if (formation == null) {
-            String message = "formation can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("formation can't be null");
         }
         if (players == null) {
-            String message = "players can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("players can't be null");
         }
         LineupFormationFragment fragment = new LineupFormationFragment();
         Bundle args = new Bundle();
         args.putSerializable(FORMATION_KEY, formation);
-        args.putSerializable(LIST_PLAYERS_KEY, new LineupPlayers(players));
+        args.putSerializable(LIST_PLAYERS_KEY, new SerializableList<>(players));
         fragment.setArguments(args);
         return fragment;
     }
@@ -296,7 +294,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     @Override
     public void onClick(View view) {
         logger.info("player clicked");
-        int [] location = new int[2];
+        int[] location = new int[2];
         view.getLocationOnScreen(location);
         presenter.onPlayerClick(view.getId(), location[0], location[1]);
     }

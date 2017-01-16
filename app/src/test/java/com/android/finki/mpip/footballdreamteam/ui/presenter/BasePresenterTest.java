@@ -4,14 +4,11 @@ import com.android.finki.mpip.footballdreamteam.exception.InternalServerErrorExc
 import com.android.finki.mpip.footballdreamteam.exception.NotAuthenticatedException;
 import com.android.finki.mpip.footballdreamteam.ui.component.BaseView;
 
-import org.bouncycastle.ocsp.Req;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -22,9 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 19.09.2016.

@@ -1,16 +1,14 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
+import android.annotation.SuppressLint;
+
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,14 +17,13 @@ import java.util.Map;
  */
 public class LineupUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(LineupUtils.class);
     private PositionUtils positionUtils;
 
     public enum FORMATION {
         F_4_4_2,
+        F_3_2_3_2,
         F_4_2_3_1,
-        F_4_3_3,
-        F_3_2_3_2
+        F_4_3_3
     }
 
     public LineupUtils(PositionUtils positionUtils) {
@@ -36,26 +33,27 @@ public class LineupUtils {
     /**
      * Get the lineup formation for the given list of players.
      *
-     * @param positions List of positions
+     * @param players List of players that are in the lineup
      * @return Lineup formation
      */
-    public FORMATION getFormation(List<Position> positions) {
-        if (positions.size() != 11) {
-            String message = String.format("incorrect players size, required 11, got %d",
-                    positions.size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+    public FORMATION getFormation(List<Player> players) {
+        if (players == null) {
+            throw new IllegalArgumentException("players can't be null");
         }
-
-        Map<PositionUtils.POSITION, Integer> mapped = positionUtils.countPositions(positions);
-        int centreBacks = mapped.get(PositionUtils.POSITION.CENTRE_BACK);
-        int rightBacks = mapped.get(PositionUtils.POSITION.RIGHT_BACK);
-        int leftBacks = mapped.get(PositionUtils.POSITION.LEFT_BACK);
-        int centreMidfield = mapped.get(PositionUtils.POSITION.CENTRE_MIDFIELD);
-        int rightWings = mapped.get(PositionUtils.POSITION.RIGHT_WING);
-        int leftWings = mapped.get(PositionUtils.POSITION.LEFT_WING);
-        int attackingMidfield = mapped.get(PositionUtils.POSITION.ATTACKING_MIDFIELD);
-        int centreForwards = mapped.get(PositionUtils.POSITION.CENTRE_FORWARD);
+        if (players.size() != 11) {
+            throw new IllegalArgumentException(String
+                    .format("incorrect players size, required 11, got %d", players.size()));
+        }
+        Map<PositionUtils.POSITION_TYPE, Integer> mapped =
+                positionUtils.countLineupPlayersPositions(players);
+        int centreBacks = mapped.get(PositionUtils.POSITION_TYPE.CENTRE_BACK);
+        int rightBacks = mapped.get(PositionUtils.POSITION_TYPE.RIGHT_BACK);
+        int leftBacks = mapped.get(PositionUtils.POSITION_TYPE.LEFT_BACK);
+        int centreMidfield = mapped.get(PositionUtils.POSITION_TYPE.CENTRE_MIDFIELD);
+        int rightWings = mapped.get(PositionUtils.POSITION_TYPE.RIGHT_WING);
+        int leftWings = mapped.get(PositionUtils.POSITION_TYPE.LEFT_WING);
+        int attackingMidfield = mapped.get(PositionUtils.POSITION_TYPE.ATTACKING_MIDFIELD);
+        int centreForwards = mapped.get(PositionUtils.POSITION_TYPE.CENTRE_FORWARD);
 
         if (centreBacks == 2 && rightBacks == 1 && leftBacks == 1 &&
                 centreMidfield == 2 && rightWings == 1 && leftWings == 1 && centreForwards == 2) {
@@ -71,210 +69,144 @@ public class LineupUtils {
             return FORMATION.F_3_2_3_2;
         }
         if (centreBacks == 2 && rightBacks == 1 && leftBacks == 1 && centreMidfield == 2 &&
-                rightWings == 1 && leftWings == 1 && attackingMidfield == 1 && centreForwards == 1) {
+                rightWings == 1 && leftWings == 1 && attackingMidfield == 1 &&
+                centreForwards == 1) {
             return FORMATION.F_4_2_3_1;
         }
         if (centreBacks == 2 && rightBacks == 1 && leftBacks == 1 && centreMidfield == 3 &&
                 centreForwards == 3) {
             return FORMATION.F_4_3_3;
         }
-        return null;
+        throw new IllegalArgumentException("can't determine lineup formation");
+    }
+
+    /**
+     * Get the positions resources ids for the given formation.
+     *
+     * @param formation Lineup formation
+     * @return positions resources ids
+     */
+    private int[] getPositionsResourcesIds(FORMATION formation) {
+        if (formation == null) {
+            throw new IllegalArgumentException("formation can't be null");
+        }
+        if (formation == FORMATION.F_4_4_2) {
+            return PositionUtils.formation_4_4_2_resourcesIds;
+        }
+        if (formation == FORMATION.F_3_2_3_2) {
+            return PositionUtils.formation_3_2_3_2_resourcesIds;
+        }
+        if (formation == FORMATION.F_4_2_3_1) {
+            return PositionUtils.formation_4_2_3_1_resourcesIds;
+        }
+        if (formation == FORMATION.F_4_3_3) {
+            return PositionUtils.formation_4_3_3_resourcesIds;
+        }
+        throw new IllegalArgumentException("invalid formation");
     }
 
     /**
      * Creates a map for the given list. The lineup formation is determined from the given list
      * and the players are put in the map depending on their lineup position which must be set.
      *
-     * @param lineupPlayers Lineup players and positions.
+     * @param formation Lineup formation
+     * @param players   List of players that are in the lineup
      * @return Map where the id is the player id mapped with android positions resource
      * id and is mapped to the player position in the lineup
      */
-    public LineupPlayers mapPlayers(LineupPlayers lineupPlayers) {
-        if (lineupPlayers.getPlayers().size() != 11) {
-            String message = String.format("incorrect players size, required 11, got %d",
-                    lineupPlayers.getPlayers().size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        FORMATION formation = this.getFormation(lineupPlayers.getPositions());
-        if (formation == null) {
-            String message = "lineup formation can't be determined";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        lineupPlayers.setFormation(formation);
-        Map<Integer, Player> map = new HashMap<>();
-        for (Player player : lineupPlayers.getPlayers()) {
-            if (player.getLineupPlayer() == null) {
-                String message = "lineup player can't be null";
-                logger.info(message);
-                throw new IllegalArgumentException(message);
-            }
-            if (player.getLineupPlayer().getPosition() == null) {
-                String message = "lineup player position can't be null";
-                logger.info(message);
-                throw new IllegalArgumentException(message);
-            }
-            switch (positionUtils.getPosition(player.getLineupPlayer().getPosition())) {
-                case KEEPER:
-                    map.put(R.id.keeper, player);
-                    break;
-                case RIGHT_BACK:
-                    if (formation == FORMATION.F_3_2_3_2) {
-                        if (map.get(R.id.rightCentreBack) != null) {
-                            map.put(R.id.centreCentreBack, map.get(R.id.rightCentreBack));
-                        }
-                        map.put(R.id.rightCentreBack, player);
-                    } else {
-                        map.put(R.id.rightBack, player);
-                    }
-                    break;
-                case LEFT_BACK:
-                    if (formation == FORMATION.F_3_2_3_2) {
-                        if (map.get(R.id.leftCentreBack) != null) {
-                            map.put(R.id.centreCentreBack, map.get(R.id.leftCentreBack));
-                        }
-                        map.put(R.id.leftCentreBack, player);
-                    } else {
-                        map.put(R.id.leftBack, player);
-                    }
-                    break;
-                case CENTRE_BACK:
-                    if (map.get(R.id.leftCentreBack) == null) {
-                        map.put(R.id.leftCentreBack, player);
-                    } else if (map.get(R.id.rightCentreBack) == null) {
-                        map.put(R.id.rightCentreBack, player);
-                    } else {
-                        map.put(R.id.centreCentreBack, player);
-                    }
-                    break;
-                case DEFENSIVE_MIDFIELD:
-                case CENTRE_MIDFIELD:
-                    if (map.get(R.id.leftCentreMidfield) == null) {
-                        map.put(R.id.leftCentreMidfield, player);
-                    } else if (map.get(R.id.rightCentreMidfield) == null) {
-                        map.put(R.id.rightCentreMidfield, player);
-                    } else {
-                        map.put(R.id.centreCentreMidfield, player);
-                    }
-                    break;
-                case RIGHT_WING:
-                    map.put(R.id.rightWing, player);
-                    break;
-                case LEFT_WING:
-                    map.put(R.id.leftWing, player);
-                    break;
-                case ATTACKING_MIDFIELD:
-                    map.put(R.id.attackingMidfield, player);
-                    break;
-                case CENTRE_FORWARD:
-                case SECONDARY_FORWARD:
-                    if (formation == FORMATION.F_4_2_3_1) {
-                        map.put(R.id.centreCentreForward, player);
-                    } else if (map.get(R.id.leftCentreForward) == null) {
-                        map.put(R.id.leftCentreForward, player);
-                    } else if (map.get(R.id.rightCentreForward) == null) {
-                        map.put(R.id.rightCentreForward, player);
-                    } else {
-                        map.put(R.id.centreCentreForward, player);
-                    }
-                    break;
-            }
-        }
-        lineupPlayers.setMappedPlayers(map);
-        return lineupPlayers;
-    }
-
-    /**
-     * Generates a map for the given formation and fills the map with the List of players.
-     *
-     * @param formation       lineup formation
-     * @param players         players that are in the lineup, not necessarily has 11 records
-     * @param mappedPositions mapped positions when the id is positions resource id and the
-     *                        value is position id in the database
-     * @return Map where the key is a android resource position id that is in the lineup formation
-     * and the value is null
-     */
-    public Map<Integer, Player> generateMap(FORMATION formation,
-                                            List<Player> players,
-                                            Map<PositionUtils.POSITION, Integer> mappedPositions) {
-        if (formation == null) {
-            String message = "formation can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
+    @SuppressLint("UseSparseArrays")
+    public Map<Integer, Player> mapPlayers(FORMATION formation, List<Player> players) {
         if (players == null) {
-            String message = "players can't be null";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("players can'e be null");
         }
-        int i = 0;
+        if (players.size() != 11) {
+            String msg = String.format("incorrect players size, required 11, got %d",
+                                       players.size());
+            throw new IllegalArgumentException(msg);
+        }
+        int[] resourceIds = this.getPositionsResourcesIds(formation);
         Map<Integer, Player> map = new HashMap<>();
-        map.put(R.id.keeper, this.getPlayer(players, i++, R.id.keeper, mappedPositions));
-        /* Generate the defenders */
-        map.put(R.id.leftCentreBack, this.getPlayer(players, i++,
-                R.id.leftCentreBack, mappedPositions));
-        map.put(R.id.rightCentreBack, this.getPlayer(players, i++,
-                R.id.rightCentreBack, mappedPositions));
-        if (formation == FORMATION.F_3_2_3_2) {
-            map.put(R.id.centreCentreBack, this.getPlayer(players, i++,
-                    R.id.centreCentreBack, mappedPositions));
-        } else {
-            map.put(R.id.leftBack, this.getPlayer(players, i++, R.id.leftBack, mappedPositions));
-            map.put(R.id.rightBack, this.getPlayer(players, i++, R.id.rightBack, mappedPositions));
-        }
-        /* Generate the midfielders */
-        map.put(R.id.leftCentreMidfield, this.getPlayer(players, i++,
-                R.id.leftCentreMidfield, mappedPositions));
-        map.put(R.id.rightCentreMidfield, this.getPlayer(players, i++,
-                R.id.rightCentreMidfield, mappedPositions));
-        if (formation == FORMATION.F_4_3_3) {
-            map.put(R.id.centreCentreMidfield, this.getPlayer(players, i++,
-                    R.id.centreCentreMidfield, mappedPositions));
-        } else {
-            if (formation == FORMATION.F_4_2_3_1 ||
-                    formation == FORMATION.F_3_2_3_2) {
-                map.put(R.id.attackingMidfield, this.getPlayer(players, i++,
-                        R.id.attackingMidfield, mappedPositions));
+        List<Player> tPlayers = new ArrayList<>(players);
+        for (int resourceId : resourceIds) {
+            PositionUtils.POSITION_TYPE positionType =
+                    positionUtils.getPositionResourceIdType(resourceId);
+            Iterator<Player> iterator = tPlayers.iterator();
+            while (iterator.hasNext()) {
+                Player player = iterator.next();
+                LineupPlayer lineupPlayer = player.getLineupPlayer();
+                if (lineupPlayer == null) {
+                    throw new IllegalArgumentException("lineup player can't be null");
+                }
+                PositionUtils.POSITION_TYPE playerPositionType;
+                if (lineupPlayer.getPosition() != null &&
+                        lineupPlayer.getPosition().getName() != null) {
+                    playerPositionType =
+                            positionUtils.getPositionType(lineupPlayer.getPosition());
+                } else {
+                    playerPositionType =
+                            positionUtils.getPositionType(lineupPlayer.getPositionId());
+                }
+                boolean remove = false;
+                if (playerPositionType == PositionUtils.POSITION_TYPE.RIGHT_BACK &&
+                        formation == FORMATION.F_3_2_3_2) {
+                    if (map.get(R.id.rightCentreBack) != null) {
+                        map.put(R.id.centreCentreBack, map.get(R.id.rightCentreBack));
+                    }
+                    map.put(R.id.rightCentreBack, player);
+                    remove = true;
+                } else if (playerPositionType == PositionUtils.POSITION_TYPE.LEFT_BACK &&
+                        formation == FORMATION.F_3_2_3_2) {
+                    if (map.get(R.id.leftCentreBack) != null) {
+                        map.put(R.id.centreCentreBack, map.get(R.id.leftCentreBack));
+                    }
+                    map.put(R.id.leftCentreBack, player);
+                    remove = true;
+                } else if (positionUtils.samePositions(positionType, playerPositionType)) {
+                    map.put(resourceId, player);
+                    remove = true;
+                }
+                if (remove) {
+                    iterator.remove();
+                    break;
+                }
             }
-            map.put(R.id.leftWing, this.getPlayer(players, i++, R.id.leftWing, mappedPositions));
-            map.put(R.id.rightWing, this.getPlayer(players, i++, R.id.rightWing, mappedPositions));
         }
-        /* Generate the attackers. */
-        if (formation != FORMATION.F_4_2_3_1) {
-            map.put(R.id.leftCentreForward, this.getPlayer(players, i++,
-                    R.id.leftCentreForward, mappedPositions));
-            map.put(R.id.rightCentreForward, this.getPlayer(players, i++,
-                    R.id.rightCentreForward, mappedPositions));
-        }
-        if (formation == FORMATION.F_4_2_3_1 ||
-                formation == FORMATION.F_4_3_3) {
-            map.put(R.id.centreCentreForward, this.getPlayer(players, i,
-                    R.id.centreCentreForward, mappedPositions));
+        if (map.size() != 11) {
+            throw new IllegalArgumentException("not all players can be mapped");
         }
         return map;
     }
 
     /**
-     * Get the player from the list on the given position or if the position is bigger
-     * than the list size return a empty player.
+     * Generates a map for the given formation and fills the map with the List of players.
      *
-     * @param players             List of players
-     * @param i                   index in the list
-     * @param positionsResourceId position resource id
-     * @param mappedPositions     mapped positions when the id is positions resource id and the
-     *                            value is position id in the database
-     * @return player from the list or empty player
+     * @param formation lineup formation
+     * @param players   players that are in the lineup, not necessarily has 11 records
+     * @return Map where the key is a android resource position id that is in the lineup formation
+     * and the value is null
      */
-    private Player getPlayer(List<Player> players, int i, int positionsResourceId,
-                             Map<PositionUtils.POSITION, Integer> mappedPositions) {
-        if (i > players.size() - 1) {
-            return new Player();
+    @SuppressLint("UseSparseArrays")
+    public Map<Integer, Player> generateMap(FORMATION formation, List<Player> players) {
+        if (formation == null) {
+            throw new IllegalArgumentException("formation can't be null");
         }
-        Player player = players.get(i);
-        int positionId = positionUtils.getPositionId(positionsResourceId, mappedPositions);
-        player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
-        return player;
+        if (players == null) {
+            throw new IllegalArgumentException("players can't be null");
+        }
+        int[] resourcesIds = this.getPositionsResourcesIds(formation);
+        Map<Integer, Player> map = new HashMap<>();
+        for (int i = 0; i < resourcesIds.length; i++) {
+            Player player;
+            if (i > players.size() - 1) {
+                player = new Player();
+            } else {
+                player = players.get(i);
+                int positionId = positionUtils.getPositionId(resourcesIds[i]);
+                player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
+            }
+            map.put(resourcesIds[i], player);
+        }
+        return map;
     }
 
     /**
@@ -284,18 +216,23 @@ public class LineupUtils {
      * @return List of LineupPlayer
      */
     public List<LineupPlayer> getLineupPlayers(Map<Integer, Player> mappedPlayers) {
+        if (mappedPlayers == null) {
+            throw new IllegalArgumentException("mapped players can't be null");
+        }
         if (mappedPlayers.size() != 11) {
-            String message = String.format("invalid map size, requested 11, got %d",
-                    mappedPlayers.size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException(String
+                    .format("invalid map size, requested 11, got %d", mappedPlayers.size()));
         }
         List<LineupPlayer> lineupPlayers = new ArrayList<>();
         for (Map.Entry<Integer, Player> entry : mappedPlayers.entrySet()) {
             Player player = entry.getValue();
-            int playerId = player.getId();
-            int positionId = player.getLineupPositionId();
-            lineupPlayers.add(new LineupPlayer(0, playerId, positionId));
+            if (player.getLineupPlayer() == null) {
+                throw new IllegalArgumentException("lineup player can't be null");
+            }
+            int lineupId = player.getLineupPlayer().getLineupId();
+            int playerId = player.getLineupPlayer().getPlayerId();
+            int positionId = player.getLineupPlayer().getPositionId();
+            lineupPlayers.add(new LineupPlayer(lineupId, playerId, positionId));
         }
         return lineupPlayers;
     }

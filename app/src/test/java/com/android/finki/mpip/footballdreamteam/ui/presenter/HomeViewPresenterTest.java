@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -48,7 +49,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 09.08.2016.
  */
-@Ignore
 public class HomeViewPresenterTest {
 
     @Mock
@@ -126,6 +126,7 @@ public class HomeViewPresenterTest {
     /**
      * Mock the object to return specific values on method calls.
      */
+    @SuppressLint("CommitPrefEdits")
     private void initMocks() {
         when(context.getString(R.string.preference_teams_loaded_key))
                 .thenReturn(TEAMS_LOADED_KEY);

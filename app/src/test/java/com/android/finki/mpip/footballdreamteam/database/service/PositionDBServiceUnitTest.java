@@ -405,22 +405,22 @@ public class PositionDBServiceUnitTest {
     }
 
     /**
-     * Test that mapPositions correctly maps the POSITION with position id.
+     * Test that mapPositions correctly maps the POSITION_TYPE with position id.
      */
     @Test
     public void testMapPositions() {
-        Map<PositionUtils.POSITION, Integer> map = service.mapPositions();
+        Map<PositionUtils.POSITION_TYPE, Integer> map = service.mapPositions();
         assertNotNull(map);
-        assertEquals(keeper.getId(), map.get(PositionUtils.POSITION.KEEPER));
-        assertEquals(centreBack.getId(), map.get(PositionUtils.POSITION.CENTRE_BACK));
-        assertEquals(leftBack.getId(), map.get(PositionUtils.POSITION.LEFT_BACK));
-        assertEquals(rightBack.getId(), map.get(PositionUtils.POSITION.RIGHT_BACK));
-        assertEquals(defensiveMidfield.getId(), map.get(PositionUtils.POSITION.DEFENSIVE_MIDFIELD));
-        assertEquals(centreMidfield.getId(), map.get(PositionUtils.POSITION.CENTRE_MIDFIELD));
-        assertEquals(attackingMidfield.getId(), map.get(PositionUtils.POSITION.ATTACKING_MIDFIELD));
-        assertEquals(leftWing.getId(), map.get(PositionUtils.POSITION.LEFT_WING));
-        assertEquals(rightWing.getId(), map.get(PositionUtils.POSITION.RIGHT_WING));
-        assertEquals(centreForward.getId(), map.get(PositionUtils.POSITION.CENTRE_FORWARD));
-        assertEquals(secondaryForward.getId(), map.get(PositionUtils.POSITION.SECONDARY_FORWARD));
+        assertEquals(keeper.getId(), map.get(PositionUtils.POSITION_TYPE.KEEPER));
+        assertEquals(centreBack.getId(), map.get(PositionUtils.POSITION_TYPE.CENTRE_BACK));
+        assertEquals(leftBack.getId(), map.get(PositionUtils.POSITION_TYPE.LEFT_BACK));
+        assertEquals(rightBack.getId(), map.get(PositionUtils.POSITION_TYPE.RIGHT_BACK));
+        assertEquals(defensiveMidfield.getId(), map.get(PositionUtils.POSITION_TYPE.DEFENSIVE_MIDFIELD));
+        assertEquals(centreMidfield.getId(), map.get(PositionUtils.POSITION_TYPE.CENTRE_MIDFIELD));
+        assertEquals(attackingMidfield.getId(), map.get(PositionUtils.POSITION_TYPE.ATTACKING_MIDFIELD));
+        assertEquals(leftWing.getId(), map.get(PositionUtils.POSITION_TYPE.LEFT_WING));
+        assertEquals(rightWing.getId(), map.get(PositionUtils.POSITION_TYPE.RIGHT_WING));
+        assertEquals(centreForward.getId(), map.get(PositionUtils.POSITION_TYPE.CENTRE_FORWARD));
+        assertEquals(secondaryForward.getId(), map.get(PositionUtils.POSITION_TYPE.SECONDARY_FORWARD));
     }
 }

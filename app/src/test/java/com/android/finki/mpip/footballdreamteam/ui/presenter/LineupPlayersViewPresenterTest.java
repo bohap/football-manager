@@ -18,7 +18,6 @@ import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Borce on 17.08.2016.
  */
-@Ignore
 public class LineupPlayersViewPresenterTest {
 
     @Mock
@@ -87,8 +85,6 @@ public class LineupPlayersViewPresenterTest {
 
     private Lineup lineup = new Lineup(1, new User(1, "User 1"));
     private List<Player> players = Arrays.asList(new Player(), new Player(), new Player());
-    private List<LineupPlayer> lineupPlayers = Arrays.asList(new LineupPlayer(1, 1, 1),
-            new LineupPlayer(2, 2, 2), new LineupPlayer(3, 3, 3));
 
     @Before
     public void setup() {

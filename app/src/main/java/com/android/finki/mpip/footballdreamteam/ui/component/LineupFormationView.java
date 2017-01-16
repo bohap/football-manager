@@ -8,6 +8,7 @@ import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 public interface LineupFormationView {
 
     String LINEUP_PLAYERS_KEY = "LINEUP_PLAYERS";
+    String LINEUP_EDITABLE_KEY = "LINEUP_EDITABLE";
     String FORMATION_KEY = "LINEUP_FORMATION";
     String LIST_PLAYERS_KEY = "LINEUP_LIST_PLAYERS";
 

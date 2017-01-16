@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.ui.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -98,6 +99,7 @@ public class RegisterViewPresenterTest {
     private RegisterUserResponse response = new RegisterUserResponse(200, null, null,
             new AuthUser(user.getId(), name, email), "Token");
 
+    @SuppressLint("CommitPrefEdits")
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);

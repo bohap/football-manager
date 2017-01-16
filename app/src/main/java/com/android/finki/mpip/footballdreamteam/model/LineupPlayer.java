@@ -48,8 +48,8 @@ public class LineupPlayer extends BaseModel implements Serializable {
 
     public LineupPlayer(Lineup lineup, Player player, Position position, Date createdAt,
                         Date updatedAt) {
-        this(lineup.getId(), player.getId(), position.getId(), createdAt, updatedAt,
-                lineup, player, position);
+        this(lineup.getId(), player.getId(), position.getId(), createdAt,
+             updatedAt, lineup, player, position);
     }
 
     public LineupPlayer(Lineup lineup, Player player, Position position) {

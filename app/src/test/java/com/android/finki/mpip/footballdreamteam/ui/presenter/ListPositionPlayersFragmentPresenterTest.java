@@ -8,7 +8,6 @@ import com.android.finki.mpip.footballdreamteam.ui.component.ListPositionPlayers
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -17,7 +16,11 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 19.08.2016.

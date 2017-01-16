@@ -24,9 +24,6 @@ import com.android.finki.mpip.footballdreamteam.utility.PlayerUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 import com.android.finki.mpip.footballdreamteam.utility.validator.LineupPlayerValidator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -154,7 +151,7 @@ public class AuthPersistenceModule {
      *
      * @param context         base application context
      * @param dbHelper        application OpenSQLiteHelper
-     * @param userDBService   instnac eof UserDBService
+     * @param userDBService   instance of UserDBService
      * @param lineupDBService instance of LineupDBService
      * @return instance of LikeDBService
      */

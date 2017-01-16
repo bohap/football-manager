@@ -60,7 +60,7 @@ public class StringUtilsTest {
      * Test the isValidEmail method works for invalid emails.
      */
     @Test
-    public void testisValidEmailOnInvalidEmails() {
+    public void testIsValidEmailOnInvalidEmails() {
         String email = "user.com";
         assertFalse(StringUtils.isValidEmail(email));
         email = "user@";

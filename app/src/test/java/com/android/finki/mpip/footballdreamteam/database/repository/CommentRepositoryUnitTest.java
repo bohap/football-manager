@@ -40,7 +40,7 @@ public class CommentRepositoryUnitTest {
 
     private Calendar calendar = new GregorianCalendar(2016, 7, 1, 15, 30, 0);
     private Date date = calendar.getTime();
-    String sDate = DateUtils.format(calendar.getTime());
+    private String sDate = DateUtils.format(calendar.getTime());
     private String COLUMN_ID = "id";
     private String COLUMN_USER_ID = "user_id";
     private String COLUMN_LINEUP_ID = "lineup_id";

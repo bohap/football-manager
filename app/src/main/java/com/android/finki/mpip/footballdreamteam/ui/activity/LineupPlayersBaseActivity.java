@@ -79,8 +79,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
      * @param editable whatever the lineup is editable
      */
     void showLineupFormationFragment(List<Player> players, boolean editable) {
-        LineupPlayers playersList = new LineupPlayers(players, editable);
-        LineupFormationFragment fragment = LineupFormationFragment.newInstance(playersList);
+        LineupFormationFragment fragment = LineupFormationFragment.newInstance(players, editable);
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
         transaction.commit();

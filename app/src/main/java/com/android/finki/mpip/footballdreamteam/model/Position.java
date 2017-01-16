@@ -36,6 +36,10 @@ public class Position extends IdModel<Integer> implements Serializable {
         this(id, name, 0);
     }
 
+    public Position(int id) {
+        this(id, null);
+    }
+
     @Override
     public Integer getId() {
         return id;

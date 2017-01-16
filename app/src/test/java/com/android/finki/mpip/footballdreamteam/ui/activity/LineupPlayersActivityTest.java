@@ -211,7 +211,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testOnCreateOptionsMenuWhenLineupIsNotValid() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        when(presenter.isChanged()).thenReturn(true);
 //        when(presenter.isLineupValid()).thenReturn(false);
 //        activity.invalidateOptionsMenu();
@@ -317,14 +317,14 @@ public class LineupPlayersActivityTest {
 //    }
 //
 //    /**
-//     * Test the behavior on the activity when showLoadingSuccess method is called.
+//     * Test the behavior on the activity when testShowLoadingSuccess method is called.
 //     */
 //    @Test
 //    public void testShowLoadingSuccess() {
 //        spinner.setVisibility(View.VISIBLE);
 //        errorLayout.setVisibility(View.VISIBLE);
 //        updateLineupErrorLayout.setVisibility(View.VISIBLE);
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        assertEquals(View.VISIBLE, mainContent.getVisibility());
 //        assertEquals(View.GONE, spinner.getVisibility());
 //        assertEquals(View.GONE, errorLayout.getVisibility());
@@ -340,7 +340,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testOnCreateOptionsMenuWhenLineupIsNotChanged() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        when(presenter.isChanged()).thenReturn(false);
 //        activity.invalidateOptionsMenu();
 //        MenuItem item = shadowOf(activity).getOptionsMenu().findItem(R.id.lineupMenu_save);
@@ -364,7 +364,7 @@ public class LineupPlayersActivityTest {
 //    public void testShowListPositionPlayersFragment() {
 //        /* A LineupFormationFragment need to be add in order to be replaced
 //         * with ListPositionPlayersFragment */
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        Fragment fragment = manager.findFragmentById(R.id.content);
 //        assertNotNull(fragment);
@@ -387,7 +387,7 @@ public class LineupPlayersActivityTest {
 //    @Test
 //    public void testOnPlayerSelected() {
 //        //TODO
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        activity.onPlayerSelected(players.get(0));
 //        Fragment fragment = manager.findFragmentById(R.id.content);
@@ -411,7 +411,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testShowPlayerDetailsDialog() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showPlayerDetailsDialog(players.get(0).getId(), false);
 //        FragmentManager manager = activity.getSupportFragmentManager();
 //        assertTrue(manager.findFragmentById(R.id.content) instanceof LineupFormationFragment);
@@ -432,7 +432,7 @@ public class LineupPlayersActivityTest {
 //
 //    @Test
 //    public void testRemovePlayer() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showPlayerDetailsDialog(players.get(0).getId(), false);
 //        activity.removePlayer();
 //        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
@@ -448,7 +448,7 @@ public class LineupPlayersActivityTest {
 //    @Test
 //    public void testOnBackButtonPressedWhenListPositionPlayersFragmentIsActive() {
 //        FragmentManager manager = activity.getSupportFragmentManager();
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
 //        assertTrue(manager.findFragmentById(R.id.content) instanceof ListPositionPlayersFragment);
 //        activity.onBackPressed();
@@ -463,7 +463,7 @@ public class LineupPlayersActivityTest {
 //    @Test
 //    public void testDialogDismissedWhenPlayerDetailsDialogIsActive() {
 //        FragmentManager manager = activity.getSupportFragmentManager();
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showPlayerDetailsDialog(players.get(0).getId(), false);
 //        /**
 //         * When a dialog fragment is active and back button is pressed, onBackPressed method on
@@ -484,7 +484,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testOnBackButtonPressedWhenLineupFormationIsActive() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.onBackPressed();
 //        assertTrue(shadowOf(activity).isFinishing());
 //    }
@@ -507,7 +507,7 @@ public class LineupPlayersActivityTest {
 //    @Test
 //    public void testBtnUpdate() {
 //        //TODO
-////        activity.showLoadingSuccess(players);
+////        activity.testShowLoadingSuccess(players);
 ////        Button button = (Button) activity.findViewById(R.id.lineupPlayersLayout_btnUpdate);
 ////        assertNotNull(button);
 ////        button.performClick();
@@ -552,7 +552,7 @@ public class LineupPlayersActivityTest {
 //    @Test
 //    public void testBtnTryUpdateAgainClicked() {
 //        //TODO
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        Button button = (Button) activity
 //                .findViewById(R.id.lineupPlayersActivity_btnTryUpdateAgain);
 //        assertNotNull(button);
@@ -585,7 +585,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testGetPlayersWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.ATTACKERS, new int[]{});
 //        activity.getPlayersOrdered();
 //    }
@@ -596,7 +596,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testGetFormationWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        activity.showListPositionPlayersFragment(PositionUtils.POSITION_PLACE.ATTACKERS, new int[]{});
 //        activity.getFormation();
 //    }
@@ -606,7 +606,7 @@ public class LineupPlayersActivityTest {
 //     */
 //    @Test
 //    public void testChangeFormation() {
-//        activity.showLoadingSuccess(players);
+//        activity.testShowLoadingSuccess(players);
 //        FragmentManager manager = activity.getSupportFragmentManager();
 //        Fragment currentFragment = manager.findFragmentById(R.id.content);
 //        activity.changeFormation(LineupUtils.FORMATION.F_3_2_3_2, players);

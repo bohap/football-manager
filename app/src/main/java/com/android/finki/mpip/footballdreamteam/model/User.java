@@ -38,9 +38,7 @@ public class User extends IdModel<Integer> implements Serializable {
     private int commentsCount;
 
     private List<Lineup> lineups;
-
     private List<Lineup> likes;
-
     private List<Comment> comments;
 
     public User() {

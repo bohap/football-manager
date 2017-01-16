@@ -31,35 +31,35 @@ public class LineupPlayerValidator {
             return false;
         }
         for (LineupPlayer lineupPlayer : lineupPlayers) {
+            if (lineupPlayer.getLineupId() < 1) {
+                logger.error(String.format("invalid lineup id, %d", lineupPlayer.getLineupId()));
+                return false;
+            }
             if (lineupPlayer.getPlayerId() < 1) {
-                String message = String.format("invalid player id, %d", lineupPlayer.getPlayerId());
-                logger.error(message);
+                logger.error(String.format("invalid player id, %d", lineupPlayer.getPlayerId()));
                 return false;
             }
             if (lineupPlayer.getPositionId() < 1) {
-                String message = String.format("invalid position id, %d",
-                        lineupPlayer.getPositionId());
-                logger.error(message);
+                logger.error(String.format("invalid position id, %d",
+                        lineupPlayer.getPositionId()));
                 return false;
             }
         }
-        Set<Integer> set = new HashSet<>();
+        Set<Integer> set = new LinkedHashSet<>();
         for (LineupPlayer lineupPlayer : lineupPlayers) {
             set.add(lineupPlayer.getLineupId());
         }
         if (set.size() != 1) {
-            String message = "all element in the List must have the same lineup id";
-            logger.error(message);
+            logger.error("all element in the List must have the same lineup id");
             return false;
         }
-        set = new HashSet<>();
+        set.clear();
         for (LineupPlayer lineupPlayer : lineupPlayers) {
             set.add(lineupPlayer.getPlayerId());
         }
         if (set.size() != lineupPlayers.size()) {
-            String message = String.format("all players must be different in a lineup, " +
-                    "the given list has %d equal player id", lineupPlayers.size() - set.size());
-            logger.error(message);
+            logger.error(String.format("all players must be different in a lineup, " +
+                    "the given list has %d equal player id", lineupPlayers.size() - set.size()));
             return false;
         }
         return true;

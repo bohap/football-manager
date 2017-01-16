@@ -2,6 +2,7 @@ package com.android.finki.mpip.footballdreamteam.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -44,7 +45,7 @@ import butterknife.OnClick;
  */
 public class HomeActivity extends BaseActivity implements HomeView,
                                                           ListLineupsFragment.Listener,
-        BaseFragment.Listener {
+                                                          BaseFragment.Listener {
 
     private Logger logger = LoggerFactory.getLogger(HomeActivity.class);
 
@@ -164,7 +165,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
         sidebar.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem item) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         onOptionsItemSelected(item);
                         return true;
                     }

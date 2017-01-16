@@ -1,5 +1,6 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -41,6 +42,7 @@ public class AuthUserUtilsTest {
     private String USER_STATISTIC_LAST_CHECKED_KEY = "user_statistic_last_checked";
     private User user = new User(1, "User");
 
+    @SuppressLint("CommitPrefEdits")
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);

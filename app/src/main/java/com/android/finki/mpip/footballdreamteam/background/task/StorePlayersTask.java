@@ -35,8 +35,8 @@ public class StorePlayersTask extends AsyncTask<Player, Void, Boolean> {
     /**
      * Save the players on a new worker thread.
      *
-     * @param players array of players to be saved
-     * @return whatever the saving is successful
+     * @param players   array of players to be saved
+     * @return          whatever the saving is successful
      */
     @Override
     protected Boolean doInBackground(Player... players) {

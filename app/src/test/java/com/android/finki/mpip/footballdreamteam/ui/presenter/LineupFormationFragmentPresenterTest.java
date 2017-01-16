@@ -131,7 +131,7 @@ public class LineupFormationFragmentPresenterTest {
 //            new Player(5, 0, 0, "Player 5", new LineupPlayer(0, 0, position5.getId())));
 //    private Map<Integer, Player> mappedPlayers;
 //    private Map<Integer, Player> mappedEmptyPlayers;
-//    private Map<PositionUtils.POSITION, Integer> mappedPositions = new HashMap<>();
+//    private Map<PositionUtils.POSITION_TYPE, Integer> mappedPositions = new HashMap<>();
 //
 //    @Before
 //    public void setup() {
@@ -183,7 +183,7 @@ public class LineupFormationFragmentPresenterTest {
 //                return mappedEmptyPlayers;
 //            }
 //        }).when(lineupUtils).generateMap(any(LineupUtils.FORMATION.class),
-//                anyListOf(Player.class), anyMapOf(PositionUtils.POSITION.class, Integer.class));
+//                anyListOf(Player.class), anyMapOf(PositionUtils.POSITION_TYPE.class, Integer.class));
 //        when(positionDBService.mapPositions()).thenReturn(mappedPositions);
 //    }
 //
@@ -283,7 +283,7 @@ public class LineupFormationFragmentPresenterTest {
 //            assertEquals(this.players.get(i).getId(), players.get(i).getId());
 //            assertEquals(this.players.get(i).getName(), players.get(i).getName());
 //            assertNotNull(players.get(i).getLineupPlayer());
-//            assertNotNull(players.get(i).getLineupPlayer().getPosition());
+//            assertNotNull(players.get(i).getLineupPlayer().getPositionType());
 //        }
 //        List<Position> positions = lineupPlayersCaptor.getValue().getPositions();
 //        assertEquals(this.positions.size(), positions.size());
@@ -536,7 +536,7 @@ public class LineupFormationFragmentPresenterTest {
 //     */
 //    @Test
 //    public void testUpdateLineupPositionOnInvalidLineup() {
-//        final Map<PositionUtils.POSITION, Integer> mappedPositions = new HashMap<>();
+//        final Map<PositionUtils.POSITION_TYPE, Integer> mappedPositions = new HashMap<>();
 //        int positionResourceId = positionsResourcesIds[4];
 //        int positionId = 10;
 //        Player player = new Player(125, "Simple Player");
@@ -570,7 +570,7 @@ public class LineupFormationFragmentPresenterTest {
 //     */
 //    @Test
 //    public void testUpdatePlayerOnValidLineup() {
-//        final Map<PositionUtils.POSITION, Integer> mappedPositions = new HashMap<>();
+//        final Map<PositionUtils.POSITION_TYPE, Integer> mappedPositions = new HashMap<>();
 //        int positionResourceId = positionsResourcesIds[7];
 //        int positionId = 43;
 //        Player player = new Player(324, "Simple Player");

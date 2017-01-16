@@ -3,13 +3,13 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.android.finki.mpip.footballdreamteam"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,8 +27,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
     compile 'ch.qos.logback:logback-classic:1.0.13'
     apt 'com.google.dagger:dagger-compiler:2.5'
     compile 'com.google.dagger:dagger:2.5'
@@ -47,7 +47,7 @@ dependencies {
     testCompile 'com.google.dagger:dagger-compiler:2.5'
     testCompile 'com.google.dagger:dagger:2.5'
     /* Instrumentation Tests */
-    androidTestCompile 'com.android.support:support-annotations:23.4.0'
+    androidTestCompile 'com.android.support:support-annotations:25.0.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'org.mockito:mockito-core:1.10.19'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'

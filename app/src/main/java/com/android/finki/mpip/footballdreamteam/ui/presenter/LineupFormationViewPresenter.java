@@ -4,9 +4,8 @@ import android.os.Bundle;
 
 import com.android.finki.mpip.footballdreamteam.database.service.PositionDBService;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
-import com.android.finki.mpip.footballdreamteam.model.Position;
+import com.android.finki.mpip.footballdreamteam.model.helpers.SerializableList;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.utility.ArrayUtils;
@@ -66,27 +65,78 @@ public class LineupFormationViewPresenter {
         if (args == null) {
             throw new IllegalArgumentException("bundle argument can't be null");
         }
-        Serializable serializable = args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY);
-        if ((serializable instanceof LineupPlayers)) {
-            LineupPlayers lineupPlayers = (LineupPlayers) serializable;
-            this.setPlayers(lineupPlayers);
-        } else {
-            serializable = args.getSerializable(LineupFormationFragment.FORMATION_KEY);
-            if (!(serializable instanceof LineupUtils.FORMATION)) {
-                throw new IllegalArgumentException(
-                        "neither player of formation provided for view");
+        if (!this.extractLineupPlayers(args) && !this.extractFormation(args)) {
+            throw new IllegalArgumentException("neither player of formation provided for view");
+        }
+    }
+
+    /**
+     * Extract the lineup players from the given bundle.
+     *
+     * @param args view arguments
+     * @return whatever the lineup players are extracted from the arguments
+     */
+    @SuppressWarnings("unchecked")
+    private boolean extractLineupPlayers(Bundle args) {
+        Serializable serializable =
+                args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY);
+        if (serializable instanceof SerializableList) {
+            List list = ((SerializableList) serializable).getList();
+            if (list == null) {
+                throw new IllegalArgumentException("list of players can't be null");
             }
+            for (Object aList : list) {
+                if (!(aList instanceof Player)) {
+                    throw new IllegalArgumentException("players list contains invalid argument");
+                }
+            }
+            this.editable = args.getBoolean(LineupFormationView.LINEUP_EDITABLE_KEY, false);
+            this.setPositions();
+            this.setPlayers(list);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Extract the formation from the given bundle.
+     *
+     * @param args view arguments
+     * @return whatever the formation is extracted from the arguments
+     */
+    @SuppressWarnings("unchecked")
+    private boolean extractFormation(Bundle args) {
+        Serializable serializable = args.getSerializable(LineupFormationFragment.FORMATION_KEY);
+        if (serializable instanceof LineupUtils.FORMATION) {
             LineupUtils.FORMATION formation = (LineupUtils.FORMATION) serializable;
             serializable = args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY);
-            if (!(serializable instanceof LineupPlayers)) {
+            if (!(serializable instanceof SerializableList)) {
                 throw new IllegalArgumentException("players for the formation are not provided");
             }
-            List<Player> players = ((LineupPlayers) serializable).getPlayers();
-            if (players == null) {
-                throw new IllegalArgumentException("List of players must be provided");
+            List list = ((SerializableList) serializable).getList();
+            if (list == null) {
+                throw new IllegalArgumentException("list of players can't be null");
             }
-            this.setFormation(formation, players);
+            for (Object aList : list) {
+                if (!(aList instanceof Player)) {
+                    throw new IllegalArgumentException("players list contains invalid argument");
+                }
+            }
+            this.setPositions();
+            this.setFormation(formation, list);
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Get all positions that are stored in the local database and pass them to the positions
+     * utils.
+     */
+    private void setPositions() {
+        positionDBService.open();
+        positionUtils.setPositions(positionDBService.getAll());
+        positionDBService.close();
     }
 
     /**
@@ -95,94 +145,16 @@ public class LineupFormationViewPresenter {
     public void onViewLayoutCreated() {
         logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
-        view.bindPlayers();
-        List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
-        if (validator.validate(lineupPlayers)) {
-            view.showValidLineup();
-        } else {
-            view.showInvalidLineup();
-        }
+        this.updateView();
     }
 
     /**
-     * Called when the view layout is destroyed.
+     * Update the view with the new data.
      */
-    public void onViewLayoutDestroyed() {
-        this.viewLayoutCreated = false;
-    }
-
-    /**
-     * Set the players that will be in the lineup. The formation is determined from players.
-     *
-     * @param lineupPlayers all players in the lineup with value indicating
-     *                      whatever the lineup is editable
-     */
-    private void setPlayers(LineupPlayers lineupPlayers) {
-        if (lineupPlayers.getPlayers().size() != 11) {
-            String message = String.format("invalid players size, required 11, got %d",
-                    lineupPlayers.getPlayers().size());
-            logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-        positionDBService.open();
-        List<Position> positions = new ArrayList<>();
-        for (Player player : lineupPlayers.getPlayers()) {
-            if (player.getLineupPlayer() == null) {
-                positionDBService.close();
-                throw new IllegalArgumentException("lineup player must be set");
-            }
-            int positionId = player.getLineupPositionId();
-            /* We need access to the player position that is used in LineupUtils */
-            Position position = positionDBService.get(positionId);
-            if (position == null) {
-                positionDBService.close();
-                throw new IllegalArgumentException(String
-                        .format("un existing position id, %d", positionId));
-            }
-            player.getLineupPlayer().setPosition(position);
-            positions.add(position);
-        }
-        positionDBService.close();
-
-        lineupPlayers.setPositions(positions);
-        lineupUtils.mapPlayers(lineupPlayers);
-        this.editable = lineupPlayers.isEditable();
-        this.formation = lineupPlayers.getFormation();
-        this.mappedPlayers = lineupPlayers.getMappedPlayers();
-    }
-
-    /**
-     * Set the lineup formation, and put the list of players in the lineup.
-     *
-     * @param formation lineup formation
-     * @param players players that are already in the lineup
-     */
-    private void setFormation(LineupUtils.FORMATION formation, List<Player> players) {
-        this.formation = formation;
-        this.editable = true;
-        positionDBService.open();
-        for (Player player : players) {
-            if (player.getLineupPlayer() == null) {
-                positionDBService.close();
-                throw new IllegalArgumentException("lineup player must be set");
-            }
-            if (player.getLineupPlayer().getPosition() == null) {
-                int positionId = player.getLineupPositionId();
-                /* We need access to the player position that is used in LineupUtils */
-                Position position = positionDBService.get(positionId);
-                if (position == null) {
-                    positionDBService.close();
-                    throw new IllegalArgumentException(String
-                            .format("un existing position id, %d", positionId));
-                }
-                player.getLineupPlayer().setPosition(position);
-            }
-        }
-        this.mappedPlayers = lineupUtils.generateMap(formation,
-                players, positionDBService.mapPositions());
-        positionDBService.close();
-        List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
+    private void updateView() {
         if (viewLayoutCreated) {
+            view.bindPlayers();
+            List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
             if (validator.validate(lineupPlayers)) {
                 view.showValidLineup();
             } else {
@@ -198,6 +170,52 @@ public class LineupFormationViewPresenter {
      */
     public LineupUtils.FORMATION getFormation() {
         return this.formation;
+    }
+
+    /**
+     * Convert the players in the map to a List of LineupPlayer.
+     *
+     * @return List of LineupPlayer
+     */
+    public List<LineupPlayer> getLineupPlayers() {
+        return lineupUtils.getLineupPlayers(mappedPlayers);
+    }
+
+    /**
+     * Get the players in the lineup ordered by their position.
+     *
+     * @return List of players in the lineup
+     */
+    public List<Player> getPlayersOrdered() {
+        return lineupUtils.orderPlayers(mappedPlayers);
+    }
+
+    /**
+     * Set the players that will be in the lineup. The formation is determined from players.
+     *
+     * @param players List of players in the lineup
+     */
+    private void setPlayers(List<Player> players) {
+        if (players.size() != 11) {
+            throw new IllegalArgumentException(String
+                    .format("invalid players size, required 11, got %d", players.size()));
+        }
+        this.formation = lineupUtils.getFormation(players);
+        this.mappedPlayers = lineupUtils.mapPlayers(formation, players);
+        this.updateView();
+    }
+
+    /**
+     * Set the lineup formation, and put the list of players in the lineup.
+     *
+     * @param formation lineup formation
+     * @param players   players that are already in the lineup
+     */
+    private void setFormation(LineupUtils.FORMATION formation, List<Player> players) {
+        this.formation = formation;
+        this.editable = true;
+        this.mappedPlayers = lineupUtils.generateMap(formation, players);
+        this.updateView();
     }
 
     /**
@@ -224,8 +242,8 @@ public class LineupFormationViewPresenter {
      * Handle click on the player.
      *
      * @param positionResourceId android position resource id
-     * @param startX player x position in the layout
-     * @param startY player y position in the layout
+     * @param startX             player x position in the layout
+     * @param startY             player y position in the layout
      */
     public void onPlayerClick(int positionResourceId, int startX, int startY) {
         if (mappedPlayers == null) {
@@ -236,28 +254,28 @@ public class LineupFormationViewPresenter {
             throw new IllegalArgumentException(String
                     .format("can't find player at position %d", positionResourceId));
         }
-        int playerId = player.getId();
-        if (playerId > 0) {
-            if (viewLayoutCreated) {
+        if (viewLayoutCreated) {
+            int playerId = player.getId();
+            if (playerId > 0) {
                 view.showPlayerDetailsView(playerId, editable);
-            }
-        } else if (playerId == 0) {
-            PositionUtils.POSITION_PLACE place = positionUtils.getPositionPlace(positionResourceId);
-            List<Integer> playersToExclude = new ArrayList<>();
-            for (Map.Entry<Integer, Player> entry : mappedPlayers.entrySet()) {
-                Player mapPlayer = entry.getValue();
-                if (mapPlayer.getId() > 0) {
-                    playersToExclude.add(mapPlayer.getId());
+            } else if (playerId == 0) {
+                PositionUtils.POSITION_PLACE place =
+                        positionUtils.getPositionResourceIdPlace(positionResourceId);
+                List<Integer> playersToExclude = new ArrayList<>();
+                for (Map.Entry<Integer, Player> entry : mappedPlayers.entrySet()) {
+                    Player mapPlayer = entry.getValue();
+                    if (mapPlayer.getId() > 0) {
+                        playersToExclude.add(mapPlayer.getId());
+                    }
                 }
-            }
-            if (viewLayoutCreated) {
                 view.showListPositionPlayersView(place,
                         ArrayUtils.toInt(playersToExclude), startX, startY);
+            } else {
+                throw new IllegalArgumentException(String
+                        .format("invalid player id, %d", playerId));
             }
-        } else {
-            throw new IllegalArgumentException(String.format("invalid player id, %d", playerId));
+            this.selectedPositionResourceId = positionResourceId;
         }
-        this.selectedPositionResourceId = positionResourceId;
     }
 
     /**
@@ -269,23 +287,11 @@ public class LineupFormationViewPresenter {
         if (selectedPositionResourceId == -1) {
             throw new IllegalArgumentException("position not selected");
         }
-        positionDBService.open();
-        Map<PositionUtils.POSITION, Integer> mappedPositions = positionDBService.mapPositions();
-        positionDBService.close();
-        int positionId = positionUtils.getPositionId(selectedPositionResourceId, mappedPositions);
+        int positionId = positionUtils.getPositionId(selectedPositionResourceId);
         player.setLineupPlayer(new LineupPlayer(0, player.getId(), positionId));
         mappedPlayers.put(selectedPositionResourceId, player);
-
         selectedPositionResourceId = -1;
-        List<LineupPlayer> lineupPlayers = this.getLineupPlayers();
-        if (viewLayoutCreated) {
-            view.bindPlayers();
-            if (validator.validate(lineupPlayers)) {
-                view.showValidLineup();
-            } else {
-                view.showInvalidLineup();
-            }
-        }
+        this.updateView();
     }
 
     /**
@@ -317,20 +323,9 @@ public class LineupFormationViewPresenter {
     }
 
     /**
-     * Convert the players in the map to a List of LineupPlayer.
-     *
-     * @return List of LineupPlayer
+     * Called when the view layout is destroyed.
      */
-    public List<LineupPlayer> getLineupPlayers() {
-        return lineupUtils.getLineupPlayers(mappedPlayers);
-    }
-
-    /**
-     * Get the players in the lineup ordered by their position.
-     *
-     * @return List of players in the lineup
-     */
-    public List<Player> getPlayersOrdered() {
-        return lineupUtils.orderPlayers(mappedPlayers);
+    public void onViewLayoutDestroyed() {
+        this.viewLayoutCreated = false;
     }
 }

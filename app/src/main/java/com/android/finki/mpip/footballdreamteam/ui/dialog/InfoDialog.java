@@ -64,8 +64,8 @@ public class InfoDialog extends DialogFragment implements DialogInterface.OnClic
         logger.info("onCreateDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setTitle(this.title)
-                .setMessage(this.message)
-                .setNegativeButton("Close", this);
+               .setMessage(this.message)
+               .setNegativeButton("Close", this);
         return builder.create();
     }
 

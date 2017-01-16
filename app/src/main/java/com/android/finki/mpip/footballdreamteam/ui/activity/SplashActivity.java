@@ -99,7 +99,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView, Inf
     @Override
     public void showHomeView() {
         logger.info("showHomeView");
-        ((MainApplication)this.getApplication()).createAuthComponent();
+        ((MainApplication) this.getApplication()).createAuthComponent();
         this.startActivity(new Intent(this, HomeActivity.class));
         super.finish();
     }
