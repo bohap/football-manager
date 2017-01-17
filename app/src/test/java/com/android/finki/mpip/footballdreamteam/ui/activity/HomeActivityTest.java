@@ -270,7 +270,7 @@ public class HomeActivityTest {
         Intent actualIntent = shadowOf(activity).getNextStartedActivity();
         assertNotNull(actualIntent);
         assertTrue(actualIntent.filterEquals(expectedIntent));
-        assertNull(application.getAuthComponent());
+        assertNull(application.getAuthComponent(false));
         assertTrue(activity.isFinishing());
     }
 

@@ -7,7 +7,6 @@ import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.helpers.SerializableList;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
-import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
 import com.android.finki.mpip.footballdreamteam.utility.ArrayUtils;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
 import com.android.finki.mpip.footballdreamteam.utility.PlayerUtils;
@@ -22,13 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView.FORMATION_KEY;
+import static com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView.LINEUP_EDITABLE_KEY;
+import static com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView.LINEUP_PLAYERS_KEY;
+import static com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView.LIST_PLAYERS_KEY;
+
 /**
  * Created by Borce on 13.08.2016.
  */
 public class LineupFormationViewPresenter {
 
     private static Logger logger = LoggerFactory.getLogger(LineupFormationViewPresenter.class);
-
     private LineupFormationView view;
     private PositionDBService positionDBService;
     private LineupUtils lineupUtils;
@@ -79,7 +82,7 @@ public class LineupFormationViewPresenter {
     @SuppressWarnings("unchecked")
     private boolean extractLineupPlayers(Bundle args) {
         Serializable serializable =
-                args.getSerializable(LineupFormationFragment.LINEUP_PLAYERS_KEY);
+                args.getSerializable(LINEUP_PLAYERS_KEY);
         if (serializable instanceof SerializableList) {
             List list = ((SerializableList) serializable).getList();
             if (list == null) {
@@ -90,7 +93,7 @@ public class LineupFormationViewPresenter {
                     throw new IllegalArgumentException("players list contains invalid argument");
                 }
             }
-            this.editable = args.getBoolean(LineupFormationView.LINEUP_EDITABLE_KEY, false);
+            this.editable = args.getBoolean(LINEUP_EDITABLE_KEY, false);
             this.setPositions();
             this.setPlayers(list);
             return true;
@@ -106,10 +109,10 @@ public class LineupFormationViewPresenter {
      */
     @SuppressWarnings("unchecked")
     private boolean extractFormation(Bundle args) {
-        Serializable serializable = args.getSerializable(LineupFormationFragment.FORMATION_KEY);
+        Serializable serializable = args.getSerializable(FORMATION_KEY);
         if (serializable instanceof LineupUtils.FORMATION) {
             LineupUtils.FORMATION formation = (LineupUtils.FORMATION) serializable;
-            serializable = args.getSerializable(LineupFormationFragment.LIST_PLAYERS_KEY);
+            serializable = args.getSerializable(LIST_PLAYERS_KEY);
             if (!(serializable instanceof SerializableList)) {
                 throw new IllegalArgumentException("players for the formation are not provided");
             }
@@ -146,6 +149,13 @@ public class LineupFormationViewPresenter {
         logger.info("onViewLayoutCreated");
         this.viewLayoutCreated = true;
         this.updateView();
+    }
+
+    /**
+     * Called when the view layout is destroyed.
+     */
+    public void onViewLayoutDestroyed() {
+        this.viewLayoutCreated = false;
     }
 
     /**
@@ -197,8 +207,9 @@ public class LineupFormationViewPresenter {
      */
     private void setPlayers(List<Player> players) {
         if (players.size() != 11) {
-            throw new IllegalArgumentException(String
-                    .format("invalid players size, required 11, got %d", players.size()));
+            String msg = String.format("invalid players size, required 11, got %d",
+                                        players.size());
+            throw new IllegalArgumentException(msg);
         }
         this.formation = lineupUtils.getFormation(players);
         this.mappedPlayers = lineupUtils.mapPlayers(formation, players);
@@ -229,8 +240,9 @@ public class LineupFormationViewPresenter {
         }
         Player player = mappedPlayers.get(positionId);
         if (player == null) {
-            throw new IllegalArgumentException(String
-                    .format("can't find player in the lineup on positions %s", positionId));
+            String msg = String.format("can't find player in the lineup on positions %s",
+                                        positionId);
+            throw new IllegalArgumentException(msg);
         }
         if (player.getId() == 0 || player.getName() == null) {
             return "";
@@ -251,8 +263,8 @@ public class LineupFormationViewPresenter {
         }
         Player player = mappedPlayers.get(positionResourceId);
         if (player == null) {
-            throw new IllegalArgumentException(String
-                    .format("can't find player at position %d", positionResourceId));
+            String msg = String.format("can't find player at position %d", positionResourceId);
+            throw new IllegalArgumentException(msg);
         }
         if (viewLayoutCreated) {
             int playerId = player.getId();
@@ -268,11 +280,11 @@ public class LineupFormationViewPresenter {
                         playersToExclude.add(mapPlayer.getId());
                     }
                 }
-                view.showListPositionPlayersView(place,
-                        ArrayUtils.toInt(playersToExclude), startX, startY);
+                view.showListPositionPlayersView(place, ArrayUtils.toInt(playersToExclude),
+                                                 startX, startY);
             } else {
-                throw new IllegalArgumentException(String
-                        .format("invalid player id, %d", playerId));
+                String msg = String.format("invalid player id, %d", playerId);
+                throw new IllegalArgumentException(msg);
             }
             this.selectedPositionResourceId = positionResourceId;
         }
@@ -320,12 +332,5 @@ public class LineupFormationViewPresenter {
         if (viewLayoutCreated) {
             view.showInvalidLineup();
         }
-    }
-
-    /**
-     * Called when the view layout is destroyed.
-     */
-    public void onViewLayoutDestroyed() {
-        this.viewLayoutCreated = false;
     }
 }

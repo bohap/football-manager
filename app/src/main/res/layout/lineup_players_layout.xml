@@ -30,7 +30,7 @@
         </LinearLayout>
         <RelativeLayout
             android:orientation="vertical"
-            android:id="@+id/lineupPlayersPlayers_mainContent"
+            android:id="@+id/lineupPlayersActivity_mainContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <FrameLayout

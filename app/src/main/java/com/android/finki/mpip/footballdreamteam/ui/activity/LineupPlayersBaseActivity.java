@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.android.finki.mpip.footballdreamteam.R;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.ConfirmDialog;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
@@ -23,8 +22,8 @@ import java.util.List;
 /**
  * Created by Borce on 23.08.2016.
  */
-public abstract class LineupPlayersBaseActivity extends BaseActivity implements
-        ConfirmDialog.Listener {
+public abstract class LineupPlayersBaseActivity extends BaseActivity
+                                                implements ConfirmDialog.Listener {
 
     private static final Logger logger = LoggerFactory.getLogger(LineupPlayersBaseActivity.class);
     private String confirmDialogTitle;
@@ -55,6 +54,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
     public void onBackPressed() {
         logger.info("onBackPressed");
         boolean playerSelectCanceled = false;
+
         FragmentManager manager = this.getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.content);
         if (currentFragment instanceof ListPositionPlayersFragment) {
@@ -63,6 +63,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
             this.showConfirmDialog();
             return;
         }
+
         super.onBackPressed();
         if (playerSelectCanceled) {
             this.checkLineupFormationFragmentVisibility();
@@ -121,8 +122,8 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
         this.checkLineupFormationFragmentVisibility();
         FragmentManager manager = this.getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        ListPositionPlayersFragment fragment = ListPositionPlayersFragment
-                .newInstance(place, playersToExclude, startX, startY);
+        ListPositionPlayersFragment fragment =
+                ListPositionPlayersFragment.newInstance(place, playersToExclude, startX, startY);
         transaction.addToBackStack(LineupFormationFragment.TAG);
         transaction.replace(R.id.content, fragment);
 
@@ -141,6 +142,7 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
             logger.error(message);
             throw new IllegalArgumentException(message);
         }
+
         boolean result = this.getSupportFragmentManager().popBackStackImmediate();
         if (!result) {
             String message = "error occurred while removing ListPositionPlayers fragment";
@@ -175,9 +177,9 @@ public abstract class LineupPlayersBaseActivity extends BaseActivity implements
     void checkLineupFormationFragmentVisibility() {
         Fragment currentFragment = this.getSupportFragmentManager().findFragmentById(R.id.content);
         if (currentFragment == null || !(currentFragment instanceof LineupFormationFragment)) {
-            String message = "LineupFormation fragment is not visible";
-            logger.error(message);
-            throw new IllegalArgumentException(message);
+            String msg = "LineupFormation fragment is not visible";
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
         }
     }
 

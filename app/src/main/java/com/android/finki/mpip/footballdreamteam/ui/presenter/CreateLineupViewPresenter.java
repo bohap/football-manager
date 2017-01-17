@@ -187,7 +187,7 @@ public class CreateLineupViewPresenter extends BasePresenter implements Callback
 
         Lineup lineup = response.body().getLineup();
         if (lineup == null) {
-            throw new IllegalArgumentException("lineup is be null");
+            throw new IllegalArgumentException("server lineup is null");
         }
         lineupDBService.open();
         boolean lineupSavingError = false;

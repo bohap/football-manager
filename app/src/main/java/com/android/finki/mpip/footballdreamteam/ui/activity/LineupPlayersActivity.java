@@ -45,9 +45,11 @@ import butterknife.OnClick;
 /**
  * Created by Borce on 15.08.2016.
  */
-public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
-        BaseFragment.Listener, LineupPlayersView, ListPositionPlayersFragment.Listener,
-        LineupFormationFragment.Listener, PlayerDetailsDialog.Listener {
+public class LineupPlayersActivity extends LineupPlayersBaseActivity
+                                   implements BaseFragment.Listener, LineupPlayersView,
+                                              ListPositionPlayersFragment.Listener,
+                                              LineupFormationFragment.Listener,
+                                              PlayerDetailsDialog.Listener {
 
     private Logger logger = LoggerFactory.getLogger(LineupPlayersActivity.class);
     private LineupPlayersViewPresenter presenter;
@@ -85,7 +87,7 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
     @BindView(R.id.lineupPlayersActivity_updateFailed)
     LinearLayout lineupUpdateErrorLayout;
 
-    @BindView(R.id.lineupPlayersPlayers_mainContent)
+    @BindView(R.id.lineupPlayersActivity_mainContent)
     RelativeLayout mainContent;
 
     @BindView(R.id.lineupPlayersLayout_btnChangeFormation)
@@ -143,10 +145,8 @@ public class LineupPlayersActivity extends LineupPlayersBaseActivity implements
             } else {
                 item.setVisible(false);
             }
-            return true;
-        } else {
-            return super.onCreateOptionsMenu(menu);
         }
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**

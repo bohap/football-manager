@@ -17,24 +17,24 @@ import java.util.Map;
 public class PositionUtils {
 
     private List<Position> positions;
-    static final int[] resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+    public static final int[] resourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftBack, R.id.rightBack,
             R.id.leftCentreMidfield, R.id.rightCentreMidfield, R.id.centreCentreMidfield,
             R.id.attackingMidfield, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
             R.id.rightCentreForward, R.id.centreCentreForward};
-    static final int[] formation_4_4_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+    public static final int[] formation_4_4_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
             R.id.rightCentreMidfield, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
             R.id.rightCentreForward};
-    static final int[] formation_3_2_3_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+    public static final int[] formation_3_2_3_2_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftCentreMidfield,
             R.id.rightCentreMidfield, R.id.attackingMidfield, R.id.leftWing, R.id.rightWing,
             R.id.leftCentreForward, R.id.rightCentreForward};
-    static final int[] formation_4_2_3_1_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+    public static final int[] formation_4_2_3_1_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
             R.id.rightCentreMidfield, R.id.attackingMidfield, R.id.leftWing, R.id.rightWing,
             R.id.centreCentreForward};
-    static final int[] formation_4_3_3_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
+    public static final int[] formation_4_3_3_resourcesIds = {R.id.keeper, R.id.leftCentreBack,
             R.id.rightCentreBack, R.id.leftBack, R.id.rightBack, R.id.leftCentreMidfield,
             R.id.rightCentreMidfield, R.id.centreCentreMidfield, R.id.leftCentreForward,
             R.id.rightCentreForward, R.id.centreCentreForward};

@@ -87,7 +87,6 @@ public class MockApplication extends MainApplication {
                 .thenReturn(commentsViewComponent);
         when(authComponent.plus(any(PlayerDetailsViewModule.class)))
                 .thenReturn(playerDetailsViewComponent);
-
         when(authComponent.plus(any(LineupPlayersViewModule.class)))
                 .thenReturn(lineupPlayerActivityComponent);
         when(authComponent.plus(any(LineupFormationViewModule.class)))
@@ -96,6 +95,32 @@ public class MockApplication extends MainApplication {
                 .thenReturn(listPositionPlayersViewComponent);
         when(authComponent.plus(any(CreateLineupViewModule.class)))
                 .thenReturn(createLineupViewComponent);
+    }
+
+    /**
+     * get the instance of the AuthComponent.
+     *
+     * @return instance of the AuthComponent
+     */
+    @Override
+    public AuthComponent getAuthComponent() {
+        if (authComponent == null) {
+            this.createAuthComponent();
+        }
+        return authComponent;
+    }
+
+    /**
+     * get the instance of the AuthComponent.
+     *
+     * @param create    whatever the component should be created if is null.
+     * @return          instance of the AuthComponent
+     */
+    public AuthComponent getAuthComponent(boolean create) {
+        if (create && authComponent == null) {
+            this.createAuthComponent();
+        }
+        return authComponent;
     }
 
     /**

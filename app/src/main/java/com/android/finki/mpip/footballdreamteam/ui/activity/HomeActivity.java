@@ -214,7 +214,7 @@ public class HomeActivity extends BaseActivity implements HomeView,
     }
 
     /**
-     * Called when the options menu is ready to be creted or recreated.
+     * Called when the options menu is ready to be created or recreated.
      *
      * @param menu menu that will be created
      * @return whatever the menu should be created or not

@@ -32,7 +32,8 @@ import butterknife.OnItemClick;
 /**
  * Created by Borce on 17.08.2016.
  */
-public class ListPositionPlayersFragment extends BaseFragment implements ListPositionPlayersView {
+public class ListPositionPlayersFragment extends BaseFragment
+                                         implements ListPositionPlayersView {
 
     private Logger logger = LoggerFactory.getLogger(ListPositionPlayersFragment.class);
     private ListPositionPlayersViewPresenter presenter;

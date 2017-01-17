@@ -116,8 +116,8 @@ public class LineupPlayersViewPresenter extends BasePresenter {
         }
         this.lineup = (Lineup) serializable;
         if (this.lineup.getId() < 1) {
-            throw new IllegalArgumentException(String
-                    .format("invalid lineup id, %d", lineup.getId()));
+            throw new IllegalArgumentException(
+                    String.format("invalid lineup id, %d", lineup.getId()));
         }
     }
 
@@ -179,6 +179,11 @@ public class LineupPlayersViewPresenter extends BasePresenter {
         return lineupValid;
     }
 
+    /**
+     * Check if the request for updating the lineup failed.
+     *
+     * @return  whatever the update request failed
+     */
     public boolean isLineupUpdateFailed() {
         return lineupUpdateFailed;
     }
@@ -216,7 +221,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
      *
      * @param response server response
      */
-    public void onPlayerLoadingSuccess(Response<List<Player>> response) {
+    private void onPlayerLoadingSuccess(Response<List<Player>> response) {
         logger.info("load players request success");
         loadRequestSending = false;
         lineupPlayersCall = null;
@@ -231,7 +236,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    public void onPlayersLoadingFailed(Call<List<Player>> call, Throwable t) {
+    private void onPlayersLoadingFailed(Call<List<Player>> call, Throwable t) {
         logger.info("load players request failed");
         loadRequestSending = false;
         if (call.isCanceled()) {
@@ -247,7 +252,7 @@ public class LineupPlayersViewPresenter extends BasePresenter {
     }
 
     /**
-     * Send a request to onUpdateSuccess the lineup players.
+     * Send a request to update the lineup players.
      */
     public void update() {
         if (this.lineup == null) {
@@ -266,8 +271,8 @@ public class LineupPlayersViewPresenter extends BasePresenter {
             if (viewLayoutCreated) {
                 view.showUpdating();
             }
-            updateLineupCall = api
-                    .update(lineup.getId(), this.createdLineupRequest(lineupPlayers));
+            updateLineupCall =
+                    api.update(lineup.getId(), this.createdLineupRequest(lineupPlayers));
             updateLineupCall.enqueue(new Callback<LineupResponse>() {
                 @Override
                 public void onResponse(Call<LineupResponse> call,

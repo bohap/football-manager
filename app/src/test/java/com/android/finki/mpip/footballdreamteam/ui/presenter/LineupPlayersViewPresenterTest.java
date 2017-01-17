@@ -40,6 +40,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,114 +101,157 @@ public class LineupPlayersViewPresenterTest {
     private void initMocks() {
         when(api.players(anyInt(), anyInt(), anyInt())).thenReturn(playersCall);
         when(api.update(anyInt(), any(LineupRequest.class))).thenReturn(updateCall);
+        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY)).thenReturn(lineup);
     }
 
     /**
-     * Test the behavior on loadPlayers called with null arguments.
+     * Test the behavior when onViewCreated is called with null argument.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testLoadPlayersOnNullArguments() {
-//        presenter.loadPlayers(null);
+    public void testOnViewCreatedWithNullArgument() {
+        presenter.onViewCreated(null);
     }
 
     /**
-     * Test the behavior on loadPlayers when data in the bundle is not Lineup.
+     * Test the behavior when onViewCreated is called with data in the bundle
+     * that is not a Lineup.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testLoadPlayersOnInvalidBundleData() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(new User());
-//        presenter.loadPlayers(args);
+    public void testOnViewCreatedWithInvalidBundleData() {
+        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY)).thenReturn(new User());
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test the behavior on loadPlayers when lineup id in the bundle is invalid.
+     * Test the behavior when onVIewCreated is called with a lineup id in the bundle that is invalid.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testLoadPlayersOnInvalidLineupId() {
         when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
                 .thenReturn(new Lineup(-1, 1));
-//        presenter.loadPlayers(args);
+        presenter.onViewCreated(args);
     }
 
     /**
-     * Test that loadData method will send a request to load the lineup
-     * players data from the server.
+     * Test that onViewCreated method will send a request to load the lineup players data
+     * from the server, when the view layout is not yet created.
      */
     @Test
-    public void testLoadPlayers() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-//        presenter.loadPlayers(args);
-        verify(view).showLoading();
+    public void testLoadPlayersWhenViewLayoutIsNotCreated() {
+        presenter.onViewCreated(args);
         verify(api).players(lineup.getId(), null, null);
         verify(playersCall).enqueue(playersCaptor.capture());
+        verify(view, never()).showLoading();
+    }
+
+    /**
+     * Test that onViewCreated method will send a request to load the lineup players data
+     * from the server, when the view layout is created before the request is send.
+     */
+    @Test
+    public void testLoadPlayersWhenViewLayoutIsCreated() {
+        presenter.onViewLayoutCreated();
+        presenter.onViewCreated(args);
+        verify(api).players(lineup.getId(), null, null);
+        verify(playersCall).enqueue(playersCaptor.capture());
+        verify(view).showLoading();
+    }
+
+    /**
+     * Test the behavior when onViewLayoutCreated is called and a request to load lineup data
+     * is already sending.
+     */
+    @Test
+    public void testOnViewLayoutCreatedWhenARequestIsSending() {
+        presenter.onViewCreated(args);
+        verify(api).players(lineup.getId(), null, null);
+        verify(view, never()).showLoading();
+        presenter.onViewLayoutCreated();
+        verify(view).showLoading();
     }
 
     /**
      * Test the behavior on the presenter when data from the server is loaded successfully
-     * and the autheticated user can edit the lineup.
+     * and the view layout is created before the response id received.
      */
     @Test
-    public void testLoadPlayersSuccessWhenUserCanEditTheLineup() {
+    public void testLoadPlayersSuccessWhenViewLayoutIsCreated() {
         lineup.getUser().setId(user.getId());
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-//        presenter.loadPlayers(args);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
         verify(playersCall).enqueue(playersCaptor.capture());
         playersCaptor.getValue().onResponse(playersCall, Response.success(players));
         verify(view).showLoadingSuccess(players);
         verify(view, never()).showLoadingFailed();
-//        verify(view).showBtnChangeFormation();
     }
 
     /**
      * Test the behavior on the presenter when data from the server is loaded successfully
-     * and the autheticated user can't edit the lineup.
+     * and the view layout is not created before the response id received.
      */
     @Test
-    public void testLoadPlayersSuccessWhenUserCanNotEditTheLineup() {
-        lineup.getUser().setId(user.getId() + 1);
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-//        presenter.loadPlayers(args);
+    public void testLoadPlayersSuccessWhenViewLayoutIsNotCreated() {
+        lineup.getUser().setId(user.getId());
+        presenter.onViewCreated(args);
         verify(playersCall).enqueue(playersCaptor.capture());
         playersCaptor.getValue().onResponse(playersCall, Response.success(players));
-        verify(view).showLoadingSuccess(players);
+        verify(view, never()).showLoadingSuccess(players);
         verify(view, never()).showLoadingFailed();
-//        verify(view, never()).showBtnChangeFormation();
     }
 
     /**
-     * Test the behavior on the presenter when loading the data failed with socket timeout error.
+     * Test the behavior on the presenter when loading the data failed with socket timeout error
+     * and the view layout is crated before the response is received.
      */
     @Test
-    public void testLoadPlayersFailedWithSocketTimeoutError() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-//        presenter.loadPlayers(args);
+    public void testLoadPlayersFailedWithSocketTimeoutErrorAndViewLayoutIsCreated() {
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
         verify(playersCall).enqueue(playersCaptor.capture());
         playersCaptor.getValue().onFailure(playersCall, new SocketTimeoutException());
         verify(view).showLoadingFailed();
         verify(view, never()).showLoadingSuccess(players);
-//        verify(view).showConnectionTimeoutMessage();
-//        verify(view, never()).showServerErrorMessage();
+        verify(view).showSocketTimeout();
     }
 
     /**
-     * Test the behavior on the presenter when loading the data failed with unknown error.
+     * Test the behavior on the presenter when loading the data failed with socket timeout error
+     * and the view layout is crated before the response is received.
      */
     @Test
-    public void testLoadPlayersFailedWithUnknownError() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-//        presenter.loadPlayers(args);
+    public void testLoadPlayersFailedWithSocketTimeoutErrorAndViewLayoutIsNotCreated() {
+        presenter.onViewCreated(args);
         verify(playersCall).enqueue(playersCaptor.capture());
-        playersCaptor.getValue().onFailure(playersCall, new Throwable());
-        verify(view).showLoadingFailed();
+        playersCaptor.getValue().onFailure(playersCall, new SocketTimeoutException());
+        verify(view, never()).showLoadingFailed();
         verify(view, never()).showLoadingSuccess(players);
-//        verify(view).showServerErrorMessage();
-//        verify(view, never()).showConnectionTimeoutMessage();
+        verify(view, never()).showSocketTimeout();
+    }
+
+    /**
+     * Test the behavior when loadPlayers is called and a request to load players
+     * is already sending.
+     */
+    @Test
+    public void testLoadPlayersWhenPlayersAreAlreadyLoading() {
+        presenter.onViewCreated(args);
+        verify(api).players(lineup.getId(), null, null);
+        reset(api);
+        presenter.loadPlayers();
+        verify(api, never()).players(anyInt(), any(Integer.class), any(Integer.class));
+    }
+
+    /**
+     * TEst the behavior when loadPlayers is called and the view is destroyed before the response
+     * from the server is received.
+     */
+    @Test
+    public void testLoadPlayersWhenViewIsDestroyed() {
+        presenter.onViewCreated(args);
+        verify(api).players(lineup.getId(), null, null);
+        verify(playersCall).enqueue(playersCaptor.capture());
+        presenter.onViewDestroyed();
+        verify(playersCall).cancel();
     }
 
     /**
@@ -216,8 +260,6 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testCanEditLineup() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(user.getId()).thenReturn(lineup.getUserId());
         presenter.extractLineup(args);
         assertTrue(presenter.canEditLineup());
@@ -228,33 +270,19 @@ public class LineupPlayersViewPresenterTest {
      * is not the author of the lineup.
      */
     @Test
-    public void testCantEditLineup() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
+    public void testCanNotEditLineup() {
         when(user.getId()).thenReturn(lineup.getUserId() + 1);
         presenter.extractLineup(args);
         assertFalse(presenter.canEditLineup());
     }
 
     /**
-     * Test the behavior on onUpdateSuccess called before thr lineup data is set.
+     * Test the behavior on updated called before the lineup data is set.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnSetLineup() {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.onUpdateSuccess(null);
-    }
-
-    /**
-     * Test the behavior on onUpdateSuccess called with invalid List of lineup players.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testUpdateOnInvalidLineupPlayers() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
-        when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(false);
-//        presenter.loadPlayers(args);
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.update();
     }
 
     /**
@@ -262,24 +290,46 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateOnUnChangedData() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.loadPlayers(args);
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.update();
     }
 
     /**
-     * Test that onUpdateSuccess works correctly.
+     * Test the behavior when update is called and the lineup players are not valid.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateWIthInvalidLineupPlayers() {
+        when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(false);
+        presenter.onViewCreated(args);
+        presenter.update();
+    }
+
+    /**
+     * Test the behavior when update is called and the view layout is not created.
      */
     @Test
-    public void testUpdate() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
+    public void testUpdateWhenViewLayoutIsNotCreated() {
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.setChanged(true);
+        presenter.update();
+        verify(api).update(anyInt(), any(LineupRequest.class));
+        verify(updateCall).enqueue(updateCaptor.capture());
+        verify(view, never()).showUpdating();
+    }
+
+    /**
+     * Test the behavior when update is called and the view layout is created.
+     */
+    @Test
+    public void testUpdateWhenViewLayoutIsCreated() {
+        when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
+        verify(api).update(anyInt(), any(LineupRequest.class));
         verify(updateCall).enqueue(updateCaptor.capture());
         verify(view).showUpdating();
     }
@@ -290,14 +340,13 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testUpdateSuccessOnUnSavedLineupWithLineupSavingFailed() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(false);
         doThrow(LineupException.class).when(lineupDBService).store(any(Lineup.class));
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -316,15 +365,14 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testUpdateSuccessOnUnSavedLineupWIthPlayerSavingFailed() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(false);
         doThrow(LineupPlayerException.class).when(lineupPlayerDBService)
                 .storePlayers(anyListOf(LineupPlayer.class));
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -343,14 +391,13 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testUpdateSuccessOnSavedLineupWithUpdateLineupFailed() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(true);
         doThrow(LineupException.class).when(lineupDBService).update(any(Lineup.class));
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -370,15 +417,14 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testUpdateSuccessOnSavedLineupWithUpdatePlayersFailed() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
         when(lineupDBService.exists(any(Lineup.class))).thenReturn(true);
         doThrow(LineupPlayerException.class).when(lineupPlayerDBService)
                 .syncPlayers(anyInt(), anyListOf(LineupPlayer.class));
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onResponse(updateCall, Response.success(new LineupResponse()));
 
@@ -396,16 +442,15 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testFailedUpdateOnSocketTimeoutMessage() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new SocketTimeoutException());
         verify(view).showUpdatingFailed();
-//        verify(view).showConnectionTimeoutMessage();
+        verify(view).showSocketTimeout();
     }
 
     /**
@@ -413,16 +458,14 @@ public class LineupPlayersViewPresenterTest {
      */
     @Test
     public void testFailedUpdateOnUnknownError() {
-        when(args.getSerializable(LineupPlayersView.LINEUP_BUNDLE_KEY))
-                .thenReturn(lineup);
         when(validator.validate(anyListOf(LineupPlayer.class))).thenReturn(true);
-//        presenter.loadPlayers(args);
-//        presenter.setChanged();
-//        presenter.onUpdateSuccess(lineupPlayers);
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
+        presenter.setChanged(true);
+        presenter.update();
         verify(updateCall).enqueue(updateCaptor.capture());
         updateCaptor.getValue().onFailure(updateCall, new Throwable());
         verify(view).showUpdatingFailed();
-//        verify(view).showServerErrorMessage();
     }
 
     /**
@@ -440,6 +483,8 @@ public class LineupPlayersViewPresenterTest {
     @Test
     public void testUpdateFormationWhenFormationIsDifferent() {
         final List<Player> players = new ArrayList<>();
+        presenter.onViewCreated(args);
+        presenter.onViewLayoutCreated();
         when(view.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
         when(view.getPlayersOrdered()).thenReturn(players);
         presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
@@ -456,7 +501,7 @@ public class LineupPlayersViewPresenterTest {
         when(view.getFormation()).thenReturn(LineupUtils.FORMATION.F_3_2_3_2);
         when(view.getPlayersOrdered()).thenReturn(players);
         presenter.updateFormation(LineupUtils.FORMATION.F_3_2_3_2);
-        verify(view, never()).changeFormation(any(LineupUtils.FORMATION.class),
-                anyListOf(Player.class));
+        verify(view, never())
+                .changeFormation(any(LineupUtils.FORMATION.class), anyListOf(Player.class));
     }
 }

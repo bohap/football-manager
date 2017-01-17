@@ -1,5 +1,7 @@
 package com.android.finki.mpip.footballdreamteam.utility;
 
+import android.annotation.SuppressLint;
+
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Lineup;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
@@ -54,14 +56,16 @@ public class LineupUtilsTest {
     private Position posLeftWing = new Position(9, "Left Wing");
     private Position posCentreForward = new Position(10, "Centre Forward");
     private Position posSecondaryForward = new Position(11, "Secondary Forward");
-    private List<Position> positions = Arrays.asList(posKeeper, posCentreBack, posRightBack,
-            posLeftBack, posDefensiveMidfield, posCentreMidfield, posAttackingMidfield,
-            posRightWing, posLeftWing, posCentreForward, posSecondaryForward);
-    private List<POSITION_TYPE> positionTypes = Arrays.asList(POSITION_TYPE.KEEPER,
-            POSITION_TYPE.CENTRE_BACK, POSITION_TYPE.RIGHT_BACK, POSITION_TYPE.LEFT_BACK,
-            POSITION_TYPE.DEFENSIVE_MIDFIELD, POSITION_TYPE.CENTRE_MIDFIELD,
-            POSITION_TYPE.ATTACKING_MIDFIELD, POSITION_TYPE.RIGHT_WING, POSITION_TYPE.LEFT_WING,
-            POSITION_TYPE.CENTRE_FORWARD, POSITION_TYPE.SECONDARY_FORWARD);
+    private List<Position> positions = Arrays.asList(
+            posKeeper, posCentreBack, posRightBack, posLeftBack, posDefensiveMidfield,
+            posCentreMidfield, posAttackingMidfield, posRightWing, posLeftWing,
+            posCentreForward, posSecondaryForward);
+    private List<POSITION_TYPE> positionTypes = Arrays.asList(
+            POSITION_TYPE.KEEPER, POSITION_TYPE.CENTRE_BACK, POSITION_TYPE.RIGHT_BACK,
+            POSITION_TYPE.LEFT_BACK, POSITION_TYPE.DEFENSIVE_MIDFIELD,
+            POSITION_TYPE.CENTRE_MIDFIELD, POSITION_TYPE.ATTACKING_MIDFIELD,
+            POSITION_TYPE.RIGHT_WING, POSITION_TYPE.LEFT_WING, POSITION_TYPE.CENTRE_FORWARD,
+            POSITION_TYPE.SECONDARY_FORWARD);
 
     private Lineup lineup = new Lineup();
     private Player player = new Player();
@@ -95,29 +99,6 @@ public class LineupUtilsTest {
             new Player(14, 0, 0, new LineupPlayer(lineup, player, posCentreForward));
     private Player leftCentreForward =
             new Player(15, 0, 0, new LineupPlayer(lineup, player, posCentreForward));
-
-
-//    private final int[] positions_F_4_4_2 = {R.id.posKeeper, R.id.leftCentreBack,
-//            R.id.rightCentreBack, R.id.posLeftBack, R.id.posRightBack, R.id.leftCentreMidfield,
-//            R.id.rightCentreMidfield, R.id.posLeftWing, R.id.posRightWing, R.id.leftCentreForward,
-//            R.id.rightCentreForward};
-//    private final int[] positions_F_3_2_3_2_V1 = {R.id.posKeeper, R.id.leftCentreBack,
-//            R.id.rightCentreBack, R.id.centreCentreBack, R.id.leftCentreMidfield,
-//        R.id.rightCentreMidfield, R.id.posAttackingMidfield, R.id.posLeftWing, R.id.posRightWing,
-//            R.id.leftCentreForward, R.id.rightCentreForward};
-//    private final int[] positions_F_3_2_3_2_V2 = {R.id.posKeeper, R.id.centreCentreBack,
-//            R.id.leftCentreBack, R.id.rightCentreBack, R.id.leftCentreMidfield,
-//        R.id.rightCentreMidfield, R.id.posAttackingMidfield, R.id.posLeftWing, R.id.posRightWing,
-//            R.id.leftCentreForward, R.id.rightCentreForward};
-//    private final int[] positions_F_4_2_3_1 = {R.id.posKeeper, R.id.leftCentreBack,
-//            R.id.rightCentreBack, R.id.posLeftBack, R.id.posRightBack, R.id.leftCentreMidfield,
-//       R.id.rightCentreMidfield, R.id.posAttackingMidfield, R.id.posLeftWing, R.id.posRightWing,
-//            R.id.centreCentreForward};
-//    private final int[] positions_F_4_3_3 = {R.id.posKeeper, R.id.leftCentreBack,
-//            R.id.rightCentreBack, R.id.posLeftBack, R.id.posRightBack, R.id.leftCentreMidfield,
-//            R.id.rightCentreMidfield, R.id.centreCentreMidfield, R.id.leftCentreForward,
-//            R.id.rightCentreForward, R.id.centreCentreForward};
-//    private Map<PositionUtils.POSITION_TYPE, Integer> mappedPositions = new HashMap<>();
 
     @Before
     public void setup() {
@@ -167,15 +148,15 @@ public class LineupUtilsTest {
      * Generate a map where the key is a POSITION_TYPE and is mapped with the number of players on
      * that position.
      *
-     * @param cbs number of centre backs
-     * @param rbs number of right backs
-     * @param lbs number of left backs
-     * @param cms number of centre midfielders
-     * @param ams number of attacking midfielders
-     * @param rws number of right wings
-     * @param lws number of left wings
-     * @param cfs number of centre forwards
-     * @return generated map
+     * @param cbs   number of centre backs
+     * @param rbs   number of right backs
+     * @param lbs   number of left backs
+     * @param cms   number of centre midfielders
+     * @param ams   number of attacking midfielders
+     * @param rws   number of right wings
+     * @param lws   number of left wings
+     * @param cfs   number of centre forwards
+     * @return      generated map
      */
     private Map<POSITION_TYPE, Integer> generateCountMap(int cbs, int rbs, int lbs, int cms,
                                                          int ams, int rws, int lws, int cfs) {
@@ -329,17 +310,19 @@ public class LineupUtilsTest {
     }
 
     /**
-     * Test the mapPlayers correctly maps the list into a map when the players formation is 4-2-2.
+     * Test the mapPlayers correctly maps the list into a map when the players formation is 4-2-2
+     * and the players order in the list is mixed.
      */
     @Test
     public void testMapPlayersOn4_4_2Formation() {
-        final int[] resourceIds = {R.id.keeper, R.id.leftBack, R.id.leftCentreBack,
-                R.id.rightBack, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
-                R.id.rightCentreForward, R.id.rightCentreBack, R.id.leftCentreMidfield,
-                R.id.rightCentreMidfield};
-        List<Player> players = Arrays.asList(keeper, leftBack, leftCentreBack, rightBack,
-                leftWing, rightWing, leftCentreForward, rightCentreForward, rightCentreBack,
-                leftCentreMidfield, rightCentreMidfield);
+        final int[] resourceIds = {
+                R.id.keeper, R.id.leftBack, R.id.leftCentreBack, R.id.rightBack, R.id.leftWing,
+                R.id.rightWing, R.id.leftCentreForward, R.id.rightCentreForward,
+                R.id.rightCentreBack, R.id.leftCentreMidfield, R.id.rightCentreMidfield};
+        List<Player> players = Arrays.asList(
+                keeper, leftBack, leftCentreBack, rightBack, leftWing, rightWing,
+                leftCentreForward, rightCentreForward, rightCentreBack, leftCentreMidfield,
+                rightCentreMidfield);
         Map<Integer, Player> result = utils.mapPlayers(FORMATION.F_4_4_2, players);
         verify(positionUtils, never()).getPositionType(anyInt());
         this.assertMappedPlayers(resourceIds, players, result);
@@ -352,10 +335,10 @@ public class LineupUtilsTest {
      */
     @Test
     public void testMapPlayersOn3_2_3_2FormationWithThreeCentreBackAndNullPlayerLineupPosition() {
-        final int[] resourceIds = {R.id.keeper, R.id.leftCentreBack, R.id.rightCentreBack,
-                R.id.centreCentreBack, R.id.leftWing, R.id.rightWing, R.id.leftCentreForward,
-                R.id.rightCentreForward, R.id.attackingMidfield, R.id.leftCentreMidfield,
-                R.id.rightCentreMidfield};
+        final int[] resourceIds = {
+                R.id.keeper, R.id.leftCentreBack, R.id.rightCentreBack, R.id.centreCentreBack,
+                R.id.leftWing, R.id.rightWing, R.id.leftCentreForward, R.id.rightCentreForward,
+                R.id.attackingMidfield, R.id.leftCentreMidfield, R.id.rightCentreMidfield};
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
                 centreCentreBack, leftWing, rightWing, leftCentreForward, rightCentreForward,
                 attackingMidfield, leftCentreMidfield, rightCentreMidfield);
@@ -369,7 +352,7 @@ public class LineupUtilsTest {
 
     /**
      * Test the mapPlayers correctly maps the list into a map when the players formation is 3-2-3-2
-     * when there are there are centre back, left back and right back and the centre back player
+     * when there are there is a centre back, left back and right back and the centre back player
      * is placed in the list before the left back player.
      */
     @Test
@@ -388,7 +371,7 @@ public class LineupUtilsTest {
 
     /**
      * Test the mapPlayers correctly maps the list into a map when the players formation is 3-2-3-2
-     * and there are there are centre back, left back and right back and the centre back player
+     * and there are there is centre back, left back and right back and the centre back player
      * is placed in the list before the right back player.
      */
     @Test
@@ -565,6 +548,7 @@ public class LineupUtilsTest {
      *
      * @param players List of Player
      */
+    @SuppressLint("UseSparseArrays")
     private Map<Integer, Player> putPlayers(List<Player> players) {
         Map<Integer, Player> map = new HashMap<>();
         int i = 0;
@@ -627,6 +611,7 @@ public class LineupUtilsTest {
     /**
      * Test orderPlayers on lineup with formation 4-4-2.
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersOn4_4_2() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack, leftBack,
@@ -647,6 +632,7 @@ public class LineupUtilsTest {
     /**
      * Test orderPlayers on lineup with formation 3-2-3-2.
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersOn3_2_3_2() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
@@ -667,6 +653,7 @@ public class LineupUtilsTest {
     /**
      * Test orderPlayers on lineup with formation 4-2-3-1.
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersOn4_2_3_1() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
@@ -687,6 +674,7 @@ public class LineupUtilsTest {
     /**
      * Test orderPlayers on lineup with formation 4-3-3.
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersOn4_3_3() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
@@ -707,6 +695,7 @@ public class LineupUtilsTest {
     /**
      * Test the behavior when orderPlayers is called with a List that contains a null player.
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersWithNullPlayer() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
@@ -730,6 +719,7 @@ public class LineupUtilsTest {
      * Test the behavior when orderPlayers is called with a List that contains a empty
      * player(player id is 0)
      */
+    @SuppressLint("UseSparseArrays")
     @Test
     public void testOrderPlayersWithEmptyPlayer() {
         List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,

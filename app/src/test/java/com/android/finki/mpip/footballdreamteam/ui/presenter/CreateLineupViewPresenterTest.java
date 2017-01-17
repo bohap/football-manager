@@ -11,13 +11,13 @@ import com.android.finki.mpip.footballdreamteam.rest.request.LineupRequest;
 import com.android.finki.mpip.footballdreamteam.rest.response.LineupResponse;
 import com.android.finki.mpip.footballdreamteam.rest.web.LineupApi;
 import com.android.finki.mpip.footballdreamteam.ui.component.CreatedLineupView;
-import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils.FORMATION;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -29,13 +29,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyListOf;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Borce on 25.08.2016.
  */
-@Ignore
 public class CreateLineupViewPresenterTest {
 
     @Mock
@@ -61,15 +68,15 @@ public class CreateLineupViewPresenterTest {
 
     private CreateLineupViewPresenter presenter;
 
-    private List<LineupPlayer> lineupPlayers = Arrays.asList(new LineupPlayer(1, 1, 1),
-            new LineupPlayer(2, 2, 2), new LineupPlayer(3, 3, 3));
+    private List<LineupPlayer> lineupPlayers = Arrays.asList(
+            new LineupPlayer(1, 1, 1), new LineupPlayer(2, 2, 2), new LineupPlayer(3, 3, 3));
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         when(api.store(any(LineupRequest.class))).thenReturn(call);
-        presenter = new CreateLineupViewPresenter(view, api,
-                lineupDBService, lineupPlayerDBService);
+        presenter = new CreateLineupViewPresenter(view, api, lineupDBService,
+                lineupPlayerDBService);
     }
 
     /**
@@ -78,9 +85,9 @@ public class CreateLineupViewPresenterTest {
      */
     @Test
     public void testUpdateFormationOnSameFormation() {
-        presenter.updateFormation(LineupUtils.FORMATION.F_4_4_2);
-        verify(view, never())
-                .changeFormation(any(LineupUtils.FORMATION.class), anyListOf(Player.class));
+        presenter.onViewLayoutCreated();
+        presenter.updateFormation(FORMATION.F_4_4_2);
+        verify(view, never()).changeFormation(any(FORMATION.class), anyListOf(Player.class));
     }
 
     /**
@@ -89,10 +96,21 @@ public class CreateLineupViewPresenterTest {
      */
     @Test
     public void testUpdateFormationOnNewFormation() {
-        List<Player> players = Arrays.asList(new Player(), new Player());
-        when(view.getPlayersOrdered()).thenReturn(players);
-        presenter.updateFormation(LineupUtils.FORMATION.F_4_2_3_1);
-        verify(view).changeFormation(LineupUtils.FORMATION.F_4_2_3_1, players);
+        List<Player> mockList = Arrays.asList(new Player(), new Player());
+        when(view.getPlayersOrdered()).thenReturn(mockList);
+        presenter.onViewLayoutCreated();
+        presenter.updateFormation(FORMATION.F_4_2_3_1);
+        verify(view).changeFormation(FORMATION.F_4_2_3_1, mockList);
+    }
+
+    /**
+     * Test the behavior when store is called and the view layout is not created.
+     */
+    @Test
+    public void testStoreWhenViewLayoutIsNotCreated() {
+        presenter.store();
+        verify(view, never()).showStoring();
+        verify(api, never()).store(any(LineupRequest.class));
     }
 
     /**
@@ -101,6 +119,8 @@ public class CreateLineupViewPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testStoreWithInvalidPlayerId() {
         lineupPlayers.get(0).setPlayerId(-1);
+        when(view.getLineupPlayers()).thenReturn(lineupPlayers);
+        presenter.onViewLayoutCreated();
         presenter.store();
     }
 
@@ -110,6 +130,8 @@ public class CreateLineupViewPresenterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testStoreWithInvalidPositionId() {
         lineupPlayers.get(1).setPositionId(-2);
+        when(view.getLineupPlayers()).thenReturn(lineupPlayers);
+        presenter.onViewLayoutCreated();
         presenter.store();
     }
 
@@ -118,17 +140,32 @@ public class CreateLineupViewPresenterTest {
      */
     @Test
     public void testStore() {
+        when(view.getLineupPlayers()).thenReturn(lineupPlayers);
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(api).store(lineupRequestCaptor.capture());
-        List<LineupRequest.Content> lineupPlayers = lineupRequestCaptor.getValue().getPlayers();
-        assertEquals(this.lineupPlayers.size(), lineupPlayers.size());
-        for (int i = 0; i < this.lineupPlayers.size(); i++) {
-            assertEquals(this.lineupPlayers.get(i).getPlayerId(),
-                    lineupPlayers.get(i).getPlayerId());
-            assertEquals(this.lineupPlayers.get(i).getPositionId(),
-                    lineupPlayers.get(i).getPositionId());
+        List<LineupRequest.Content> requestPlayers = lineupRequestCaptor.getValue().getPlayers();
+        assertEquals(lineupPlayers.size(), requestPlayers.size());
+        for (int i = 0; i < lineupPlayers.size(); i++) {
+            LineupPlayer expected = this.lineupPlayers.get(i);
+            LineupRequest.Content actual = requestPlayers.get(i);
+            assertEquals(expected.getPlayerId(), actual.getPlayerId());
+            assertEquals(expected.getPositionId(), actual.getPositionId());
         }
         verify(call).enqueue(callbackCaptor.capture());
+    }
+
+    /**
+     * Test the behavior when store is called and a store request is already sending.
+     */
+    @Test
+    public void testStoreWhenARequestIsAlreadySending() {
+        presenter.onViewLayoutCreated();
+        presenter.store();
+        verify(api).store(any(LineupRequest.class));
+        reset(api);
+        presenter.store();
+        verify(api, never()).store(any(LineupRequest.class));
     }
 
     /**
@@ -137,6 +174,7 @@ public class CreateLineupViewPresenterTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testStoringSuccessWhenServerRespondedWithNullLineup() {
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(call).enqueue(callbackCaptor.capture());
         callbackCaptor.getValue().onResponse(call, Response.success(new LineupResponse(null)));
@@ -152,14 +190,17 @@ public class CreateLineupViewPresenterTest {
         final Lineup lineup = new Lineup(1, 1);
         when(lineupDBService.exists(anyInt())).thenReturn(false);
         doThrow(new LineupException("")).when(lineupDBService).store(any(Lineup.class));
+
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(call).enqueue(callbackCaptor.capture());
         callbackCaptor.getValue().onResponse(call, Response.success(new LineupResponse(lineup)));
 
-        verify(lineupDBService).open();
-        verify(lineupDBService).exists(lineup.getId());
-        verify(lineupDBService).store(lineup);
-        verify(lineupDBService).close();
+        InOrder inOrder = inOrder(lineupDBService);
+        inOrder.verify(lineupDBService).open();
+        inOrder.verify(lineupDBService).exists(lineup.getId());
+        inOrder.verify(lineupDBService).store(lineup);
+        inOrder.verify(lineupDBService).close();
         verify(lineupPlayerDBService, never()).open();
         verify(lineupPlayerDBService, never()).storePlayers(anyListOf(LineupPlayer.class));
         verify(lineupPlayerDBService, never()).close();
@@ -176,17 +217,22 @@ public class CreateLineupViewPresenterTest {
         when(lineupDBService.exists(anyInt())).thenReturn(false);
         doThrow(new LineupPlayerException(""))
                 .when(lineupPlayerDBService).storePlayers(anyListOf(LineupPlayer.class));
+
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(call).enqueue(callbackCaptor.capture());
         callbackCaptor.getValue().onResponse(call, Response.success(new LineupResponse(lineup)));
 
-        verify(lineupDBService).open();
-        verify(lineupDBService).exists(lineup.getId());
-        verify(lineupDBService).store(lineup);
-        verify(lineupDBService).close();
-        verify(lineupPlayerDBService).open();
-        verify(lineupPlayerDBService).storePlayers(anyListOf(LineupPlayer.class));
-        verify(lineupPlayerDBService).close();
+        InOrder inOrder = inOrder(lineupDBService);
+        inOrder.verify(lineupDBService).open();
+        inOrder.verify(lineupDBService).exists(lineup.getId());
+        inOrder.verify(lineupDBService).store(lineup);
+        inOrder.verify(lineupDBService).close();
+
+        inOrder = inOrder(lineupPlayerDBService);
+        inOrder.verify(lineupPlayerDBService).open();
+        inOrder.verify(lineupPlayerDBService).storePlayers(anyListOf(LineupPlayer.class));
+        inOrder.verify(lineupPlayerDBService).close();
         verify(view).showStoringSuccessful(lineup);
     }
 
@@ -198,17 +244,22 @@ public class CreateLineupViewPresenterTest {
     public void testStoreSuccessWhenStoringThePlayersIsSuccessful() {
         final Lineup lineup = new Lineup(1, 1);
         when(lineupDBService.exists(anyInt())).thenReturn(true);
+
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(call).enqueue(callbackCaptor.capture());
         callbackCaptor.getValue().onResponse(call, Response.success(new LineupResponse(lineup)));
 
-        verify(lineupDBService).open();
-        verify(lineupDBService).exists(lineup.getId());
-        verify(lineupDBService, never()).store(lineup);
-        verify(lineupDBService).close();
-        verify(lineupPlayerDBService).open();
-        verify(lineupPlayerDBService).storePlayers(anyListOf(LineupPlayer.class));
-        verify(lineupPlayerDBService).close();
+        InOrder inOrder = inOrder(lineupDBService);
+        inOrder.verify(lineupDBService).open();
+        inOrder.verify(lineupDBService).exists(lineup.getId());
+        inOrder.verify(lineupDBService, never()).store(lineup);
+        inOrder.verify(lineupDBService).close();
+
+        inOrder = inOrder(lineupPlayerDBService);
+        inOrder.verify(lineupPlayerDBService).open();
+        inOrder.verify(lineupPlayerDBService).storePlayers(anyListOf(LineupPlayer.class));
+        inOrder.verify(lineupPlayerDBService).close();
         verify(view).showStoringSuccessful(lineup);
     }
 
@@ -217,9 +268,11 @@ public class CreateLineupViewPresenterTest {
      */
     @Test
     public void testStoringFailed() {
+        presenter.onViewLayoutCreated();
         presenter.store();
         verify(call).enqueue(callbackCaptor.capture());
         callbackCaptor.getValue().onFailure(call, new SocketTimeoutException());
         verify(view).showStoringFailed();
+        verify(view).showSocketTimeout();
     }
 }

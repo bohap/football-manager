@@ -4,8 +4,11 @@ import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,6 +19,8 @@ import com.android.finki.mpip.footballdreamteam.dependency.component.ui.CreateLi
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.LineupFormationViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.ListPositionPlayersViewComponent;
 import com.android.finki.mpip.footballdreamteam.dependency.component.ui.PlayerDetailsViewComponent;
+import com.android.finki.mpip.footballdreamteam.model.Lineup;
+import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.ui.dialog.PlayerDetailsDialog;
 import com.android.finki.mpip.footballdreamteam.ui.fragment.LineupFormationFragment;
@@ -24,12 +29,11 @@ import com.android.finki.mpip.footballdreamteam.ui.presenter.CreateLineupViewPre
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.ListPositionPlayersViewPresenter;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.PlayerDetailsViewPresenter;
-import com.android.finki.mpip.footballdreamteam.ui.view.ButtonAwesome;
 import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.PositionUtils.POSITION_PLACE;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,9 +45,12 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
+import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ActivityController;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,7 +68,6 @@ import static org.robolectric.Shadows.shadowOf;
 /**
  * Created by Borce on 24.08.2016.
  */
-@Ignore
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP,
         application = MockApplication.class)
@@ -93,33 +99,24 @@ public class CreateLineupActivityTest {
 
     private ActivityController<CreateLineupActivity> controller;
     private CreateLineupActivity activity;
+    private FragmentManager fragmentManager;
 
     private RelativeLayout spinner;
     private TextView txtSpinner;
-    private RelativeLayout failedRequestLayout;
-    private TextView failedRequestText;
+    private RelativeLayout error;
+    private TextView errorText;
+    private Button btnTryAgain;
     private RelativeLayout mainContent;
+    private Button btnChangeFormation;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        MockApplication application = (MockApplication) RuntimeEnvironment.application;
-        application.setCreateLineupViewComponent(component);
-        application.setLineupFormationFragmentComponent(lineupFormationFragmentComponent);
-        application.setListPositionPlayersViewComponent(listPositionPlayersFragmentComponent);
-        application.setPlayerDetailsViewComponent(playerDetailsDialogComponent);
         this.mockDependencies();
         controller = Robolectric.buildActivity(CreateLineupActivity.class);
         activity = controller.create().start().resume().visible().get();
-
-        spinner = (RelativeLayout) activity.findViewById(R.id.spinner);
-        assertNotNull(spinner);
-        txtSpinner = (TextView) activity.findViewById(R.id.spinner_text);
-        assertNotNull(txtSpinner);
-//        failedRequestLayout = (RelativeLayout) activity.findViewById(R.id.error_loading);
-//        assertNotNull(failedRequestLayout);
-//        failedRequestText = (TextView) activity.findViewById(R.id.requestFailed_text);
-        mainContent = (RelativeLayout) activity.findViewById(R.id.createLineupLayout_mainContent);
+        this.getViews();
+        fragmentManager = activity.getSupportFragmentManager();
     }
 
     @After
@@ -131,12 +128,18 @@ public class CreateLineupActivityTest {
      * Mock the dependencies for the activity.
      */
     private void mockDependencies() {
+        MockApplication application = (MockApplication) RuntimeEnvironment.application;
+        application.setCreateLineupViewComponent(component);
+        application.setLineupFormationFragmentComponent(lineupFormationFragmentComponent);
+        application.setListPositionPlayersViewComponent(listPositionPlayersFragmentComponent);
+        application.setPlayerDetailsViewComponent(playerDetailsDialogComponent);
+
         when(presenter.getFormation()).thenReturn(LineupUtils.FORMATION.F_4_4_2);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                CreateLineupActivity activity = (CreateLineupActivity)
-                        invocation.getArguments()[0];
+                CreateLineupActivity activity =
+                        (CreateLineupActivity) invocation.getArguments()[0];
                 activity.setPresenter(presenter);
                 return null;
             }
@@ -144,8 +147,8 @@ public class CreateLineupActivityTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                LineupFormationFragment fragment = (LineupFormationFragment)
-                        invocation.getArguments()[0];
+                LineupFormationFragment fragment =
+                        (LineupFormationFragment) invocation.getArguments()[0];
                 fragment.setPresenter(lineupFormationFragmentPresenter);
                 return null;
             }
@@ -155,8 +158,8 @@ public class CreateLineupActivityTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ListPositionPlayersFragment fragment = (ListPositionPlayersFragment)
-                        invocation.getArguments()[0];
+                ListPositionPlayersFragment fragment =
+                        (ListPositionPlayersFragment) invocation.getArguments()[0];
                 fragment.setPresenter(listPositionPlayersFragmentPresenter);
                 return null;
             }
@@ -173,19 +176,46 @@ public class CreateLineupActivityTest {
     }
 
     /**
+     * Get the views for the activity.
+     */
+    private void getViews() {
+        spinner = (RelativeLayout) activity.findViewById(R.id.spinner);
+        txtSpinner = (TextView) activity.findViewById(R.id.spinner_text);
+        error = (RelativeLayout) activity.findViewById(R.id.error);
+        errorText = (TextView) activity.findViewById(R.id.txtError);
+        btnTryAgain = (Button) activity.findViewById(R.id.error_btnTryAgain);
+        mainContent = (RelativeLayout) activity.findViewById(R.id.createLineupLayout_mainContent);
+        btnChangeFormation =
+                (Button) activity.findViewById(R.id.createLineupLayout_btnChangeFormation);
+        assertNotNull(spinner);
+        assertNotNull(txtSpinner);
+        assertNotNull(error);
+        assertNotNull(errorText);
+        assertNotNull(btnTryAgain);
+        assertNotNull(mainContent);
+        assertNotNull(btnChangeFormation);
+    }
+
+    /**
+     * Get the active fragment in the activity.
+     *
+     * @return the active fragment in the activity
+     */
+    private Fragment getCurrentFragment() {
+        return fragmentManager.findFragmentById(R.id.content);
+    }
+
+    /**
      * Test that the activity is successfully created.
      */
     @Test
     public void testActivityIsCreated() {
         String title = activity.getString(R.string.createLineupView_title);
-        assertNotNull(activity.getSupportActionBar());
-        assertEquals(title, activity.getSupportActionBar().getTitle());
-        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
-                instanceof LineupFormationFragment);
-        ButtonAwesome btn = (ButtonAwesome) activity
-                .findViewById(R.id.createLineupLayout_btnChangeFormation);
-        assertNotNull(btn);
-        assertSame(activity, shadowOf(btn).getOnCreateContextMenuListener());
+        ActionBar actionBar = activity.getSupportActionBar();
+        assertNotNull(actionBar);
+        assertEquals(title, actionBar.getTitle());
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
+        assertSame(activity, shadowOf(btnChangeFormation).getOnCreateContextMenuListener());
     }
 
     /**
@@ -239,14 +269,23 @@ public class CreateLineupActivityTest {
     }
 
     /**
+     * Test the behavior when menu item R.id.lineupMenu_save is clicked.
+     */
+    @Test
+    public void testMenuItemSaveClick() {
+        assertTrue(shadowOf(activity).clickMenuItem(R.id.lineupMenu_save));
+        verify(presenter).store();
+    }
+
+    /**
      * Test the behavior when showListPositionPlayers is called.
      */
     @Test
     public void testShowListPositionPlayersFragment() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-        FragmentManager manager = activity.getSupportFragmentManager();
-        assertTrue(manager.findFragmentById(R.id.content) instanceof ListPositionPlayersFragment);
-        assertEquals(1, manager.getBackStackEntryCount());
+        activity.showListPositionPlayersFragment(POSITION_PLACE.KEEPERS, new int[]{}, 0, 0);
+        assertTrue(this.getCurrentFragment() instanceof ListPositionPlayersFragment);
+        assertEquals(1, fragmentManager.getBackStackEntryCount());
+        assertEquals(View.GONE, btnChangeFormation.getVisibility());
     }
 
     /**
@@ -255,8 +294,8 @@ public class CreateLineupActivityTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testShowListPositionPlayersIsCalledWithLineupFormationFragmentNoVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
     }
 
     /**
@@ -265,11 +304,10 @@ public class CreateLineupActivityTest {
     @Test
     public void testShowPlayerDetailsDialog() {
         activity.showPlayerDetailsDialog(1, false);
-        FragmentManager manager = activity.getSupportFragmentManager();
-        assertTrue(manager.findFragmentById(R.id.content) instanceof LineupFormationFragment);
-        assertEquals(0, manager.getBackStackEntryCount());
-        assertTrue(manager.findFragmentByTag(PlayerDetailsDialog.TAG)
-                instanceof PlayerDetailsDialog);
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
+        assertEquals(0, fragmentManager.getBackStackEntryCount());
+        Fragment dialog = fragmentManager.findFragmentByTag(PlayerDetailsDialog.TAG);
+        assertTrue(dialog instanceof PlayerDetailsDialog);
     }
 
     /**
@@ -278,7 +316,7 @@ public class CreateLineupActivityTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testShowPlayerDetailsDialogWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
         activity.showPlayerDetailsDialog(1, false);
     }
 
@@ -286,22 +324,39 @@ public class CreateLineupActivityTest {
      * Test the behavior when showValidLineup is called.
      */
     @Test
-    public void testOnValidFormation() {
+    public void testShowValidFormation() {
+        Menu optionsMenu = shadowOf(activity).getOptionsMenu();
+        assertNotNull(optionsMenu);
+        MenuItem menuItem = optionsMenu.findItem(R.id.lineupMenu_save);
+        assertNotNull(menuItem);
+        assertFalse(menuItem.isVisible());
+
+        when(presenter.isFormationValid()).thenReturn(true);
         activity.showValidLineup();
-//        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
-//        assertNotNull(btn);
-//        assertEquals(View.VISIBLE, btn.getVisibility());
+        menuItem = optionsMenu.findItem(R.id.lineupMenu_save);
+        assertTrue(menuItem.isVisible());
     }
 
     /**
      * Test the behavior when on invalid formation is called.
      */
     @Test
-    public void testOnInvalidFormation() {
-        activity.showInvalidLineup();
-//        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
-//        assertNotNull(btn);
-//        assertEquals(View.GONE, btn.getVisibility());
+    public void testShowInvalidFormation() {
+        Menu optionsMenu = shadowOf(activity).getOptionsMenu();
+        assertNotNull(optionsMenu);
+        MenuItem menuItem = optionsMenu.findItem(R.id.lineupMenu_save);
+        assertNotNull(menuItem);
+        assertFalse(menuItem.isVisible());
+
+        when(presenter.isFormationValid()).thenReturn(true);
+        activity.showValidLineup();
+        menuItem = optionsMenu.findItem(R.id.lineupMenu_save);
+        assertTrue(menuItem.isVisible());
+
+        when(presenter.isFormationValid()).thenReturn(false);
+        activity.showValidLineup();
+        menuItem = optionsMenu.findItem(R.id.lineupMenu_save);
+        assertFalse(menuItem.isVisible());
     }
 
     /**
@@ -309,7 +364,7 @@ public class CreateLineupActivityTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRemovePlayerOnLineupFormationFragmentNoVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
         activity.removePlayer();
     }
 
@@ -319,8 +374,9 @@ public class CreateLineupActivityTest {
     @Test
     public void testRemovePlayer() {
         activity.removePlayer();
-        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
-                instanceof LineupFormationFragment);
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
+        verify(lineupFormationFragmentPresenter).removeSelectedPlayer();
+        verify(presenter).setChanged(true);
     }
 
     /**
@@ -337,28 +393,52 @@ public class CreateLineupActivityTest {
      */
     @Test
     public void testOnPlayerSelected() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+        activity.showListPositionPlayersFragment(POSITION_PLACE.KEEPERS, new int[]{}, 0, 0);
+        assertEquals(View.GONE, btnChangeFormation.getVisibility());
         activity.onPlayerSelected(new Player());
-        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
-                instanceof LineupFormationFragment);
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
         assertEquals(0, activity.getSupportFragmentManager().getBackStackEntryCount());
+        assertEquals(View.VISIBLE, btnChangeFormation.getVisibility());
     }
 
     /**
      * Test the behavior when getPlayersOrdered is called and LineupFormationFragment is not visible.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testGetPlayersWhenLineupFormationFragmnetIsNotVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
+    public void testGetPlayersOrderedPlayersWhenLineupFormationFragmnetIsNotVisible() {
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
         activity.getPlayersOrdered();
     }
 
     /**
-     * Test that getPlayersOrdered method works.
+     * Test that get players ordered works.
      */
     @Test
-    public void testGetPlayers() {
-        activity.getPlayersOrdered();
+    public void testGetPlayersOrdered() {
+        List<Player> mockList = Arrays.asList(new Player(), new Player());
+        when(lineupFormationFragmentPresenter.getPlayersOrdered()).thenReturn(mockList);
+        List<Player> result = activity.getPlayersOrdered();
+        assertSame(mockList, result);
+    }
+
+    /**
+     * Test the behavior when getLineupPLayers is called and LineupFormationFragment is not visible.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetLineupPlayersPlayersWhenLineupFormationFragmnetIsNotVisible() {
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
+        activity.getLineupPlayers();
+    }
+
+    /**
+     * Test that getLineupPlayers method works.
+     */
+    @Test
+    public void testGetLineupPlayers() {
+        List<LineupPlayer> mockList = Arrays.asList(new LineupPlayer(), new LineupPlayer());
+        when(lineupFormationFragmentPresenter.getLineupPlayers()).thenReturn(mockList);
+        List<LineupPlayer> result = activity.getLineupPlayers();
+        assertSame(mockList, result);
     }
 
     /**
@@ -366,9 +446,9 @@ public class CreateLineupActivityTest {
      * is not visible.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testUpdateFormationWhenLineupFormationIsNotVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-        activity.changeFormation(LineupUtils.FORMATION.F_4_3_3, new ArrayList<Player>());
+    public void testChangeFormationWhenLineupFormationIsNotVisible() {
+        activity.showListPositionPlayersFragment(null, new int[]{}, 0, 0);
+        activity.changeFormation(LineupUtils.FORMATION.F_4_3_3, Collections.<Player>emptyList());
     }
 
     /**
@@ -376,39 +456,16 @@ public class CreateLineupActivityTest {
      * with a new one.
      */
     @Test
-    public void testUpdateFormation() {
+    public void testChangeFormation() {
         final LineupUtils.FORMATION formation = LineupUtils.FORMATION.F_4_3_3;
-        FragmentManager manager = activity.getSupportFragmentManager();
-        LineupFormationFragment currentFragment = (LineupFormationFragment)
-                manager.findFragmentById(R.id.content);
-        activity.changeFormation(formation, new ArrayList<Player>());
-        Fragment fragment = manager.findFragmentById(R.id.content);
-        assertTrue(fragment instanceof LineupFormationFragment);
-        assertNotSame(currentFragment, fragment);
-        assertEquals(0, manager.getBackStackEntryCount());
-    }
-
-    /**
-     * Test the behavior when button "Save" is clicked and LineupFormationFragment
-     * is not visible.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testBtnSaveClickWhenLineupFormationFragmentIsNotVisible() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-//        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
-//        assertNotNull(btn);
-//        btn.performClick();
-    }
-
-    /**
-     * Test the behavior when button "Save" is clicked.
-     */
-    @Test
-    public void testBtnSaveClick() {
-//        Button btn = (Button) activity.findViewById(R.id.createLineupLayout_btnSave);
-//        assertNotNull(btn);
-//        btn.performClick();
-//        verify(presenter).store(anyListOf(LineupPlayer.class));
+        final List<Player> mockList = Arrays.asList(new Player(), new Player());
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
+        LineupFormationFragment currFragment = (LineupFormationFragment) this.getCurrentFragment();
+        activity.changeFormation(formation, mockList);
+        Fragment newFragment = this.getCurrentFragment();
+        assertTrue(newFragment instanceof LineupFormationFragment);
+        assertNotSame(currFragment, newFragment);
+        assertEquals(0, fragmentManager.getBackStackEntryCount());
     }
 
     /**
@@ -417,11 +474,11 @@ public class CreateLineupActivityTest {
     @Test
     public void testShowStoring() {
         String text = activity.getString(R.string.createLineupView_spinnerCreateLineup_text);
-        failedRequestLayout.setVisibility(View.VISIBLE);
+        error.setVisibility(View.VISIBLE);
         activity.showStoring();
         assertEquals(View.VISIBLE, spinner.getVisibility());
         assertEquals(text, txtSpinner.getText());
-        assertEquals(View.GONE, failedRequestLayout.getVisibility());
+        assertEquals(View.GONE, error.getVisibility());
         assertEquals(View.GONE, mainContent.getVisibility());
     }
 
@@ -433,8 +490,8 @@ public class CreateLineupActivityTest {
         String text = activity.getString(R.string.createLineupView_requestFailedText);
         spinner.setVisibility(View.VISIBLE);
         activity.showStoringFailed();
-        assertEquals(View.VISIBLE, failedRequestLayout.getVisibility());
-        assertEquals(text, failedRequestText.getText());
+        assertEquals(View.VISIBLE, error.getVisibility());
+        assertEquals(text, errorText.getText());
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.GONE, mainContent.getVisibility());
     }
@@ -443,23 +500,18 @@ public class CreateLineupActivityTest {
      * Test the behavior when button "Try Again" is clicked and LineupFormationFragment
      * is not active.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBtnTryAgainWhenLineupFormationIsNotActive() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-//        Button btn = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
-//        assertNotNull(btn);
-//        btn.performClick();
+        assertTrue(btnTryAgain.performClick());
+        verify(presenter).store();
     }
 
-    /**
-     * Test the behavior when button "Try Again" is clicked.
-     */
     @Test
-    public void testBtnTryAgain() {
-//        Button btn = (Button) activity.findViewById(R.id.error_loading_btn_tryAgain);
-//        assertNotNull(btn);
-//        btn.performClick();
-//        verify(presenter).store(anyListOf(LineupPlayer.class));
+    public void testShowStoringSuccessful() {
+        String text = activity.getString(R.string.createLineupView_lineupCreateSuccessful_text);
+        activity.showStoringSuccessful(new Lineup());
+        assertEquals(text, ShadowToast.getTextOfLatestToast());
+        assertTrue(shadowOf(activity).isFinishing());
     }
 
     /**
@@ -468,13 +520,12 @@ public class CreateLineupActivityTest {
     @Test
     public void testOnBackBtnPressedWhenPlayerDetailsDialogIsActive() {
         activity.showPlayerDetailsDialog(1, false);
-        DialogFragment dialog = (DialogFragment) activity.getSupportFragmentManager()
-                .findFragmentByTag(PlayerDetailsDialog.TAG);
+        DialogFragment dialog =
+                (DialogFragment) fragmentManager.findFragmentByTag(PlayerDetailsDialog.TAG);
         assertTrue(dialog.isVisible());
         dialog.dismiss();
         assertFalse(dialog.isVisible());
-        assertTrue(activity.getSupportFragmentManager().findFragmentById(R.id.content)
-                instanceof LineupFormationFragment);
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
         assertEquals(0, activity.getSupportFragmentManager().getBackStackEntryCount());
         assertFalse(shadowOf(activity).isFinishing());
     }
@@ -485,12 +536,11 @@ public class CreateLineupActivityTest {
      */
     @Test
     public void testOnBackBtnPressedWhenListPositionPlayersFragmentIsActive() {
-//        activity.showListPositionPlayersView(PositionUtils.POSITION_PLACE.KEEPERS, new int[]{});
-        FragmentManager manager = activity.getSupportFragmentManager();
-        assertTrue(manager.findFragmentById(R.id.content) instanceof ListPositionPlayersFragment);
+        activity.showListPositionPlayersFragment(POSITION_PLACE.KEEPERS, new int[]{}, 0, 0);
+        assertTrue(this.getCurrentFragment() instanceof ListPositionPlayersFragment);
         activity.onBackPressed();
-        assertTrue(manager.findFragmentById(R.id.content) instanceof LineupFormationFragment);
-        assertEquals(0, manager.getBackStackEntryCount());
+        assertTrue(this.getCurrentFragment() instanceof LineupFormationFragment);
+        assertEquals(0, fragmentManager.getBackStackEntryCount());
         assertFalse(shadowOf(activity).isFinishing());
     }
 

@@ -11,12 +11,11 @@ import com.android.finki.mpip.footballdreamteam.MainApplication;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.dependency.module.ui.LineupFormationViewModule;
 import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
-import com.android.finki.mpip.footballdreamteam.model.LineupPlayers;
 import com.android.finki.mpip.footballdreamteam.model.Player;
 import com.android.finki.mpip.footballdreamteam.model.helpers.SerializableList;
 import com.android.finki.mpip.footballdreamteam.ui.component.LineupFormationView;
 import com.android.finki.mpip.footballdreamteam.ui.presenter.LineupFormationViewPresenter;
-import com.android.finki.mpip.footballdreamteam.utility.LineupUtils;
+import com.android.finki.mpip.footballdreamteam.utility.LineupUtils.FORMATION;
 import com.android.finki.mpip.footballdreamteam.utility.PositionUtils;
 
 import org.slf4j.Logger;
@@ -34,9 +33,9 @@ import butterknife.Unbinder;
 /**
  * Created by Borce on 13.08.2016.
  */
-public class LineupFormationFragment extends BaseFragment implements LineupFormationView,
-        View.OnClickListener {
-
+public class LineupFormationFragment extends BaseFragment
+                                     implements LineupFormationView,
+                                                View.OnClickListener {
     private static Logger logger = LoggerFactory.getLogger(LineupFormationFragment.class);
     public static final String TAG = "LineupFormationFragment";
 
@@ -111,8 +110,8 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
             throw new IllegalArgumentException("players can't be null");
         }
         if (players.size() != 11) {
-            throw new IllegalArgumentException(String
-                    .format("invalid player size, required 11, but got %s", players.size()));
+            throw new IllegalArgumentException(
+                    String.format("invalid player size, required 11, but got %s", players.size()));
         }
         LineupFormationFragment fragment = new LineupFormationFragment();
         Bundle args = new Bundle();
@@ -129,8 +128,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @param players   list of players that are already in the lineup
      * @return LineupFormation fragment instance
      */
-    public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation,
-                                                      List<Player> players) {
+    public static LineupFormationFragment newInstance(FORMATION formation, List<Player> players) {
         if (formation == null) {
             throw new IllegalArgumentException("formation can't be null");
         }
@@ -151,7 +149,10 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      * @param formation lineup formation
      * @return new instance of the fragment
      */
-    public static LineupFormationFragment newInstance(LineupUtils.FORMATION formation) {
+    public static LineupFormationFragment newInstance(FORMATION formation) {
+        if (formation == null) {
+            throw new IllegalArgumentException("formation can't be null");
+        }
         return newInstance(formation, new ArrayList<Player>());
     }
 
@@ -185,10 +186,10 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
     /**
      * Called when the fragment view is ready to be created.
      *
-     * @param inflater           LayoutInflater
-     * @param container          fragment ViewGroup
-     * @param savedInstanceState saved state for when the fragment is recreated
-     * @return fragment view
+     * @param inflater              the layout inflater
+     * @param container             fragment ViewGroup
+     * @param savedInstanceState    saved state for when the fragment is recreated
+     * @return                      fragment view
      */
     @Nullable
     @Override
@@ -196,19 +197,27 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
                              @Nullable Bundle savedInstanceState) {
         logger.info("onCreateView");
         View view;
-        LineupUtils.FORMATION formation = presenter.getFormation();
-        int layoutId = -1;
-        if (formation == LineupUtils.FORMATION.F_4_4_2) {
-            layoutId = R.layout.lineup_formation_4_4_2;
-        } else if (formation == LineupUtils.FORMATION.F_3_2_3_2) {
-            layoutId = R.layout.lineup_formation_3_2_3_2;
-        } else if (formation == LineupUtils.FORMATION.F_4_2_3_1) {
-            layoutId = R.layout.lineup_formation_4_2_3_1;
-        } else if (formation == LineupUtils.FORMATION.F_4_3_3) {
-            layoutId = R.layout.lineup_formation_4_3_3;
+        FORMATION formation = presenter.getFormation();
+        if (formation == null) {
+            throw new IllegalArgumentException("formation can't be null");
         }
-        if (layoutId == -1) {
-            throw new IllegalArgumentException("can't determine lineup formation");
+
+        int layoutId;
+        switch (formation) {
+            case F_4_4_2:
+                layoutId = R.layout.lineup_formation_4_4_2;
+                break;
+            case F_3_2_3_2:
+                layoutId = R.layout.lineup_formation_3_2_3_2;
+                break;
+            case F_4_2_3_1:
+                layoutId = R.layout.lineup_formation_4_2_3_1;
+                break;
+            case F_4_3_3:
+                layoutId = R.layout.lineup_formation_4_3_3;
+                break;
+            default:
+                throw new IllegalArgumentException("can't determine lineup formation");
         }
 
         view = inflater.inflate(layoutId, container, false);
@@ -384,7 +393,7 @@ public class LineupFormationFragment extends BaseFragment implements LineupForma
      *
      * @return lineup formation
      */
-    public LineupUtils.FORMATION getFormation() {
+    public FORMATION getFormation() {
         logger.info("getFormation");
         return presenter.getFormation();
     }

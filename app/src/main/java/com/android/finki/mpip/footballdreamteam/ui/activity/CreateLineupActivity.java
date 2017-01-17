@@ -42,9 +42,11 @@ import butterknife.OnClick;
 /**
  * Created by Borce on 22.08.2016.
  */
-public class CreateLineupActivity extends LineupPlayersBaseActivity implements CreatedLineupView,
-        LineupFormationFragment.Listener, ListPositionPlayersFragment.Listener,
-        PlayerDetailsDialog.Listener {
+public class CreateLineupActivity extends LineupPlayersBaseActivity
+                                  implements CreatedLineupView,
+                                             LineupFormationFragment.Listener,
+                                             ListPositionPlayersFragment.Listener,
+                                             PlayerDetailsDialog.Listener {
 
     private Logger logger = LoggerFactory.getLogger(CreateLineupActivity.class);
     private CreateLineupViewPresenter presenter;
@@ -139,10 +141,10 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     }
 
     /**
-     * Called when the options menu is ready to be creted or recreated.
+     * Called when the options menu is ready to be created or recreated.
      *
-     * @param menu menu to be created
-     * @return whatever the action should be canceled or not
+     * @param menu  menu to be created
+     * @return      whatever the action should be canceled or not
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,7 +157,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
         } else {
             item.setVisible(false);
         }
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -332,7 +334,7 @@ public class CreateLineupActivity extends LineupPlayersBaseActivity implements C
     }
 
     /**
-     * Get all the players that are in the lienup.
+     * Get all the players that are in the lineup.
      *
      * @return lineup players
      */
