@@ -23,14 +23,17 @@
         </activity>
         <activity
             android:name=".ui.activity.LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".ui.activity.RegisterActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan">
+        </activity>
         <activity
             android:name=".ui.activity.LineupPlayersActivity"
             android:screenOrientation="landscape"
@@ -41,10 +44,12 @@
         </activity>
         <activity
             android:name=".ui.activity.CreateLineupActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape">
+        </activity>
 
         <!--Services-->
-        <service android:name=".service.UserStatisticService"></service>
+        <service android:name=".service.UserStatisticService">
+        </service>
 
         <!--Receivers-->
         <receiver android:name=".receiver.ApplicationBootReceiver">
