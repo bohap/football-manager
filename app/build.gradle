@@ -53,4 +53,5 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestApt 'com.google.dagger:dagger-compiler:2.5'
+    compile 'junit:junit:4.12'
 }

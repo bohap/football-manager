@@ -93,7 +93,7 @@ public class CommentFragmentTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        application = (MockApplication) RuntimeEnvironment.application;
+        application = (MockApplication) RuntimeEnvironment.application.getApplicationContext();
         application.setCommentsViewComponent(component);
         application.createAuthComponent();
         this.mockDependencies();
