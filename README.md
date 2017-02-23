@@ -8,21 +8,21 @@ Android application that enables making football dream team. User that want to u
 * Dagger 2 for DI
 * Robolectric 3 for Unit testing the app
 
-### To be implemented:
+### Features:
 ---
-- [x] User registration
-- [x] User authentication using JWT tokens
-- [x] Loading teams, positions and players data and saving it into local SQLite database on first launch
-- [x] Listing latest lineups
-- [x] Displaying lineup likes
-- [x] Adding and removing likes to the lineups
-- [x] Displaying lineup comments
-- [x] Adding, updating and removing comments to the lineup
-- [x] Displaying lineup players
-- [x] Updating lineup players
-- [x] Creating new lineup
-- [x] Deleting existing lineup
-- [x] Background service to load and notify the user about the latest likes and comments on his latest lineup
+* User registration
+* User authentication using JWT tokens
+* Loading teams, positions and players data and saving it into local SQLite database on first launch
+* Listing latest lineups
+* Displaying lineup likes
+* Adding and removing likes to the lineups
+* Displaying lineup comments
+* Adding, updating and removing comments to the lineup
+* Displaying lineup players
+* Updating lineup players
+* Creating new lineup
+* Deleting existing lineup
+* Background service to load and notify the user about the latest likes and comments on his latest lineup
 
 ### Screenshots
 ---
