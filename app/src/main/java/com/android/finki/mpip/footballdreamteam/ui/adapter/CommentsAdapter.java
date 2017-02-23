@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.model.Comment;
 import com.android.finki.mpip.footballdreamteam.model.User;
-import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +133,7 @@ public class CommentsAdapter extends BaseAdapter {
      *
      * @return comment that will be checked
      */
-    public boolean isEditing(Comment comment) {
+    boolean isEditing(Comment comment) {
         if (comment == null) {
             throw new IllegalArgumentException("comment can't be null");
         }
@@ -156,21 +155,6 @@ public class CommentsAdapter extends BaseAdapter {
         comments.add(0, comment);
         items.put(comment.getId(), new Item());
         super.notifyDataSetChanged();
-    }
-
-    /**
-     * Merge the given list with the current.
-     *
-     * @param comments List of comments that will be merged
-     */
-    public void update(List<Comment> comments) {
-        logger.info("update");
-        this.comments = ListUtils.concat(this.comments, comments);
-        for (Comment comment : comments) {
-            if (this.items.get(comment.getId()) == null) {
-                this.items.put(comment.getId(), new Item());
-            }
-        }
     }
 
     /**
@@ -402,11 +386,11 @@ public class CommentsAdapter extends BaseAdapter {
         boolean sending = false;
         private String editedBody = null;
 
-        public void setEditing(boolean editing) {
+        void setEditing(boolean editing) {
             this.editing = editing;
         }
 
-        public boolean isEditing() {
+        boolean isEditing() {
             return editing;
         }
 
@@ -418,11 +402,11 @@ public class CommentsAdapter extends BaseAdapter {
             return sending;
         }
 
-        public void setEditedBody(String editedBody) {
+        void setEditedBody(String editedBody) {
             this.editedBody = editedBody;
         }
 
-        public String getEditedBody() {
+        String getEditedBody() {
             return editedBody;
         }
     }

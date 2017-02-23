@@ -5,7 +5,6 @@ import com.android.finki.mpip.footballdreamteam.model.LineupPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,10 +30,6 @@ public class LineupPlayerValidator {
             return false;
         }
         for (LineupPlayer lineupPlayer : lineupPlayers) {
-            if (lineupPlayer.getLineupId() < 1) {
-                logger.error(String.format("invalid lineup id, %d", lineupPlayer.getLineupId()));
-                return false;
-            }
             if (lineupPlayer.getPlayerId() < 1) {
                 logger.error(String.format("invalid player id, %d", lineupPlayer.getPlayerId()));
                 return false;
@@ -46,14 +41,6 @@ public class LineupPlayerValidator {
             }
         }
         Set<Integer> set = new LinkedHashSet<>();
-        for (LineupPlayer lineupPlayer : lineupPlayers) {
-            set.add(lineupPlayer.getLineupId());
-        }
-        if (set.size() != 1) {
-            logger.error("all element in the List must have the same lineup id");
-            return false;
-        }
-        set.clear();
         for (LineupPlayer lineupPlayer : lineupPlayers) {
             set.add(lineupPlayer.getPlayerId());
         }

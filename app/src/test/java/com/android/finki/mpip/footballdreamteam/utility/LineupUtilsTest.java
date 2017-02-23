@@ -596,19 +596,6 @@ public class LineupUtilsTest {
     }
 
     /**
-     * Test the behavior when getLineupPlayers is called with a player that has a null for
-     * LineupPlayer.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetLineupPlayersOnNullLineupPlayer() {
-        List<Player> players = Arrays.asList(keeper, leftBack, rightWing, leftCentreBack,
-                rightCentreBack, leftCentreMidfield, rightCentreMidfield, leftWing, rightWing,
-                leftCentreForward, rightCentreForward);
-        players.get(3).setLineupPlayer(null);
-        utils.getLineupPlayers(this.putPlayers(players));
-    }
-
-    /**
      * Test orderPlayers on lineup with formation 4-4-2.
      */
     @SuppressLint("UseSparseArrays")
@@ -704,30 +691,6 @@ public class LineupUtilsTest {
         List<Player> actualPlayers = new ArrayList<>(players);
         actualPlayers.add(3, null);
         int[] positionsResourceIds = PositionUtils.formation_4_3_3_resourcesIds;
-        Map<Integer, Player> map = new HashMap<>();
-        for (int i = 0; i < 11; i++) {
-            map.put(positionsResourceIds[i], actualPlayers.get(i));
-        }
-        List<Player> result = utils.orderPlayers(map);
-        assertEquals(players.size(), result.size());
-        for (int i = 0; i < players.size(); i++) {
-            assertSame(players.get(i), result.get(i));
-        }
-    }
-
-    /**
-     * Test the behavior when orderPlayers is called with a List that contains a empty
-     * player(player id is 0)
-     */
-    @SuppressLint("UseSparseArrays")
-    @Test
-    public void testOrderPlayersWithEmptyPlayer() {
-        List<Player> players = Arrays.asList(keeper, leftCentreBack, rightCentreBack,
-                leftBack, rightBack, leftCentreMidfield, rightCentreMidfield, attackingMidfield,
-                rightWing, centreCentreForward);
-        List<Player> actualPlayers = new ArrayList<>(players);
-        actualPlayers.add(3, new Player());
-        int[] positionsResourceIds = PositionUtils.formation_4_2_3_1_resourcesIds;
         Map<Integer, Player> map = new HashMap<>();
         for (int i = 0; i < 11; i++) {
             map.put(positionsResourceIds[i], actualPlayers.get(i));

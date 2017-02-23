@@ -442,26 +442,6 @@ public class CommentsAdapterTest {
     }
 
     /**
-     * Test that update method will sync the current list of comments in the adapter with the
-     * given one.
-     */
-    @Test
-    public void testUpdate() {
-        int id = this.comments.get(this.comments.size() - 1).getId();
-        Comment comment1 = new Comment(id++, user1, lineup, "Comment", date, date);
-        Comment comment2 = new Comment(id, user1, lineup, "Comment", date, date);
-        List<Comment> comments = Arrays.asList(comment1, comment2);
-        adapter.update(comments);
-        assertEquals(NUMBER_OF_COMMENTS + 2, adapter.getCount());
-        assertSame(comment1, adapter.getItem(NUMBER_OF_COMMENTS));
-        assertSame(comment2, adapter.getItem(NUMBER_OF_COMMENTS + 1));
-        assertFalse(adapter.isSending(comment1));
-        assertFalse(adapter.isEditing(comment1));
-        assertFalse(adapter.isSending(comment2));
-        assertFalse(adapter.isEditing(comment2));
-    }
-
-    /**
      * Test the behavior when onUpdateSuccess is called.
      */
     @Test

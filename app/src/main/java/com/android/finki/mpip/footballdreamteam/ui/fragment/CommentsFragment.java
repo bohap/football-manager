@@ -171,9 +171,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         if (this.getActivity() instanceof Listener) {
             ((Listener) this.getActivity()).changeTitle(title);
         }
-        adapter = new CommentsAdapter(this.getActivity(), presenter.getComments(),
-                presenter.getUser(), this);
-        listView.setAdapter(adapter);
         return view;
     }
 
@@ -220,7 +217,8 @@ public class CommentsFragment extends BaseFragment implements CommentsView, Comm
         spinner.setVisibility(View.GONE);
         error.setVisibility(View.GONE);
         content.setVisibility(View.VISIBLE);
-        adapter.update(comments);
+        adapter = new CommentsAdapter(this.getActivity(), comments, presenter.getUser(), this);
+        listView.setAdapter(adapter);
     }
 
     /**

@@ -30,7 +30,6 @@ public class CommentsViewPresenter extends BasePresenter {
     private LineupApi api;
     private User user;
     private int lineupId = -1;
-    private List<Comment> comments;
     private Call<List<Comment>> loadCommentsCall;
     private Queue<CommentCall> calls = new ArrayDeque<>();
     private boolean loadCommentsRequestSending = false;
@@ -65,15 +64,6 @@ public class CommentsViewPresenter extends BasePresenter {
         if (loadCommentsRequestSending) {
             view.showCommentsLoading();
         }
-    }
-
-    /**
-     * Get all loaded comments.
-     *
-     * @return all comments that are loaded
-     */
-    public List<Comment> getComments() {
-        return comments;
     }
 
     /**
@@ -119,12 +109,11 @@ public class CommentsViewPresenter extends BasePresenter {
      *
      * @param response server response
      */
-    public void onLoadingCommentsSuccess(Response<List<Comment>> response) {
+    private void onLoadingCommentsSuccess(Response<List<Comment>> response) {
         logger.info("comments loaded successfully");
         loadCommentsRequestSending = false;
         loadCommentsCall = null;
         List<Comment> comments = response.body();
-        this.comments = comments;
         if (viewLayoutCreated) {
             view.showCommentsLoadingSuccess(comments);
         }
@@ -136,7 +125,7 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    public void onLoadingCommentsFailed(Call<List<Comment>> call, Throwable t) {
+    private void onLoadingCommentsFailed(Call<List<Comment>> call, Throwable t) {
         logger.info("comments loading failed");
         loadCommentsRequestSending = false;
         if (call.isCanceled()) {
@@ -242,7 +231,7 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param comment  comment that was updating
      * @param response server response
      */
-    public void onCommentUpdatingSuccess(Comment comment, Response<CommentResponse> response) {
+    private void onCommentUpdatingSuccess(Comment comment, Response<CommentResponse> response) {
         logger.info(String
                 .format("updating comment success, comment id %d", comment.getId()));
         if (viewLayoutCreated) {
@@ -259,7 +248,7 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param call    retrofit call
      * @param t       exception that has been thrown
      */
-    public void onCommentUpdatingFailed(Comment comment, Call<CommentResponse> call,
+    private void onCommentUpdatingFailed(Comment comment, Call<CommentResponse> call,
                                         Throwable t) {
         logger.info(String
                 .format("updating comment failed, comment id %d", comment.getId()));
@@ -297,7 +286,7 @@ public class CommentsViewPresenter extends BasePresenter {
      *
      * @param comment failed deleted comment
      */
-    public void onCommentDeletingSuccess(Comment comment) {
+    private void onCommentDeletingSuccess(Comment comment) {
         logger.info(String.format("delete comment success, comment %d", comment.getId()));
         if (viewLayoutCreated) {
             view.showCommentDeletingSuccess(comment);
@@ -313,7 +302,7 @@ public class CommentsViewPresenter extends BasePresenter {
      * @param call    retrofit call
      * @param t       exception that has been thrown
      */
-    public void onCommentDeletingFailed(Comment comment, Call<Void> call, Throwable t) {
+    private void onCommentDeletingFailed(Comment comment, Call<Void> call, Throwable t) {
         logger.info(String.format("delete comment failed, comment %d", comment.getId()));
         if (call.isCanceled()) {
             logger.info(String.format("delete comment canceled, comment %d", comment.getId()));
@@ -351,7 +340,7 @@ public class CommentsViewPresenter extends BasePresenter {
     /**
      * Wrapper class for the add, onUpdateSuccess and delete comment calls.
      */
-    public abstract class CommentCall {
+    abstract class CommentCall {
 
         public abstract void execute();
 
@@ -363,12 +352,12 @@ public class CommentsViewPresenter extends BasePresenter {
     /**
      * Wrapper class for adding comment call.
      */
-    public class AddCommentCall extends CommentCall implements Callback<CommentResponse> {
+    private class AddCommentCall extends CommentCall implements Callback<CommentResponse> {
 
         private String body;
         private Call<CommentResponse> call;
 
-        public AddCommentCall(String body) {
+        AddCommentCall(String body) {
             this.body = body;
         }
 
@@ -430,13 +419,13 @@ public class CommentsViewPresenter extends BasePresenter {
     /**
      * Wrapper class for updating comment call.
      */
-    public class UpdateCommentCall extends CommentCall implements Callback<CommentResponse> {
+    private class UpdateCommentCall extends CommentCall implements Callback<CommentResponse> {
 
         private Comment comment;
         private String newBody;
         private Call<CommentResponse> call;
 
-        public UpdateCommentCall(Comment comment, String newBody) {
+        UpdateCommentCall(Comment comment, String newBody) {
             this.comment = comment;
             this.newBody = newBody;
         }
@@ -498,12 +487,12 @@ public class CommentsViewPresenter extends BasePresenter {
     /**
      * Wrapper class for deleting comment call.
      */
-    public class DeleteCommentCall extends CommentCall implements Callback<Void> {
+    private class DeleteCommentCall extends CommentCall implements Callback<Void> {
 
         private Comment comment;
         private Call<Void> call;
 
-        public DeleteCommentCall(Comment comment) {
+        DeleteCommentCall(Comment comment) {
             this.comment = comment;
         }
 

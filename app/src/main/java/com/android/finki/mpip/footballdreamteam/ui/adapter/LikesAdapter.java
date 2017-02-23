@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.android.finki.mpip.footballdreamteam.R;
 import com.android.finki.mpip.footballdreamteam.rest.model.UserLike;
 import com.android.finki.mpip.footballdreamteam.utility.DateUtils;
-import com.android.finki.mpip.footballdreamteam.utility.ListUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,15 +113,6 @@ public class LikesAdapter extends BaseAdapter {
         logger.info("remove");
         likes.remove(userLike);
         super.notifyDataSetChanged();
-    }
-
-    /**
-     * Merge the given list with the current.
-     *
-     * @param likes List of likes that will be merged
-     */
-    public void update(List<UserLike> likes) {
-        this.likes = ListUtils.concat(this.likes, likes);
     }
 
     /**

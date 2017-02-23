@@ -133,6 +133,7 @@ public class LikeFragmentTest {
     @Test
     public void testFragmentIsCrated() {
         this.startFragment(MockActivity.class);
+        fragment.showLoadingSuccess(likes);
         String title = application.getString(R.string.likesFragment_title);
         Bundle args = fragment.getArguments();
         assertNotNull(args);

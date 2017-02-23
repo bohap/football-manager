@@ -38,7 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.shadows.support.v4.SupportFragmentTestUtil;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -73,10 +73,7 @@ public class CommentFragmentTest {
     private CommentsFragment fragment;
     private User user = new User(1, "User");
     private Lineup lineup = new Lineup(1, 1);
-    private List<Comment> comments = Arrays.asList(
-            new Comment(1, 1, 1, "Comment", null, null),
-            new Comment(2, 2, 1, "Comment", null, null),
-            new Comment(3, 1, 1, "Comment", null, null));
+    private List<Comment> comments;
     private RelativeLayout spinner;
     private TextView txtSpinner;
     private RelativeLayout error;
@@ -98,6 +95,11 @@ public class CommentFragmentTest {
         application.createAuthComponent();
         this.mockDependencies();
         when(presenter.getUser()).thenReturn(user);
+
+        comments = new ArrayList<>();
+        comments.add(new Comment(1, 1, 1, "Comment", null, null));
+        comments.add(new Comment(2, 2, 1, "Comment", null, null));
+        comments.add(new Comment(3, 1, 1, "Comment", null, null));
     }
 
     /**
@@ -170,6 +172,7 @@ public class CommentFragmentTest {
     public void testFragmentIsCreated() {
         String title = application.getString(R.string.commentsLayout_title);
         this.startFragment(MockActivity.class);
+        fragment.showCommentsLoadingSuccess(comments);
         Bundle args = fragment.getArguments();
         assertNotNull(args);
         assertEquals(lineup.getId().intValue(), args.getInt(CommentsView.LINEUP_ID_KEY, -1));
@@ -192,18 +195,8 @@ public class CommentFragmentTest {
     public void testFragmentIsCreatedWhenActivityDoesNotImplementsListener() {
         String title = application.getString(R.string.commentsLayout_title);
         this.startFragment(null);
-        Bundle args = fragment.getArguments();
-        assertNotNull(args);
-        assertEquals(lineup.getId().intValue(), args.getInt(CommentsView.LINEUP_ID_KEY, -1));
         verify(bfListener, never()).onFragmentActive();
         verify(bfListener, never()).changeTitle(title);
-        verify(presenter).onViewCreated(args);
-        verify(presenter).onViewLayoutCreated();
-        View view = fragment.getView();
-        assertNotNull(view);
-        listView = (ListView) view.findViewById(R.id.commentsLayout_listView);
-        assertNotNull(listView);
-        assertTrue(listView.getAdapter() instanceof CommentsAdapter);
     }
 
     /**
@@ -232,12 +225,13 @@ public class CommentFragmentTest {
     public void testShowLoadingSuccess() {
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         Adapter adapter = listView.getAdapter();
         assertNotNull(adapter);
         spinner.setVisibility(View.VISIBLE);
         error.setVisibility(View.VISIBLE);
         content.setVisibility(View.GONE);
-        assertEquals(0, adapter.getCount());
+        assertEquals(comments.size(), adapter.getCount());
         fragment.showCommentsLoadingSuccess(comments);
         assertEquals(View.VISIBLE, content.getVisibility());
         assertEquals(View.GONE, spinner.getVisibility());
@@ -370,18 +364,20 @@ public class CommentFragmentTest {
     @Test
     public void testShowCommentAddingSuccess() {
         String text = application.getString(R.string.commentsLayout_addingCommentSuccess_text);
-        final Comment comment = comments.get(1);
+        final Comment comment = new Comment(4, 1, 1, "Comment", null, null);
+        final int size = comments.size();
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         Adapter adapter = listView.getAdapter();
-        assertEquals(0, adapter.getCount());
+        assertEquals(comments.size(), adapter.getCount());
         btnAddComment.setVisibility(View.GONE);
         addCommentContent.setVisibility(View.VISIBLE);
         fragment.showCommentAddingSuccess(comment);
         assertEquals(View.VISIBLE, btnAddComment.getVisibility());
         assertEquals(View.GONE, addCommentContent.getVisibility());
         assertEquals(text, ShadowToast.getTextOfLatestToast());
-        assertEquals(1, adapter.getCount());
+        assertEquals(size + 1, adapter.getCount());
         assertSame(comment, adapter.getItem(0));
     }
 
@@ -393,8 +389,8 @@ public class CommentFragmentTest {
         String text = application.getString(R.string.commentsLayout_addingCommentFailed_text);
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         Adapter adapter = listView.getAdapter();
-        assertEquals(0, adapter.getCount());
         txtComment.setEnabled(false);
         spinnerSubmittingComment.setVisibility(View.VISIBLE);
         btnSubmitComment.setVisibility(View.GONE);
@@ -405,7 +401,7 @@ public class CommentFragmentTest {
         assertEquals(View.VISIBLE, btnCancelAddingComment.getVisibility());
         assertTrue(txtComment.isEnabled());
         assertEquals(text, ShadowToast.getTextOfLatestToast());
-        assertEquals(0, adapter.getCount());
+        assertEquals(comments.size(), adapter.getCount());
     }
 
     /**
@@ -417,9 +413,9 @@ public class CommentFragmentTest {
         final String newBody = "New Test Body";
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         assertTrue(listView.getAdapter() instanceof CommentsAdapter);
         CommentsAdapter adapter = (CommentsAdapter) listView.getAdapter();
-        adapter.update(comments);
         assertEquals(comments.size(), adapter.getCount());
         fragment.updateComment(index, newBody);
         verify(presenter).updateComment(comments.get(index), newBody);
@@ -434,9 +430,9 @@ public class CommentFragmentTest {
         final int index = 2;
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         assertTrue(listView.getAdapter() instanceof CommentsAdapter);
         CommentsAdapter adapter = (CommentsAdapter) listView.getAdapter();
-        adapter.update(comments);
         View view = adapter.getView(index, null, listView);
         assertNotNull(view);
         ButtonAwesome btnUpdate = (ButtonAwesome) view.findViewById(R.id.commentListItem_btnUpdate);
@@ -457,9 +453,9 @@ public class CommentFragmentTest {
         final int index = 0;
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         assertTrue(listView.getAdapter() instanceof CommentsAdapter);
         CommentsAdapter adapter = (CommentsAdapter) listView.getAdapter();
-        adapter.update(comments);
         View view = adapter.getView(index, null, listView);
         assertNotNull(view);
         ButtonAwesome btnUpdate = (ButtonAwesome) view.findViewById(R.id.commentListItem_btnUpdate);
@@ -476,14 +472,15 @@ public class CommentFragmentTest {
      */
     @Test
     public void testShowCommentDeletingSuccess() {
+        final int size = comments.size();
         String text = application.getString(R.string.commentLayout_deletingCommentSuccess_text);
         final int index = 2;
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         CommentsAdapter adapter = (CommentsAdapter) listView.getAdapter();
-        adapter.update(comments);
         fragment.showCommentDeletingSuccess(comments.get(index));
-        assertEquals(comments.size() - 1, adapter.getCount());
+        assertEquals(size - 1, adapter.getCount());
         assertEquals(text, ShadowToast.getTextOfLatestToast());
     }
 
@@ -496,8 +493,8 @@ public class CommentFragmentTest {
         final int index = 1;
         this.startFragment(null);
         this.getViews();
+        fragment.showCommentsLoadingSuccess(comments);
         CommentsAdapter adapter = (CommentsAdapter) listView.getAdapter();
-        adapter.update(comments);
         View view = adapter.getView(index, null, listView);
         assertNotNull(view);
         ButtonAwesome btnRemove = (ButtonAwesome) view.findViewById(R.id.commentListItem_btnRemove);

@@ -28,9 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -203,7 +201,6 @@ public class LikeViewPresenterTest {
         verify(view, never()).showLoading();
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
         verify(view, never()).showLoadingSuccess(anyListOf(UserLike.class));
-        assertSame(likes, presenter.getLikes());
     }
 
     /**
@@ -220,7 +217,6 @@ public class LikeViewPresenterTest {
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         presenter.onViewLayoutCreated();
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
-        assertSame(likes, presenter.getLikes());
         verify(view).showLoadingSuccess(likes);
         verify(view).showRemoveLikeButton();
         verify(view, never()).showAddLikeButton();
@@ -239,7 +235,6 @@ public class LikeViewPresenterTest {
         verify(callListUserLikes).enqueue(callbackLikesCaptor.capture());
         presenter.onViewLayoutCreated();
         callbackLikesCaptor.getValue().onResponse(callListUserLikes, Response.success(likes));
-        assertSame(likes, presenter.getLikes());
         verify(view).showLoadingSuccess(likes);
         verify(view).showAddLikeButton();
         verify(view, never()).showRemoveLikeButton();
@@ -444,7 +439,6 @@ public class LikeViewPresenterTest {
         verify(view).showLikeRemovingSuccess(userLikeCaptor.capture());
         assertEquals(userLike.getId(), userLikeCaptor.getValue().getId());
         assertEquals(userLike.getName(), userLikeCaptor.getValue().getName());
-        assertFalse(presenter.getLikes().contains(userLike));
     }
 
     /**
@@ -468,7 +462,6 @@ public class LikeViewPresenterTest {
                 new InternalServerErrorException());
         verify(view, never()).showLikeRemovingFailed();
         verify(view, never()).showInternalServerError();
-        assertTrue(presenter.getLikes().contains(userLike));
     }
 
     /**
@@ -491,7 +484,6 @@ public class LikeViewPresenterTest {
                 new InternalServerErrorException());
         verify(view).showLikeRemovingFailed();
         verify(view).showInternalServerError();
-        assertTrue(presenter.getLikes().contains(userLike));
     }
 
     /**

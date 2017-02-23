@@ -32,7 +32,6 @@ public class LikeViewPresenter extends BasePresenter {
     private User user;
     private Lineup lineup;
     private UserLike userLike;
-    private List<UserLike> likes;
     private Call<List<UserLike>> likesCall;
     private Call<ServerResponse> addLikeCall;
     private Call<Void> removeLikeCall;
@@ -40,12 +39,14 @@ public class LikeViewPresenter extends BasePresenter {
     private boolean loadLikesRequestSending = false;
     private boolean addLikeRequestSending = false;
     private boolean removeLikeRequestSending = false;
+    private boolean hasLiked = false;
 
     public LikeViewPresenter(LikeView view, LineupApi api, User user) {
         this.view = view;
         this.api = api;
         this.user = user;
-        userLike = new UserLike(user.getId(), user.getName(), new LineupLike());
+        this.userLike = new UserLike(user.getId(), user.getName(), new LineupLike());
+        this.hasLiked = false;
     }
 
     /**
@@ -84,15 +85,6 @@ public class LikeViewPresenter extends BasePresenter {
     }
 
     /**
-     * Get all loaded likes.
-     *
-     * @return loaded likes
-     */
-    public List<UserLike> getLikes() {
-        return likes;
-    }
-
-    /**
      * Load the current lineup likes.
      */
     public void loadLikes() {
@@ -125,15 +117,15 @@ public class LikeViewPresenter extends BasePresenter {
      *
      * @param response server response
      */
-    public void onLikesLoadingSuccess(Response<List<UserLike>> response) {
+    private void onLikesLoadingSuccess(Response<List<UserLike>> response) {
         logger.info("likes request success");
         likesCall = null;
         loadLikesRequestSending = false;
         List<UserLike> likes = response.body();
-        this.likes = likes;
+        this.hasLiked = likes.contains(userLike);
         if (viewLayoutCreated) {
             view.showLoadingSuccess(likes);
-            if (likes.contains(userLike)) {
+            if (this.hasLiked) {
                 view.showRemoveLikeButton();
             } else {
                 view.showAddLikeButton();
@@ -147,7 +139,7 @@ public class LikeViewPresenter extends BasePresenter {
      * @param call retrofit call
      * @param t    exception that has been thrown
      */
-    public void onLikesLoadingFailed(Call<List<UserLike>> call, Throwable t) {
+    private void onLikesLoadingFailed(Call<List<UserLike>> call, Throwable t) {
         logger.info("likes request failed");
         loadLikesRequestSending = false;
         if (call.isCanceled()) {
@@ -170,7 +162,7 @@ public class LikeViewPresenter extends BasePresenter {
             throw new IllegalArgumentException("lineup is not set yet");
         }
         if (!addLikeRequestSending) {
-            if (likes.contains(userLike)) {
+            if (this.hasLiked) {
                 throw new IllegalArgumentException("like already added");
             }
             logger.info("sending add like request");
@@ -202,7 +194,7 @@ public class LikeViewPresenter extends BasePresenter {
         addLikeRequestSending = false;
         addLikeCall = null;
         userLike.getPivot().setCreatedAt(new Date());
-        this.likes.add(userLike);
+        this.hasLiked = true;
         if (viewLayoutCreated) {
             view.showLikeAddingSuccess(userLike);
         }
@@ -237,7 +229,7 @@ public class LikeViewPresenter extends BasePresenter {
             throw new IllegalArgumentException("lineup is not set yet");
         }
         if (!removeLikeRequestSending) {
-            if (!likes.contains(userLike)) {
+            if (!this.hasLiked) {
                 throw new IllegalArgumentException("lineup not liked");
             }
             logger.info("sending onRemoveSuccess like request");
@@ -267,14 +259,14 @@ public class LikeViewPresenter extends BasePresenter {
         logger.info("remove like request success");
         removeLikeRequestSending = false;
         removeLikeCall = null;
-        this.likes.remove(userLike);
+        this.hasLiked = false;
         if (viewLayoutCreated) {
             view.showLikeRemovingSuccess(userLike);
         }
     }
 
     /**
-     * Called when removing the liek failed.
+     * Called when removing the like failed.
      *
      * @param call retrofit call
      * @param t    exception that has been thrown

@@ -18,7 +18,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -165,21 +164,5 @@ public class LikeAdapterTest {
         assertEquals(NUMBER_OF_ITEMS - 1, adapter.getCount());
         assertSame(likes.get(position + 1), adapter.getItem(position));
         assertTrue(shadowOf(adapter).wasNotifyDataSetChangedCalled());
-    }
-
-    /**
-     * Test update method will sync the list of likes with the given list.
-     */
-    @Test
-    public void testUpdate() {
-        int id = this.likes.get(NUMBER_OF_ITEMS - 1).getId();
-        final UserLike like1 = new UserLike(id + 1, "User", new LineupLike(id + 1, id + 1, date));
-        id++;
-        final UserLike like2 = new UserLike(id + 1, "User", new LineupLike(id + 1, id + 1, date));
-        List<UserLike> likes = Arrays.asList(like1, this.likes.get(3), like2);
-        adapter.update(likes);
-        assertEquals(NUMBER_OF_ITEMS + 2, adapter.getCount());
-        assertSame(likes.get(0), adapter.getItem(NUMBER_OF_ITEMS));
-        assertSame(likes.get(2), adapter.getItem(NUMBER_OF_ITEMS + 1));
     }
 }

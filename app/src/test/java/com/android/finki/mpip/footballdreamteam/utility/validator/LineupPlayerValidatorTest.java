@@ -47,17 +47,6 @@ public class LineupPlayerValidatorTest {
     }
 
     /**
-     * Test the behavior on validate method called with invalid lineups id.
-     */
-    @Test
-    public void testValidateOnInvalidLineupId() {
-        final int[] playersIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        final int[] positionsIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        List<LineupPlayer> lineupPlayers = this.generateLineupPlayers(0, playersIds, positionsIds);
-        assertFalse(validator.validate(lineupPlayers));
-    }
-
-    /**
      * Test the behavior on validate method called with invalid player id.
      */
     @Test
@@ -76,31 +65,6 @@ public class LineupPlayerValidatorTest {
         final int[] playersIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
         final int[] positionsIds = {1, 2, 3, 4, 5, 6, 7, 0, 9, 10, 11};
         List<LineupPlayer> lineupPlayers = this.generateLineupPlayers(1, playersIds, positionsIds);
-        assertFalse(validator.validate(lineupPlayers));
-    }
-
-    /**
-     * Test the behavior on validate method called with two different lineups ids.
-     */
-    @Test
-    public void testValidateWIthTwoDifferentLineupId() {
-        final int[] playersIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        final int[] positionsIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        List<LineupPlayer> lineupPlayers = this.generateLineupPlayers(1, playersIds, positionsIds);
-        lineupPlayers.get(4).setLineupId(2);
-        assertFalse(validator.validate(lineupPlayers));
-    }
-
-    /**
-     * Test the behavior on validate method called with more then two different lineups ids.
-     */
-    @Test
-    public void testValidateWithMoreThenTwoDifferentLineupId() {
-        final int[] playersIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        final int[] positionsIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-        List<LineupPlayer> lineupPlayers = this.generateLineupPlayers(1, playersIds, positionsIds);
-        lineupPlayers.get(4).setLineupId(2);
-        lineupPlayers.get(5).setLineupId(2);
         assertFalse(validator.validate(lineupPlayers));
     }
 

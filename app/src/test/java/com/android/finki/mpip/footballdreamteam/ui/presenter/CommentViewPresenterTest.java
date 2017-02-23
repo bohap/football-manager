@@ -204,7 +204,6 @@ public class CommentViewPresenterTest {
         commentsCallbackCaptor.getValue().onResponse(commentsCall, Response.success(comments));
         verify(view).showCommentsLoadingSuccess(comments);
         verify(view, never()).showCommentLoadingFailed();
-        assertSame(comments, presenter.getComments());
     }
 
     /**
@@ -223,7 +222,6 @@ public class CommentViewPresenterTest {
         commentsCallbackCaptor.getValue().onResponse(commentsCall, Response.success(comments));
         verify(view, never()).showCommentsLoadingSuccess(comments);
         verify(view, never()).showCommentLoadingFailed();
-        assertSame(comments, presenter.getComments());
     }
 
     /**

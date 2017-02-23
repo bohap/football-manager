@@ -227,12 +227,13 @@ public class LineupUtils {
         for (Map.Entry<Integer, Player> entry : mappedPlayers.entrySet()) {
             Player player = entry.getValue();
             if (player.getLineupPlayer() == null) {
-                throw new IllegalArgumentException("lineup player can't be null");
+                lineupPlayers.add(new LineupPlayer());
+            } else {
+                int lineupId = player.getLineupPlayer().getLineupId();
+                int playerId = player.getLineupPlayer().getPlayerId();
+                int positionId = player.getLineupPlayer().getPositionId();
+                lineupPlayers.add(new LineupPlayer(lineupId, playerId, positionId));
             }
-            int lineupId = player.getLineupPlayer().getLineupId();
-            int playerId = player.getLineupPlayer().getPlayerId();
-            int positionId = player.getLineupPlayer().getPositionId();
-            lineupPlayers.add(new LineupPlayer(lineupId, playerId, positionId));
         }
         return lineupPlayers;
     }
@@ -248,7 +249,7 @@ public class LineupUtils {
         List<Player> players = new ArrayList<>();
         for (int position : PositionUtils.resourcesIds) {
             Player player = playerMap.get(position);
-            if (player != null && player.getId() > 0) {
+            if (player != null) {
                 players.add(player);
             }
         }
