@@ -24,7 +24,20 @@ Android application that enables making football dream team. User that want to u
 - [x] Deleting existing lineup
 - [x] Background service to load and notify the user about the latest likes and comments on his latest lineup
 
+### Screenshots
+---
+![Login Page](screenshots/login.png)
+![Register Page](screenshots/register.png)
+![Home Page](screenshots/home.png)
+![SIde Menu](screenshots/side_menu.png)
+![Lineup Page](screenshots/lineup.png)
+![Formation Change](screenshots/lineup_formation.png)
+![Create Lineup Page](screenshots/lineup_create.png)
+![LikesPage](screenshots/likes.png)
+![Comments Page](screenshots/comments.png)
+
 ### Test Report
+---
 ![Test Report](screenshots/test_report.png)
 
 ### Collaborating:
