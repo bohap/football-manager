@@ -24,6 +24,9 @@ Android application that enables making football dream team. User that want to u
 - [x] Deleting existing lineup
 - [x] Background service to load and notify the user about the latest likes and comments on his latest lineup
 
+### Test Report
+![Test Report](screenshots/test_report.png)
+
 ### Collaborating:
 ---
 - Borche Petrovski as Android Developer [**@bohap**](https://github.com/bohap)
