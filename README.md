@@ -26,15 +26,15 @@ Android application that enables making football dream team. User that want to u
 
 ### Screenshots
 ---
-![Login Page](screenshots/login.png)
-![Register Page](screenshots/register.png)
-![Home Page](screenshots/home.png)
-![SIde Menu](screenshots/side_menu.png)
-![Lineup Page](screenshots/lineup.png)
-![Formation Change](screenshots/lineup_formation.png)
-![Create Lineup Page](screenshots/lineup_create.png)
-![LikesPage](screenshots/likes.png)
-![Comments Page](screenshots/comments.png)
+<img src="./screenshots/login.png" alt="Login Page" width="350px" />
+<img src="./screenshots/register.png" alt="Register Page" width="350px"  />
+<img src="./screenshots/home.png" alt="Home Page" width="350px" />
+<img src="./screenshots/side_menu.png" alt="Side Menu" width="350px" />
+<img src="./screenshots/lineup_create.png" alt="Create Lineup Page" width="650px" />
+<img src="./screenshots/lineup_formation.png" alt="Formation Change" width="650px" />
+<img src="./screenshots/lineup.png" alt="Lineup Page" width="650px" />
+<img src="./screenshots/likes.png" alt="Likes Page" width="350px"  />
+<img src="./screenshots/comments.png" alt="Comments Page" width="350px"  />
 
 ### Test Report
 ---
